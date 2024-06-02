@@ -3,6 +3,7 @@
     money: 0,
     days: 1,
     years: 12,
+    lifespan: 90,
     paused: false,
 
     unlocked:  {
