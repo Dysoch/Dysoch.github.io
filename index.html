@@ -12,17 +12,25 @@
 </head>
 <body id="body" class="dark">
 	<h1>DyIdle</h1>
-    <div class="text-caption">Years: <span id="yearsDisplay"></span>, Days: <span id="daysDisplay"></span></div>
     <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Age')"><div class="text-caption">Age: <span id="yearsDisplay"></span>, Day: <span id="daysDisplay"></span></div></button>
         <button class="tablinks" onclick="openTab(event, 'Money')"><div class="text-caption">Money: <span id="moneyDisplay"></span></div></button>
         <button class="tablinks" onclick="openTab(event, 'Stats')">Stats</button>
         <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
     </div>
     
+    <div id="Age" class="tabcontent">
+        <div class="text-caption">Age: <span id="yearsDisplay"></span>, Day: <span id="daysDisplay"></span></div>
+    </div>
+    
     <div id="Money" class="tabcontent">
         <div class="text-caption">Money: <span id="moneyPDDisplay"></span> per Day, <span id="moneyPYDisplay"></span> per Year.</div>
-        <div button id="moneyButton_1" class="w3-button button sidebar-element" onClick="money()">Search for Money</button></div>
-        <div button id="moneyButton_2" class="w3-button button sidebar-element" onClick="moneyBuyGen('lemonade')">Buy Lemonade Stand</button></div>
+        <div>
+            <button id="moneyButton_1" class="w3-button button sidebar-element" onClick="money()">Search for Money</button>
+        </div>
+        <div>
+            <button id="moneyButton_2" class="w3-button button sidebar-element" onClick="moneyBuyGen('lemonade')">Buy Lemonade Stand</button>
+        </div>
     </div>
       
     <div id="Stats" class="tabcontent">
