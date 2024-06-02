@@ -10,7 +10,9 @@ function Unlocker() {
     if (gameData.money > 100, gameData.unlocked.lemonade = 0) { gameData.unlocked.lemonade = 1 }
 }
 
-updateUI()
+function updateGenerators() {
+    if (gameData.unlocked.lemonade = 1, gameData.generators.money.lemonade >= 1) { gameData.money += 0.15 * gameData.generators.money.lemonade }
+}
 
 setInterval(function(){
     if (gameData.years <= gameData.lifespan) { 
@@ -18,6 +20,8 @@ setInterval(function(){
         if (gameData.days > 365) {
             gameData.days = 1;
             gameData.years += 1;
-        }        
+        }
+        updateGenerators() 
+        updateUI()      
     }
 },1000);
