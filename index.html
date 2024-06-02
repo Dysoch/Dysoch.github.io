@@ -14,13 +14,12 @@
 	<h1>DyIdle</h1>
     <div class="text-caption">Years: <span id="yearsDisplay"></span>, Days: <span id="daysDisplay"></span></div>
     <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'Money')" id="defaultOpen">Money</button>
+        <button class="tablinks" onclick="openTab(event, 'Money')" id="defaultOpen"><div class="text-caption">Money: <span id="moneyDisplay"></span></div></button>
         <button class="tablinks" onclick="openTab(event, 'Stats')">Stats</button>
         <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
     </div>
     
     <div id="Money" class="tabcontent">
-        <div class="text-caption">Money: <span id="moneyDisplay"></span></div>
         <div class="text-caption">Money: <span id="moneyPDDisplay"></span> per Day, <span id="moneyPYDisplay"></span> per Year.</div>
         <button id="moneyButton_1" class="w3-button button sidebar-element" onClick="money()">Search for Money</button>
         <button id="moneyButton_2" class="w3-button button sidebar-element" onClick="moneyBuyGen('lemonade')">Buy Lemonade Stand</button>
