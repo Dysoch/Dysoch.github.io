@@ -6,6 +6,11 @@ function money() {
     Unlocker()
 }
 
+function updateGeneratorsMoneyPS() {
+    gameData.moneyps = 0
+    if (gameData.unlocked.lemonade = 1, gameData.generators.money.lemonade >= 1) { gameData.moneyps = (0.15 * gameData.generators.money.lemonade) }
+}
+
 function Unlocker() {
     if (gameData.money > 100, gameData.unlocked.lemonade = 0) { gameData.unlocked.lemonade = 1 }
 }
@@ -16,6 +21,9 @@ function updateGenerators() {
 
 function moneyBuyGen(name) {
     if (name = 'lemonade', gameData.unlocked.lemonade = 1, gameData.money > 100) { gameData.generators.money.lemonade += 1, gameData.money -= 100 }
+    
+    updateGeneratorsMoneyPS()
+    updateUI()
 }
 
 setInterval(function(){
