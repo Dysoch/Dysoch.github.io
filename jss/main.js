@@ -1,13 +1,15 @@
 ﻿
-var gameloop = setInterval(function() {
-    if (ticking) return;
-    ticking = true;
-    updateUI();
+function money() {
+    gameData.money += 1;
+    gameData.days += 1;
 
-    // fps for debug only
-    //var thisFrameTime = (thisLoop = new Date) - lastLoop;
-    //frameTime += (thisFrameTime - frameTime) / filterStrength;
-    //lastLoop = thisLoop;
+    if (gameData.days >= 365) {
+        gameData.days = 1;
+        gameData.years += 1;
+    }
 
-    ticking = false;
-}, 1000)
+    updateUI()
+}
+
+
+updateUI()
