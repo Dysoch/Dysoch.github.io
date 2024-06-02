@@ -16,4 +16,5 @@ function renderSideBar() {
     document.getElementById("daysDisplay").textContent = gameData.days
     document.getElementById("yearsDisplay").textContent = gameData.years += 18
     document.getElementById("moneyDisplay").textContent = gameData.money
+    
 }
