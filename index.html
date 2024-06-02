@@ -11,31 +11,29 @@
 	<title>DyIdle</title>
 </head>
 <body id="body" class="dark">
-	<div class="w3-margin">
-		<div class="header">
-			<h3>DyIdle</h3>
-		</div>
+	<h1>DyIdle</h1>
+    <div class="text-caption">Years: <span id="yearsDisplay"></span>, Days: <span id="daysDisplay"></span></div>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Money')">Money</button>
+        <button class="tablinks" onclick="openTab(event, 'Stats')">Stats</button>
+        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
     </div>
-    <div id="info" class="panel w3-padding quick-bar" style="width:20em">
-        <div class="text-caption">Years: <span id="yearsDisplay"></span>, Days: <span id="daysDisplay"></span></div>
+    <div id="Money" class="tabcontent">
         <div class="text-caption">Money: <span id="moneyDisplay"></span></div>
+        <button id="moneyButton_1" class="w3-button button sidebar-element" onClick="money()">Search for Money</button>
+        <button id="moneyButton_2" class="w3-button button sidebar-element" onClick="moneyBuyGen('lemonade')">Buy Lemonade Stand</button>
     </div>
-    <div class="column">
-        <div id="tabcolumn" class="panel w3-margin-left tabs-tab-column">
-            <div class="w3-button w3-bar-item tabButton baritem" id="jobsTabButton" onClick="setTab('money')">Money</div>
-        </div>
-        <div id="maincolumn" class="panel w3-margin-left w3-margin-top w3-padding tabs-main-column">
-            <div id="hero">
-                <div class="tab" id="money">
-                    <div id="jobPage" style="flex: 0.83; margin-left: 0.5em;">
-                        <table id="jobTable" class="w3-table w3-bordered">
-                            <button id="moneyButton_1" class="w3-button button sidebar-element" onClick="money()">Search for Money</button>
-                            <button id="moneyButton_2" class="w3-button button sidebar-element" onClick="moneyBuyGen('lemonade')">Buy Lemonade Stand</button>
-                        </table>
-                    </div>
-                </div>
-            </div>
+      
+    <div id="Stats" class="tabcontent">
+        <h3>Paris</h3>
+        <p>Paris is the capital of France.</p> 
     </div>
+      
+    <div id="Settings" class="tabcontent">
+        <h3>Tokyo</h3>
+        <p>Tokyo is the capital of Japan.</p>
+    </div>
+
 	<script src="js/data.js"></script>
 	<script src="js/ui.js"></script>
 	<script src="js/main.js"></script>

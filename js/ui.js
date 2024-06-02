@@ -19,30 +19,16 @@ function renderSideBar() {
 
 }
 
-function setTab(selectedTab) {
-    const tabElement = document.getElementById(selectedTab)
-
-    if (tabElement == null) {
-        setTab(Tab.JOBS)
-        return
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
     }
-
-    gameData.settings.selectedTab = selectedTab
-
-    // Update the UI when switching tabs to prevent flikering.
-    updateUI()
-
-    const element = document.getElementById(selectedTab + "TabButton")
-
-    const tabs = Array.prototype.slice.call(document.getElementsByClassName("tab"))
-    tabs.forEach(function(tab) {
-        tab.style.display = "none"
-    })
-    tabElement.style.display = "flex"
-
-    const tabButtons = document.getElementsByClassName("tabButton")
-    for (tabButton of tabButtons) {
-        tabButton.classList.remove("w3-blue-gray")
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    element.classList.add("w3-blue-gray")
-}
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
