@@ -18,3 +18,31 @@ function renderSideBar() {
     document.getElementById("moneyDisplay").textContent = gameData.money
 
 }
+
+function setTab(selectedTab) {
+    const tabElement = document.getElementById(selectedTab)
+
+    if (tabElement == null) {
+        setTab(Tab.JOBS)
+        return
+    }
+
+    gameData.settings.selectedTab = selectedTab
+
+    // Update the UI when switching tabs to prevent flikering.
+    updateUI()
+
+    const element = document.getElementById(selectedTab + "TabButton")
+
+    const tabs = Array.prototype.slice.call(document.getElementsByClassName("tab"))
+    tabs.forEach(function(tab) {
+        tab.style.display = "none"
+    })
+    tabElement.style.display = "flex"
+
+    const tabButtons = document.getElementsByClassName("tabButton")
+    for (tabButton of tabButtons) {
+        tabButton.classList.remove("w3-blue-gray")
+    }
+    element.classList.add("w3-blue-gray")
+}

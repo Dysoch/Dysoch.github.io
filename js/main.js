@@ -14,6 +14,10 @@ function updateGenerators() {
     if (gameData.unlocked.lemonade = 1, gameData.generators.money.lemonade >= 1) { gameData.money += 0.15 * gameData.generators.money.lemonade }
 }
 
+function moneyBuyGen(name) {
+    if (name = 'lemonade', gameData.unlocked.lemonade = 1, gameData.money > 100) { gameData.generators.money.lemonade += 1, gameData.money -= 100 }
+}
+
 setInterval(function(){
     if (gameData.years <= gameData.lifespan) { 
         gameData.days += 1;

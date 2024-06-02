@@ -15,4 +15,8 @@
             lemonade: 0,
         },
     },
+
+    settings: {
+        selectedTab: 'money',
+    }
 }
