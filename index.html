@@ -20,7 +20,21 @@
         <div class="text-caption">Years: <span id="yearsDisplay"></span>, Days: <span id="daysDisplay"></span></div>
         <div class="text-caption">Money: <span id="moneyDisplay"></span></div>
     </div>
-    <button id="moneyButton" class="w3-button button sidebar-element" onClick="money()">Click</button>
+    <div class="column">
+        <div id="tabcolumn" class="panel w3-margin-left tabs-tab-column">
+            <div class="w3-button w3-bar-item tabButton baritem" id="jobsTabButton" onClick="setTab('money')">Money</div>
+        </div>
+        <div id="maincolumn" class="panel w3-margin-left w3-margin-top w3-padding tabs-main-column">
+            <div id="hero">
+                <div class="tab" id="money">
+                    <div id="jobPage" style="flex: 0.83; margin-left: 0.5em;">
+                        <table id="jobTable" class="w3-table w3-bordered">
+                            <button id="moneyButton" class="w3-button button sidebar-element" onClick="money()">Click</button>
+                        </table>
+                    </div>
+                </div>
+            </div>
+    </div>
 	<script src="js/data.js"></script>
 	<script src="js/ui.js"></script>
 	<script src="js/main.js"></script>
