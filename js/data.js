@@ -2,7 +2,7 @@
 
     money: 0,
     days: 1,
-    years: 0,
+    years: 12,
     paused: false,
 
     unlocked:  {

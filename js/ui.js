@@ -14,7 +14,7 @@ function updateUI() {
 
 function renderSideBar() {
     document.getElementById("daysDisplay").textContent = gameData.days
-    document.getElementById("yearsDisplay").textContent = gameData.years += 18
+    document.getElementById("yearsDisplay").textContent = gameData.years
     document.getElementById("moneyDisplay").textContent = gameData.money
-    
+
 }
