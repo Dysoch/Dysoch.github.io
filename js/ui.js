@@ -16,7 +16,8 @@ function renderSideBar() {
     document.getElementById("daysDisplay").textContent = gameData.days
     document.getElementById("yearsDisplay").textContent = gameData.years
     document.getElementById("moneyDisplay").textContent = gameData.money.toFixed(0)
-    document.getElementById("moneypsDisplay").textContent = gameData.moneyps.toFixed(2)
+    document.getElementById("moneyPDDisplay").textContent = gameData.moneyPD.toFixed(2)
+    document.getElementById("moneyPYDisplay").textContent = gameData.moneyPY.toFixed(2)
 
 }
 

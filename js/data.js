@@ -1,7 +1,8 @@
 ﻿var gameData = {
 
     money: 0,
-    moneyps: 0,
+    moneyPD: 0,
+    moneyPY: 0,
     days: 1,
     years: 12,
     lifespan: 90,

@@ -6,9 +6,11 @@ function money() {
     Unlocker()
 }
 
-function updateGeneratorsMoneyPS() {
-    gameData.moneyps = 0
-    if (gameData.unlocked.lemonade = 1, gameData.generators.money.lemonade >= 1) { gameData.moneyps = (0.15 * gameData.generators.money.lemonade) }
+function updateGeneratorsMoney() {
+    gameData.moneyPD = 0
+    if (gameData.unlocked.lemonade = 1, gameData.generators.money.lemonade >= 1) { gameData.moneyPD = (0.15 * gameData.generators.money.lemonade) }
+
+    gameData.moneyPY = gameData.moneyPD * 365
 }
 
 function Unlocker() {
