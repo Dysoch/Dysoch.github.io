@@ -11,28 +11,118 @@
 	<title>DyIdle</title>
 </head>
 <body id="body" class="dark">
-	<h1>DyIdle</h1>
+	<h1>DyIdle v0.01</h1>
+    <div>Age: <b><span id="yearsDisplay"></span></b>, Day: <b><span id="daysDisplay"></span></b></div>
     <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'Age')">Age</button>
-        <button class="tablinks" onclick="openTab(event, 'Money')">Money</button>
-        <button class="tablinks" onclick="openTab(event, 'Stats')">Stats</button>
-        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'Age', false)">Age</button>
+        <button class="tablinks" onclick="openTab(event, 'Money_0', false)" id="defaultOpen">Money</button>
+        <button class="tablinks" onclick="openTab(event, 'Stats', false)">Stats</button>
+        <button class="tablinks" onclick="openTab(event, 'Settings', false)">Settings</button>
     </div>
     
     <div id="Age" class="tabcontent">
-        <div>Age: <span id="yearsDisplay"></span></div>
-        <div>Day: <span id="daysDisplay"></span></div>
-        <div>Max Age: <span id="lifespanDisplay"></span></div>
+        <div>Max Age: <b><span id="lifespanDisplay"></span></b></div>
     </div>
     
-    <div id="Money" class="tabcontent">
-        <div class="text-caption">Money: <span id="moneyDisplay"></span></div>
-        <div class="text-caption">Money: <span id="moneyPDDisplay"></span> per Day, <span id="moneyPYDisplay"></span> per Year.</div>
-        <div>
-            <button id="moneyButton_1" class="w3-button button sidebar-element" onClick="money()">Search for Money</button>
+    <div id="Money_0" class="tabcontent">
+        <div class="text-caption">Money: <b><span id="moneyDisplay"></span></b>$</div>
+        <div class="text-caption">Money: <b><span id="moneyPDDisplay"></span></b>$ per Day, <b><span id="moneyPYDisplay"></span></b>$ per Year.</div>
+        <div class="tab2">
+            <button class="tablinks" onclick="openTab(event, 'Money_1', true)">Manual</button>
+            <button class="tablinks" onclick="openTab(event, 'Money_2', true)">Shops</button>
+            <button class="tablinks" onclick="openTab(event, 'Money_3', true)">Upgrades</button>
         </div>
-        <div>
-            <button id="moneyButton_2" class="w3-button button sidebar-element" onClick="moneyBuyGen('lemonade')">Buy Lemonade Stand</button>
+        <div id="Money_1" class="tabcontent">
+            <div>
+                <button id="moneyButton_1" onClick="money()">Search for Money</button>
+            </div>
+        </div>
+        <div id="Money_2" class="tabcontent">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Cost</th>
+                    <th>$ per Day</th>
+                    <th>Amount</th>
+                    <th>Buy</th>
+                </tr>
+                <tr>
+                    <td>Lemonade Stand</td>
+                    <td>Lets start by selling lemonade</td>
+                    <td><span id="money_gen_0_c"></span>$</td>
+                    <td><span id="money_gen_0_m"></span>$</td>
+                    <td><span id="money_gen_0_a"></span>x</td>
+                    <td>
+                        <button onClick="moneyBuyGen(0, 1)">1x</button>
+                        <button onClick="moneyBuyGen(0, 5)">5x</button>
+                        <button onClick="moneyBuyGen(0, 10)">10x</button>
+                        <button onClick="moneyBuyGen(0, 50)">50x</button>
+                        <button onClick="moneyBuyGen(0, 100)">100x</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Newspaper Route</td>
+                    <td>Bring the newspaper around</td>
+                    <td><span id="money_gen_1_c"></span>$</td>
+                    <td><span id="money_gen_1_m"></span>$</td>
+                    <td><span id="money_gen_1_a"></span>x</td>
+                    <td>
+                        <button onClick="moneyBuyGen(1, 1)">1x</button>
+                        <button onClick="moneyBuyGen(1, 5)">5x</button>
+                        <button onClick="moneyBuyGen(1, 10)">10x</button>
+                        <button onClick="moneyBuyGen(1, 50)">50x</button>
+                        <button onClick="moneyBuyGen(1, 100)">100x</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Car Wash</td>
+                    <td>Start a Car Wash</td>
+                    <td><span id="money_gen_2_c"></span>$</td>
+                    <td><span id="money_gen_2_m"></span>$</td>
+                    <td><span id="money_gen_2_a"></span>x</td>
+                    <td>
+                        <button onClick="moneyBuyGen(2, 1)">1x</button>
+                        <button onClick="moneyBuyGen(2, 5)">5x</button>
+                        <button onClick="moneyBuyGen(2, 10)">10x</button>
+                        <button onClick="moneyBuyGen(2, 50)">50x</button>
+                        <button onClick="moneyBuyGen(2, 100)">100x</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>mk4</td>
+                    <td>mk4</td>
+                    <td><span id="money_gen_3_c"></span>$</td>
+                    <td><span id="money_gen_3_m"></span>$</td>
+                    <td><span id="money_gen_3_a"></span>x</td>
+                    <td>
+                        <button onClick="moneyBuyGen(3, 1)">1x</button>
+                        <button onClick="moneyBuyGen(3, 5)">5x</button>
+                        <button onClick="moneyBuyGen(3, 10)">10x</button>
+                        <button onClick="moneyBuyGen(3, 50)">50x</button>
+                        <button onClick="moneyBuyGen(3, 100)">100x</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>mk5</td>
+                    <td>mk5</td>
+                    <td><span id="money_gen_4_c"></span>$</td>
+                    <td><span id="money_gen_4_m"></span>$</td>
+                    <td><span id="money_gen_4_a"></span>x</td>
+                    <td>
+                        <button onClick="moneyBuyGen(4, 1)">1x</button>
+                        <button onClick="moneyBuyGen(4, 5)">5x</button>
+                        <button onClick="moneyBuyGen(4, 10)">10x</button>
+                        <button onClick="moneyBuyGen(4, 50)">50x</button>
+                        <button onClick="moneyBuyGen(4, 100)">100x</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="Money_3" class="tabcontent">
+            <div>
+                <button id="moneyButton_1" onClick="money()">Search for Money</button>
+            </div>
         </div>
     </div>
       
@@ -42,8 +132,7 @@
     </div>
       
     <div id="Settings" class="tabcontent">
-        <h3>Tokyo</h3>
-        <p>Tokyo is the capital of Japan.</p>
+        <button onClick="resetGameData()">reset game</button>
     </div>
 
 	<script src="js/data.js"></script>
