@@ -11,10 +11,20 @@
 	<title>DyIdle</title>
 </head>
 <body id="body" class="dark">
-	<h1>DyIdle v0.01</h1>
+	<h1>DyIdle v0.02</h1>
+    <div>Version changes will wipe your save data, temporary until v1</div>
     <div>Age: <b><span id="yearsDisplay"></span></b>, Day: <b><span id="daysDisplay"></span></b></div>
+    <div class="tooltip">   
+        <button onClick="GameSpeed(0, true)">Pause</button>
+        <button onClick="GameSpeed(1000, false)">1x</button>
+        <button onClick="GameSpeed(5000, false)">5x</button>
+        <button onClick="GameSpeed(10000, false)">10x</button>
+        <button onClick="GameSpeed(50000, false)">50x</button>
+        <button onClick="GameSpeed(100000, false)">100x</button>
+        <span class="tooltiptext">Speed not working yet, working on a fix, pause works</span>
+    </div> 
     <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'Age', false)">Age</button>
+        <button class="tablinks" onclick="openTab(event, 'Age', false)">Life</button>
         <button class="tablinks" onclick="openTab(event, 'Money_0', false)" id="defaultOpen">Money</button>
         <button class="tablinks" onclick="openTab(event, 'Stats', false)">Stats</button>
         <button class="tablinks" onclick="openTab(event, 'Settings', false)">Settings</button>
@@ -22,6 +32,10 @@
     
     <div id="Age" class="tabcontent">
         <div>Max Age: <b><span id="lifespanDisplay"></span></b></div>
+        <button onClick="Prestige_1()">Reincarnate</button>
+        <div>You can reincarnate when you die at the max age, or when you are above 65 years</div>
+        <div>You gain 10% more money on reincarnation for money shops</div>
+        <div>Every year after 65 will add 1% more to money generators</div>
     </div>
     
     <div id="Money_0" class="tabcontent">
@@ -47,7 +61,7 @@
                     <th>Amount</th>
                     <th>Buy</th>
                 </tr>
-                <tr>
+                <tr id="money_gen_0" style="visibility: hidden">
                     <td>Lemonade Stand</td>
                     <td>Lets start by selling lemonade</td>
                     <td><span id="money_gen_0_c"></span>$</td>
@@ -61,7 +75,7 @@
                         <button onClick="moneyBuyGen(0, 100)">100x</button>
                     </td>
                 </tr>
-                <tr>
+                <tr id="money_gen_1" style="visibility: hidden">
                     <td>Newspaper Route</td>
                     <td>Bring the newspaper around</td>
                     <td><span id="money_gen_1_c"></span>$</td>
@@ -75,7 +89,7 @@
                         <button onClick="moneyBuyGen(1, 100)">100x</button>
                     </td>
                 </tr>
-                <tr>
+                <tr id="money_gen_2" style="visibility: hidden">
                     <td>Car Wash</td>
                     <td>Start a Car Wash</td>
                     <td><span id="money_gen_2_c"></span>$</td>
@@ -89,7 +103,7 @@
                         <button onClick="moneyBuyGen(2, 100)">100x</button>
                     </td>
                 </tr>
-                <tr>
+                <tr id="money_gen_3" style="visibility: hidden">
                     <td>mk4</td>
                     <td>mk4</td>
                     <td><span id="money_gen_3_c"></span>$</td>
@@ -103,7 +117,7 @@
                         <button onClick="moneyBuyGen(3, 100)">100x</button>
                     </td>
                 </tr>
-                <tr>
+                <tr id="money_gen_4" style="visibility: hidden">
                     <td>mk5</td>
                     <td>mk5</td>
                     <td><span id="money_gen_4_c"></span>$</td>
@@ -136,7 +150,9 @@
     </div>
 
 	<script src="js/data.js"></script>
+	<script src="js/classes.js"></script>
 	<script src="js/money.js"></script>
+	<script src="js/prestige.js"></script>
 	<script src="js/ui.js"></script>
 	<script src="js/main.js"></script>
 </body>
