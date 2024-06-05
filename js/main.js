@@ -23,8 +23,9 @@ function GameData() {
         if (gameData.days > 365) {
             gameData.days = 1;
             gameData.years += 1;
+            gameData.stats.years.current += 1
             if (gameData.years > 12) {
-                gameData.yearslived += 1;
+                gameData.yearslived += 1
             }
         }
         if (gameData.years == gameData.lifespan) {

@@ -1,4 +1,10 @@
-﻿
+﻿function NumberFormat(number) {
+    return new Intl.NumberFormat("en-GB", {
+        notation: "compact",
+        compactDisplay: "short",
+      }).format(number)
+}
+
 function updateUI() {
     /*
         NOTE: To ensure that performance does not decrease,
@@ -11,77 +17,45 @@ function updateUI() {
     // Always render the sidebar.
     renderSideBar()
     if (gameData.settings.selectedTab == 'Age') {renderAge()}
+    if (gameData.settings.selectedTab == 'Stats') {renderStats()}
     renderMoney()
 }
 
 function renderSideBar() {
     document.getElementById("daysDisplay").textContent = gameData.days
-    document.getElementById("yearsDisplay").textContent = gameData.years
+    document.getElementById("yearsDisplay").textContent = NumberFormat(gameData.years)
+    document.getElementById("VersionsDisplay").textContent = gameData.version
 }
 
 function renderMoney() {
-    document.getElementById("moneyDisplay").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.money);
-    //document.getElementById("moneyDisplay").textContent = gameData.money.toFixed(2)
-    document.getElementById("moneyPDDisplay").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.moneyPD)
-    document.getElementById("moneyPYDisplay").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.moneyPY)
-    document.getElementById("money_gen_0_a").textContent = gameData.generators.money[0].amount
-    document.getElementById("money_gen_0_m").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[0].money)
-    document.getElementById("money_gen_0_c").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[0].cost)
-    document.getElementById("money_gen_1_a").textContent = gameData.generators.money[1].amount
-    document.getElementById("money_gen_1_m").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[1].money)
-    document.getElementById("money_gen_1_c").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[1].cost)
-    document.getElementById("money_gen_2_a").textContent = gameData.generators.money[2].amount
-    document.getElementById("money_gen_2_m").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[2].money)
-    document.getElementById("money_gen_2_c").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[2].cost)
-    document.getElementById("money_gen_3_a").textContent = gameData.generators.money[3].amount
-    document.getElementById("money_gen_3_m").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[3].money)
-    document.getElementById("money_gen_3_c").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[3].cost)
-    document.getElementById("money_gen_4_a").textContent = gameData.generators.money[4].amount
-    document.getElementById("money_gen_4_m").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[4].money)
-    document.getElementById("money_gen_4_c").textContent = new Intl.NumberFormat("en-GB", {
-        notation: "compact",
-        compactDisplay: "short",
-      }).format(gameData.generators.money[4].cost)
+    document.getElementById("moneyDisplay").textContent = NumberFormat(gameData.money);
+    document.getElementById("moneyPDDisplay").textContent = NumberFormat(gameData.moneyPD)
+    document.getElementById("moneyPYDisplay").textContent = NumberFormat(gameData.moneyPY)
+    document.getElementById("moneyLifeDisplay").textContent = NumberFormat(gameData.moneyLife)
+
+    for (let i = 0; i < 15; i++) {
+        document.getElementById("money_gen_a_"+i).textContent = NumberFormat(gameData.generators.money[i].amount)
+        document.getElementById("money_gen_m_"+i).textContent = NumberFormat(gameData.generators.money[i].money)
+        document.getElementById("money_gen_c_"+i).textContent = NumberFormat(gameData.generators.money[i].cost)
+    }
 }
 
 function renderAge() {
-    document.getElementById("lifespanDisplay").textContent = gameData.lifespan
+    document.getElementById("lifespanDisplay").textContent = NumberFormat(gameData.lifespan)
+}
+
+function renderStats() {
+    document.getElementById("stats_prestige_1_current").textContent = NumberFormat(gameData.stats.prestige_1.current)
+    document.getElementById("stats_prestige_1_total").textContent = NumberFormat(gameData.stats.prestige_1.total)
+    document.getElementById("stats_years_current").textContent = NumberFormat(gameData.stats.years.current)
+    document.getElementById("stats_years_total").textContent = NumberFormat(gameData.stats.years.total)
+    document.getElementById("stats_money_current").textContent = NumberFormat(gameData.stats.money.current)
+    document.getElementById("stats_money_total").textContent = NumberFormat(gameData.stats.money.total)
+
+    for (let i = 0; i < 15; i++) {
+        document.getElementById("stats_generators_"+i+"_current").textContent = NumberFormat(gameData.stats.money.generators[i].current)
+        document.getElementById("stats_generators_"+i+"_total").textContent = NumberFormat(gameData.stats.money.generators[i].total)
+    }
 }
 
 document.getElementById("defaultOpen").click();
