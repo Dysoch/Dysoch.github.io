@@ -31,7 +31,7 @@ function renderMoney() {
     document.getElementById("moneyDisplay").textContent = NumberFormat(gameData.money);
     document.getElementById("moneyPDDisplay").textContent = NumberFormat(gameData.moneyPD)
     document.getElementById("moneyPYDisplay").textContent = NumberFormat(gameData.moneyPY)
-    document.getElementById("moneyLifeDisplay").textContent = NumberFormat(gameData.moneyLife)
+    //document.getElementById("moneyLifeDisplay").textContent = NumberFormat(gameData.moneyLife)
 
     for (let i = 0; i < 15; i++) {
         document.getElementById("money_gen_a_"+i).textContent = NumberFormat(gameData.generators.money[i].amount)
