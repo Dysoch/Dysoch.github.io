@@ -1,0 +1,23 @@
+[
+  {
+    "id": "worker",
+    "resource": "coins",
+    "name": "Worker",
+    "baseCost": 10,
+    "multiplier": 1.15
+  },
+  {
+    "id": "factory",
+    "resource": "coins",
+    "name": "Factory",
+    "baseCost": 100,
+    "multiplier": 1.25
+  },
+  {
+    "id": "miner",
+    "resource": "gems",
+    "name": "Miner",
+    "baseCost": 20,
+    "multiplier": 1.2
+  }
+]

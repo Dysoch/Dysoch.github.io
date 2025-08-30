@@ -1,0 +1,26 @@
+[
+  {
+    "id": "coins",
+    "name": "Coins",
+    "emoji": "💰",
+    "baseClick": 1
+  },
+  {
+    "id": "gems",
+    "name": "Gems",
+    "emoji": "💎",
+    "baseClick": 1
+  },
+  {
+    "id": "gema",
+    "name": "GemA",
+    "emoji": "💎",
+    "baseClick": 5
+  },
+  {
+    "id": "energy",
+    "name": "Energy",
+    "emoji": "⚡",
+    "baseClick": 1
+  }
+]
