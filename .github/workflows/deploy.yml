@@ -1,36 +1,35 @@
-name: Deploy React App to GitHub Pages
+name: Deploy Idle Game
 
 on:
   push:
-    branches: [ main ] # or "master" if your repo uses that
+    branches: [ main ]  # adjust if using master
 
 permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./idle-game
-      
+
       - name: Build project
-        run: npm ci && npm run build
+        run: npm run build
         working-directory: ./idle-game
-      
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./idle-game/dist   # or ./my-app/build if CRA
-      
+          publish_dir: ./idle-game/dist   # 👈 publish the build folder
