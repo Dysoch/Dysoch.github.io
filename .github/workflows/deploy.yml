@@ -25,7 +25,7 @@ jobs:
         working-directory: ./idle-game
       
       - name: Build project
-        run: npm run build
+        run: npm ci && npm run build
         working-directory: ./idle-game
       
       - name: Deploy to GitHub Pages
