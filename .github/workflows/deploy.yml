@@ -2,7 +2,7 @@ name: Deploy Idle Game
 
 on:
   push:
-    branches: [ main ]  # adjust if using master
+    branches: [ main ]  # your source branch
 
 permissions:
   contents: write
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Node
@@ -32,5 +32,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./idle-game/dist   # 👈 publish the build folder
-          destination_dir: ''             # 👈 deploy contents to root
+          publish_dir: ./idle-game/dist      # 👈 Vite build folder
+          destination_dir: idle-game         # ⚡ deploy into /idle-game on gh-pages
+          publish_branch: gh-pages
