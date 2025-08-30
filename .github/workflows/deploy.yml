@@ -19,13 +19,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
+        working-directory: ./idle-game
+      
       - name: Build project
         run: npm run build
-
+        working-directory: ./idle-game
+      
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist   # for Vite
-          # if using Create React App, change to: ./build
+          publish_dir: ./idle-game/dist   # or ./my-app/build if CRA
+      
