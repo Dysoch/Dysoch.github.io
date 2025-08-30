@@ -33,3 +33,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./idle-game/dist   # 👈 publish the build folder
+          destination_dir: ''             # 👈 deploy contents to root
