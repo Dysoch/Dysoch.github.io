@@ -1,4 +1,4 @@
-import { useState } from "react";
+//import { useState } from "react";
 
 type TabType = 'clickers' | 'skills' | 'stats' | 'settings' | 'changelog';
 

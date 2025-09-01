@@ -3,7 +3,7 @@ import { saveGame, loadGame, exportSave, importSave } from "../utils/save";
 import { useState } from "react";
 
 export default function TopBar() {
-  const { ticksLeft, lifespan, rebirths, age, days, isPaused, isDead, togglePause, prestige } = useGameStore();
+  const { lifespan, days, isPaused, isDead, togglePause, prestige } = useGameStore();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleExport = () => {
@@ -72,7 +72,7 @@ export default function TopBar() {
         }}>
           v0.0.1
         </span>
-        
+
         {!isDead && (
           <button 
             onClick={togglePause}

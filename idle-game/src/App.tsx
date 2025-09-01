@@ -2,7 +2,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import { useGameStore } from "./store/gameStore";
-import { resourcesData, skillsData } from "./data";
+import { skillsData } from "./data";
 import TopBar from "./components/TopBar";
 import SideBar from "./components/SideBar";
 import ContentArea from "./components/ContentArea";
@@ -24,7 +24,7 @@ function App() {
 
       // Age progression (each tick = 1 day)
       const newDays = state.days + 1;
-      const { years, days } = useGameStore.getState().calculateAge();
+      const { years } = useGameStore.getState().calculateAge();
       
       // Check if dead
       const isDead = years >= state.lifespan;

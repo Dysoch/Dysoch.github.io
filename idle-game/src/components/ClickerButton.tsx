@@ -1,6 +1,6 @@
 import { useGameStore } from "../store/gameStore";
 import resourcesData from "../data/resources.json";
-import skillsData from "../data/skills.json";
+//import skillsData from "../data/skills.json";
 
 type ResourceType = typeof resourcesData[number]["id"];
 

@@ -5,7 +5,7 @@ import resourcesData from "../data/resources.json";
 type ResourceType = typeof resourcesData[number]["id"];
 
 export default function SkillShop() {
-  const { skills, resources, age, days, isDead, isPaused, buySkill } = useGameStore();
+  const { skills, resources, days, isDead, isPaused, buySkill } = useGameStore();
 
   if (!skills || !resources) return <p>Loading...</p>;
 

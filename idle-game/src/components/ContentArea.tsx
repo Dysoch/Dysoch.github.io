@@ -1,4 +1,4 @@
-import { resourcesData, skillsData } from "../data";
+import { resourcesData } from "../data";
 import ClickerButton from "./ClickerButton";
 import SkillShop from "./SkillShop";
 import ResourceDisplay from "./ResourceDisplay";
