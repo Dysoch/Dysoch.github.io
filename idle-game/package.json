@@ -1,7 +1,7 @@
 {
   "name": "idle-game",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "homepage": "https://github.com/Dysoch/Dysoch.github.io",
   "scripts": {

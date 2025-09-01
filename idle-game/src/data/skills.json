@@ -1,0 +1,130 @@
+[
+  {
+    "id": "gathering",
+    "name": "Gathering",
+    "description": "Basic resource gathering skills",
+    "icon": "🖱️",
+    "category": "basic",
+    "maxLevel": 100,
+    "requirements": {
+      "age": 0,
+      "resources": {}
+    },
+    "costs": {
+      "baseCost": 1,
+      "multiplier": 1.15,
+      "resource": "time"
+    },
+    "effects": {
+      "clickPower": 1,
+      "description": "Increases manual gathering power"
+    }
+  },
+  {
+    "id": "mining",
+    "name": "Mining",
+    "description": "Extract minerals from the earth",
+    "icon": "⛏️",
+    "category": "extraction",
+    "maxLevel": 50,
+    "requirements": {
+      "age": 10,
+      "resources": {
+        "gathering": 5
+      }
+    },
+    "costs": {
+      "baseCost": 5,
+      "multiplier": 1.2,
+      "resource": "time"
+    },
+    "effects": {
+      "generates": {
+        "stone": 1,
+        "iron": 0.1
+      },
+      "description": "Automatically generates stone and iron"
+    }
+  },
+  {
+    "id": "farming",
+    "name": "Farming",
+    "description": "Grow crops and food",
+    "icon": "🌾",
+    "category": "agriculture",
+    "maxLevel": 75,
+    "requirements": {
+      "age": 15,
+      "resources": {
+        "gathering": 10,
+        "stone": 20
+      }
+    },
+    "costs": {
+      "baseCost": 8,
+      "multiplier": 1.18,
+      "resource": "time"
+    },
+    "effects": {
+      "generates": {
+        "food": 2,
+        "wood": 0.5
+      },
+      "description": "Automatically generates food and wood"
+    }
+  },
+  {
+    "id": "blacksmithing",
+    "name": "Blacksmithing",
+    "description": "Forge tools and weapons",
+    "icon": "🔨",
+    "category": "crafting",
+    "maxLevel": 60,
+    "requirements": {
+      "age": 25,
+      "resources": {
+        "mining": 15,
+        "iron": 50
+      }
+    },
+    "costs": {
+      "baseCost": 15,
+      "multiplier": 1.25,
+      "resource": "time"
+    },
+    "effects": {
+      "generates": {
+        "tools": 1,
+        "weapons": 0.1
+      },
+      "description": "Creates tools and weapons"
+    }
+  },
+  {
+    "id": "magic",
+    "name": "Magic",
+    "description": "Learn mystical arts",
+    "icon": "✨",
+    "category": "mystical",
+    "maxLevel": 40,
+    "requirements": {
+      "age": 50,
+      "resources": {
+        "gathering": 25,
+        "tools": 10
+      }
+    },
+    "costs": {
+      "baseCost": 25,
+      "multiplier": 1.3,
+      "resource": "time"
+    },
+    "effects": {
+      "generates": {
+        "mana": 1,
+        "spells": 0.05
+      },
+      "description": "Generates mana and spells"
+    }
+  }
+]

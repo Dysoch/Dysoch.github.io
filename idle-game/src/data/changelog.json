@@ -1,0 +1,38 @@
+[
+  {
+    "version": "0.0.1",
+    "title": "Initial Release",
+    "date": "2024-01-01",
+    "description": "🎉 Welcome to DyIdle!",
+    "features": [
+      "Progress Knight-style age progression system (12-70 years)",
+      "Skill tree with requirements and automatic resource generation",
+      "Manual resource gathering with skill-based click power",
+      "Pause/Resume functionality",
+      "Death mechanics with rebirth system",
+      "Save/Load system with export/import",
+      "Modern UI with top bar and side navigation"
+    ],
+    "gameplay": [
+      "Start at age 12 with basic gathering skills",
+      "Learn new skills as you age and meet requirements",
+      "Skills automatically generate resources based on level",
+      "Rebirth when you reach your lifespan to start over",
+      "Each rebirth increases your rebirth count"
+    ],
+    "technical": [
+      "JSON-driven data system for easy scaling",
+      "React + TypeScript + Zustand state management",
+      "Responsive design with CSS Grid and Flexbox",
+      "Local storage save system"
+    ],
+    "comingSoon": [
+      "More skills and resource types",
+      "Skill synergies and combinations",
+      "Prestige bonuses and multipliers",
+      "Advanced age mechanics",
+      "Sound effects and animations",
+      "Mobile optimization"
+    ]
+  }
+]

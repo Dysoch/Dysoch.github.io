@@ -1,26 +1,65 @@
 [
   {
-    "id": "coins",
-    "name": "Coins",
-    "emoji": "💰",
-    "baseClick": 1
+    "id": "time",
+    "name": "Time",
+    "emoji": "⏰",
+    "baseClick": 1,
+    "description": "The most precious resource"
   },
   {
-    "id": "gems",
-    "name": "Gems",
-    "emoji": "💎",
-    "baseClick": 1
+    "id": "stone",
+    "name": "Stone",
+    "emoji": "🪨",
+    "baseClick": 0,
+    "description": "Basic building material"
   },
   {
-    "id": "gema",
-    "name": "GemA",
-    "emoji": "💎",
-    "baseClick": 5
+    "id": "iron",
+    "name": "Iron",
+    "emoji": "🔩",
+    "baseClick": 0,
+    "description": "Metal for crafting"
   },
   {
-    "id": "energy",
-    "name": "Energy",
-    "emoji": "⚡",
-    "baseClick": 1
+    "id": "food",
+    "name": "Food",
+    "emoji": "🍎",
+    "baseClick": 0,
+    "description": "Sustenance for survival"
+  },
+  {
+    "id": "wood",
+    "name": "Wood",
+    "emoji": "🪵",
+    "baseClick": 0,
+    "description": "Versatile building material"
+  },
+  {
+    "id": "tools",
+    "name": "Tools",
+    "emoji": "🔧",
+    "baseClick": 0,
+    "description": "Improves efficiency"
+  },
+  {
+    "id": "weapons",
+    "name": "Weapons",
+    "emoji": "⚔️",
+    "baseClick": 0,
+    "description": "For protection and combat"
+  },
+  {
+    "id": "mana",
+    "name": "Mana",
+    "emoji": "🔮",
+    "baseClick": 0,
+    "description": "Magical energy"
+  },
+  {
+    "id": "spells",
+    "name": "Spells",
+    "emoji": "📜",
+    "baseClick": 0,
+    "description": "Magical knowledge"
   }
 ]

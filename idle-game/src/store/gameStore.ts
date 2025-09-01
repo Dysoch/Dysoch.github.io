@@ -1,64 +1,140 @@
+// src/store/gameStore.ts
 import { create } from "zustand";
-import resourcesData from "../data/resources.json";
-import generatorsData from "../data/generators.json";
+import { resourcesData, skillsData } from "../data";
+
+const STARTING_AGE = 12;
+const DAYS_PER_YEAR = 365;
+const BASE_LIFESPAN = 70;
 
 type ResourceType = typeof resourcesData[number]["id"];
+type SkillId = typeof skillsData[number]["id"];
 
-type GameState = {
-  resources: Record<ResourceType, number>;
-  clickPower: Record<ResourceType, number>;
-  generators: Record<string, number>; // key = generator id
-  prestigePoints: number;
+export interface GameStore {
+  skills: Record<string, number>;
+  resources: Record<string, number>;
+  ticksLeft: number;
+  rebirths: number;
+  lifespan: number;
+  age: number;
+  days: number;
+  isPaused: boolean;
+  isDead: boolean;
   addResource: (type: ResourceType, amount: number) => void;
-  buyGenerator: (generatorId: string) => void;
-};
+  addSkill: (type: SkillId, amount: number) => void;
+  buySkill: (id: SkillId) => void;
+  prestige: () => void;
+  setState: (newState: Partial<GameStore>) => void;
+  reset: () => void;
+  togglePause: () => void;
+  calculateAge: () => { years: number; days: number };
+}
 
-export const useGameStore = create<GameState>((set, get) => {
-  const initialResources: Record<ResourceType, number> = {};
-  const initialClickPower: Record<ResourceType, number> = {};
-  const initialGenerators: Record<string, number> = {};
+export const useGameStore = create<GameStore>((set, get) => ({
+  skills: Object.fromEntries(skillsData.map((s) => [s.id, 0])),
+  resources: Object.fromEntries(resourcesData.map((r) => [r.id, 0])),
+  lifespan: BASE_LIFESPAN,
+  ticksLeft: (BASE_LIFESPAN - STARTING_AGE) * DAYS_PER_YEAR,
+  rebirths: 0,
+  age: STARTING_AGE,
+  days: 0,
+  isPaused: false,
+  isDead: false,
 
-  resourcesData.forEach((r) => {
-    initialResources[r.id] = 0;
-    initialClickPower[r.id] = r.baseClick;
-  });
+  // Add resources safely
+  addResource: (type, amount) =>
+    set((state) => ({
+      resources: {
+        ...state.resources,
+        [type]: (state.resources[type] ?? 0) + amount,
+      },
+    })),
 
-  generatorsData.forEach((g) => {
-    initialGenerators[g.id] = 0;
-  });
+  // Add skills safely
+  addSkill: (type, amount) =>
+    set((state) => {
+      if (state.isDead || state.isPaused) return state;
+      
+      return {
+        skills: {
+          ...state.skills,
+          [type]: (state.skills[type] ?? 0) + amount,
+        },
+      };
+    }),
 
-  return {
-    resources: initialResources,
-    clickPower: initialClickPower,
-    generators: initialGenerators,
-    prestigePoints: 0,
+  // Buy skill action
+  buySkill: (id) => {
+    const state = get();
+    if (state.isDead || state.isPaused) return;
 
-    addResource: (type, amount) =>
-      set((state) => ({
-        resources: { ...state.resources, [type]: state.resources[type] + amount },
-      })),
+    const skill = skillsData.find((s) => s.id === id);
+    if (!skill) return;
 
-    buyGenerator: (generatorId) => {
-      const gen = generatorsData.find((g) => g.id === generatorId);
-      if (!gen) return;
+    set((state) => {
+      const owned = state.skills[id] ?? 0;
+      const cost = Math.floor(skill.costs.baseCost * Math.pow(skill.costs.multiplier, owned));
+      const available = state.resources[skill.costs.resource as ResourceType] ?? 0;
+      const currentAge = state.age;
 
-      const state = get();
-      const owned = state.generators[generatorId] || 0;
-      const cost = Math.floor(gen.baseCost * Math.pow(gen.multiplier, owned));
-      const available = state.resources[gen.resource as ResourceType] || 0;
+      // Check age requirement
+      if (currentAge < skill.requirements.age) return state;
 
-      if (available >= cost) {
-        set({
-          resources: {
-            ...state.resources,
-            [gen.resource]: available - cost,
-          },
-          generators: {
-            ...state.generators,
-            [generatorId]: owned + 1,
-          },
-        });
+      // Check resource requirements
+      for (const [reqResource, reqAmount] of Object.entries(skill.requirements.resources)) {
+        const currentAmount = state.skills[reqResource] ?? 0;
+        if (currentAmount < reqAmount) return state;
       }
-    },
-  };
-});
+
+      // Check if max level reached
+      if (owned >= skill.maxLevel) return state;
+
+      // Check if can afford
+      if (available < cost) return state;
+
+      return {
+        resources: { ...state.resources, [skill.costs.resource]: available - cost },
+        skills: { ...state.skills, [id]: owned + 1 },
+      };
+    });
+  },
+
+  // Prestige / rebirth action
+  prestige: () =>
+    set((state) => ({
+      skills: Object.fromEntries(skillsData.map((s) => [s.id, 0])),
+      resources: Object.fromEntries(resourcesData.map((r) => [r.id, 0])),
+      ticksLeft: (state.lifespan - STARTING_AGE) * DAYS_PER_YEAR,
+      rebirths: state.rebirths + 1,
+      age: STARTING_AGE,
+      days: 0,
+      isPaused: false,
+      isDead: false,
+    })),
+
+  setState: (newState) => set(() => newState),
+
+  reset: () =>
+    set(() => ({
+      skills: Object.fromEntries(skillsData.map((s) => [s.id, 0])),
+      resources: Object.fromEntries(resourcesData.map((r) => [r.id, 0])),
+      ticksLeft: (BASE_LIFESPAN - STARTING_AGE) * DAYS_PER_YEAR,
+      rebirths: 0,
+      age: STARTING_AGE,
+      days: 0,
+      isPaused: false,
+      isDead: false,
+    })),
+
+  togglePause: () =>
+    set((state) => ({
+      isPaused: !state.isPaused,
+    })),
+
+  calculateAge: () => {
+    const state = get();
+    const totalDays = state.days;
+    const years = Math.floor(totalDays / DAYS_PER_YEAR);
+    const remainingDays = totalDays % DAYS_PER_YEAR;
+    return { years: STARTING_AGE + years, days: remainingDays };
+  },
+}));
