@@ -1,0 +1,22 @@
+[
+  {
+    "fromId": "copper_coins",
+    "toId": "bronze_coins",
+    "rate": 1000000000
+  },
+  {
+    "fromId": "bronze_coins",
+    "toId": "silver_coins",
+    "rate": 1000000000
+  },
+  {
+    "fromId": "silver_coins",
+    "toId": "gold_coins",
+    "rate": 1000000000
+  },
+  {
+    "fromId": "gold_coins",
+    "toId": "platinum_coins",
+    "rate": 1000000000
+  }
+]

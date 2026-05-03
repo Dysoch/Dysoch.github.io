@@ -1,0 +1,17 @@
+[
+  {
+    "id": "beg_for_coins",
+    "name": "Beg for Coins",
+    "description": "Hold out your hand and hope for generosity.",
+    "icon": "🙏",
+    "category": "manual_labor",
+    "durationSeconds": 5,
+    "rewards": [
+      {
+        "resourceId": "copper_coins",
+        "min": 1,
+        "max": 50
+      }
+    ]
+  }
+]

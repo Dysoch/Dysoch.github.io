@@ -1,0 +1,33 @@
+[
+  {
+    "version": "0.0.2",
+    "date": "2026-05-03",
+    "added": [
+      "Capital currency system with 5 coin tiers: Copper, Bronze, Silver, Gold, and Platinum",
+      "Bank — exchange lower-tier coins for higher-tier coins (1 billion of one tier = 1 of the next). Supports exchanging one at a time or all at once",
+      "Manual Labor — first job: Beg for Coins. Takes 5 seconds and rewards between 1 and 50 copper coins. Only one job can run at a time",
+      "Statistics page — shows your current coin balances, lifetime coins earned and spent per tier, and how many times each job has been completed"
+    ],
+    "changed": [
+      "Statistics tab moved to just above the Settings and About buttons in the sidebar"
+    ],
+    "fixed": [],
+    "removed": []
+  },
+  {
+    "version": "0.0.1",
+    "date": "2026-05-03",
+    "added": [
+      "Initial release of DyWorld Inc.",
+      "Top bar showing the current system time and a menu for saving, loading, exporting, importing, and resetting your game",
+      "Sidebar with navigation tabs: Manual Labor, Market, Bank, and Statistics",
+      "Settings page with a toggle to switch between light and dark theme",
+      "About page showing developer info and this changelog",
+      "Game progress is automatically saved to your browser and restored when you return",
+      "Market and Manual Labor pages (placeholders, content coming soon)"
+    ],
+    "changed": [],
+    "fixed": [],
+    "removed": []
+  }
+]

@@ -1,55 +1,55 @@
-//import { useState } from "react";
+import { useGameStore } from '../store/gameStore'
+import { GAME_TABS, BOTTOM_TABS } from '../constants'
 
-type TabType = 'clickers' | 'skills' | 'stats' | 'settings' | 'changelog';
-
-interface SideBarProps {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
-}
-
-export default function SideBar({ activeTab, onTabChange }: SideBarProps) {
-  const tabs: { id: TabType; label: string; icon: string }[] = [
-    { id: 'clickers', label: 'Clickers', icon: '🖱️' },
-    { id: 'skills', label: 'Skills', icon: '⚡' },
-    { id: 'stats', label: 'Stats', icon: '📊' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
-    { id: 'changelog', label: 'Changelog', icon: '📝' }
-  ];
+export default function SideBar() {
+  const activeTab = useGameStore((s) => s.activeTab)
+  const setActiveTab = useGameStore((s) => s.setActiveTab)
 
   return (
-    <div style={{
-      position: 'fixed',
-      left: 0,
-      top: '60px',
-      width: '200px',
-      height: 'calc(100vh - 60px)',
-      backgroundColor: '#2a2a2a',
-      borderRight: '1px solid #444',
-      padding: '20px 0',
-      zIndex: 999
-    }}>
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            padding: '12px 20px',
-            backgroundColor: activeTab === tab.id ? '#444' : 'transparent',
-            border: 'none',
-            color: 'white',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            fontSize: '16px'
-          }}
-        >
-          <span>{tab.icon}</span>
-          {tab.label}
-        </button>
-      ))}
-    </div>
-  );
+    <nav
+      className="d-flex flex-column border-end"
+      style={{
+        position: 'fixed',
+        top: 56,
+        left: 0,
+        width: 220,
+        height: 'calc(100vh - 56px)',
+        zIndex: 1020,
+        overflowY: 'auto',
+      }}
+    >
+      <div className="flex-grow-1 pt-2">
+        {GAME_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`btn btn-link d-flex align-items-center gap-2 w-100 text-start text-decoration-none px-3 py-2 rounded-0 ${
+              activeTab === tab.id ? 'active fw-semibold' : 'text-body-secondary'
+            }`}
+            style={activeTab === tab.id ? { color: 'var(--bs-emphasis-color)' } : undefined}
+          >
+            <span style={{ fontSize: '1.1rem', width: 24, textAlign: 'center' }}>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="pb-2">
+        <hr className="my-1" />
+        {BOTTOM_TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`btn btn-link d-flex align-items-center gap-2 w-100 text-start text-decoration-none px-3 py-2 rounded-0 ${
+              activeTab === tab.id ? 'active fw-semibold' : 'text-body-secondary'
+            }`}
+            style={activeTab === tab.id ? { color: 'var(--bs-emphasis-color)' } : undefined}
+          >
+            <span style={{ fontSize: '1.1rem', width: 24, textAlign: 'center' }}>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+    </nav>
+  )
 }

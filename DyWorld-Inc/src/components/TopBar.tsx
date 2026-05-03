@@ -1,202 +1,139 @@
-import { useGameStore } from "../store/gameStore";
-import { saveGame, loadGame, exportSave, importSave } from "../utils/save";
-import { useState } from "react";
+import { useEffect, useRef, useState } from 'react'
+import { useGameStore } from '../store/gameStore'
+import { APP_NAME, APP_VERSION } from '../constants'
 
 export default function TopBar() {
-  const { lifespan, days, isPaused, isDead, togglePause, prestige } = useGameStore();
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [now, setNow] = useState(() => new Date())
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const { exportSave, importSave, resetGame } = useGameStore()
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const formattedTime = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(now)
+
+  const handleSave = () => {
+    useGameStore.persist.rehydrate()
+    setDropdownOpen(false)
+  }
+
+  const handleLoad = () => {
+    useGameStore.persist.rehydrate()
+    setDropdownOpen(false)
+  }
 
   const handleExport = () => {
-    const exported = exportSave(useGameStore.getState());
-    const textarea = document.createElement('textarea');
-    textarea.value = exported;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-    alert('Save data copied to clipboard!');
-    setShowDropdown(false);
-  };
+    const data = exportSave()
+    navigator.clipboard.writeText(data).then(
+      () => alert('Save data copied to clipboard!'),
+      () => prompt('Copy your save data:', data)
+    )
+    setDropdownOpen(false)
+  }
 
   const handleImport = () => {
-    const encoded = prompt("Paste your save data:");
+    const encoded = prompt('Paste your save data:')
     if (encoded) {
-      const imported = importSave(encoded);
-      if (imported) useGameStore.getState().setState(imported);
+      const ok = importSave(encoded.trim())
+      alert(ok ? 'Save imported successfully!' : 'Invalid save data.')
     }
-    setShowDropdown(false);
-  };
+    setDropdownOpen(false)
+  }
 
-  const years = Math.floor(days / 365);
-  const remainingDays = days % 365;
-  const displayAge = 12 + years;
+  const handleReset = () => {
+    if (window.confirm('Reset all game data? This cannot be undone.')) {
+      resetGame()
+    }
+    setDropdownOpen(false)
+  }
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: '60px',
-      backgroundColor: isDead ? '#8B0000' : '#2a2a2a',
-      borderBottom: '1px solid #444',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 20px',
-      zIndex: 1000
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <span style={{ color: isDead ? '#ff6b6b' : 'white' }}>
-          ⏰ Age: {displayAge} years, {remainingDays} days
+    <nav
+      className="navbar navbar-expand px-3"
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 56, zIndex: 1030 }}
+    >
+      <span className="navbar-brand mb-0 h6 me-auto text-secondary fw-semibold">
+        {APP_NAME}
+        <span className="ms-2 badge bg-secondary fw-normal" style={{ fontSize: '0.65rem' }}>
+          v{APP_VERSION}
         </span>
-        <span style={{ color: isDead ? '#ff6b6b' : 'white' }}>
-          💀 Lifespan: {lifespan} years
-        </span>
-        {isDead && (
-          <span style={{ color: '#ff6b6b', fontWeight: 'bold' }}>
-            💀 YOU ARE DEAD
-          </span>
-        )}
-      </div>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        
-        <span style={{ 
-          color: '#888', 
-          fontSize: '12px', 
-          marginLeft: '20px',
-          fontFamily: 'monospace'
-        }}>
-          v0.0.1
-        </span>
+      </span>
 
-        {!isDead && (
-          <button 
-            onClick={togglePause}
-            style={{
-              backgroundColor: isPaused ? '#f39c12' : '#27ae60',
-              border: 'none',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
+      <span className="mx-auto text-body fw-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>
+        {formattedTime}
+      </span>
+
+      <div className="ms-auto" ref={dropdownRef} style={{ position: 'relative' }}>
+        <button
+          className="btn btn-outline-secondary btn-sm"
+          onClick={() => setDropdownOpen((o) => !o)}
+          aria-expanded={dropdownOpen}
+        >
+          ☰ Menu
+        </button>
+
+        {dropdownOpen && (
+          <ul
+            className="dropdown-menu show"
+            style={{ position: 'absolute', right: 0, top: '100%', minWidth: 160 }}
           >
-            {isPaused ? '▶️ Resume' : '⏸️ Pause'}
-          </button>
-        )}
-        
-        {isDead && (
-          <button 
-            onClick={prestige}
-            style={{
-              backgroundColor: '#e74c3c',
-              border: 'none',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            🔄 Rebirth
-          </button>
-        )}
-        
-        <div style={{ position: 'relative' }}>
-          <button 
-            onClick={() => setShowDropdown(!showDropdown)}
-            style={{
-              backgroundColor: '#444',
-              border: 'none',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            💾 Save/Load
-          </button>
-          
-          {showDropdown && (
-            <div style={{
-              position: 'absolute',
-              top: '100%',
-              right: 0,
-              backgroundColor: '#333',
-              border: '1px solid #555',
-              borderRadius: '4px',
-              padding: '8px 0',
-              minWidth: '150px',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
-            }}>
-              <button 
-                onClick={() => { saveGame(useGameStore.getState()); setShowDropdown(false); }}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 16px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
+            <li>
+              <button className="dropdown-item" onClick={handleSave}>
                 💾 Save
               </button>
-              <button 
-                onClick={() => { 
-                  const loaded = loadGame(); 
-                  if (loaded) useGameStore.getState().setState(loaded);
-                  setShowDropdown(false);
-                }}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 16px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={handleLoad}>
                 📂 Load
               </button>
-              <button 
-                onClick={handleExport}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 16px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
+            </li>
+            <li>
+              <hr className="dropdown-divider" />
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={handleExport}>
                 📤 Export
               </button>
-              <button 
-                onClick={handleImport}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 16px',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer'
-                }}
-              >
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={handleImport}>
                 📥 Import
               </button>
-            </div>
-          )}
-        </div>
+            </li>
+            <li>
+              <hr className="dropdown-divider" />
+            </li>
+            <li>
+              <button className="dropdown-item text-danger" onClick={handleReset}>
+                🗑️ Reset
+              </button>
+            </li>
+          </ul>
+        )}
       </div>
-    </div>
-  );
+    </nav>
+  )
 }

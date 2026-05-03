@@ -1,0 +1,47 @@
+[
+  {
+    "id": "copper_coins",
+    "name": "Copper Coins",
+    "nameSingular": "Copper Coin",
+    "icon": "🟤",
+    "description": "The most basic form of currency. Common as dirt.",
+    "category": "capital",
+    "tier": 0
+  },
+  {
+    "id": "bronze_coins",
+    "name": "Bronze Coins",
+    "nameSingular": "Bronze Coin",
+    "icon": "🔶",
+    "description": "Worth their weight in bronze. A step up.",
+    "category": "capital",
+    "tier": 1
+  },
+  {
+    "id": "silver_coins",
+    "name": "Silver Coins",
+    "nameSingular": "Silver Coin",
+    "icon": "⚪",
+    "description": "Shiny and valuable. The mark of a tradesman.",
+    "category": "capital",
+    "tier": 2
+  },
+  {
+    "id": "gold_coins",
+    "name": "Gold Coins",
+    "nameSingular": "Gold Coin",
+    "icon": "🟡",
+    "description": "The classic standard of wealth.",
+    "category": "capital",
+    "tier": 3
+  },
+  {
+    "id": "platinum_coins",
+    "name": "Platinum Coins",
+    "nameSingular": "Platinum Coin",
+    "icon": "💎",
+    "description": "Beyond gold. Only the wealthiest possess these.",
+    "category": "capital",
+    "tier": 4
+  }
+]

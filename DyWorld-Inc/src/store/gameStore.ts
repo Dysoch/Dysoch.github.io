@@ -1,140 +1,161 @@
-// src/store/gameStore.ts
-import { create } from "zustand";
-import { resourcesData, skillsData } from "../data";
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { STORAGE_KEY } from '../constants'
+import type { TabType, ThemeType, ActiveJob } from '../types'
+import resourcesData from '../content/resources.json'
 
-const STARTING_AGE = 12;
-const DAYS_PER_YEAR = 365;
-const BASE_LIFESPAN = 70;
+const initialResources = Object.fromEntries(
+  resourcesData.map((r) => [r.id, 0])
+)
 
-type ResourceType = typeof resourcesData[number]["id"];
-type SkillId = typeof skillsData[number]["id"];
+interface GameStore {
+  // UI
+  theme: ThemeType
+  activeTab: TabType
 
-export interface GameStore {
-  skills: Record<string, number>;
-  resources: Record<string, number>;
-  ticksLeft: number;
-  rebirths: number;
-  lifespan: number;
-  age: number;
-  days: number;
-  isPaused: boolean;
-  isDead: boolean;
-  addResource: (type: ResourceType, amount: number) => void;
-  addSkill: (type: SkillId, amount: number) => void;
-  buySkill: (id: SkillId) => void;
-  prestige: () => void;
-  setState: (newState: Partial<GameStore>) => void;
-  reset: () => void;
-  togglePause: () => void;
-  calculateAge: () => { years: number; days: number };
+  // Game data
+  resources: Record<string, number>
+  stats: Record<string, number>
+  activeJob: ActiveJob | null
+
+  // UI actions
+  setTheme: (theme: ThemeType) => void
+  setActiveTab: (tab: TabType) => void
+
+  // Resource actions
+  addResource: (id: string, amount: number) => void
+  spendResource: (id: string, amount: number) => boolean
+
+  // Stats
+  incrementStat: (key: string, amount?: number) => void
+
+  // Job actions
+  startJob: (jobId: string, durationSeconds: number) => void
+  completeJob: (jobId: string, rewardResourceId: string, amount: number) => void
+  cancelJob: () => void
+
+  // Exchange
+  exchange: (fromId: string, toId: string, rate: number, count: number) => void
+
+  // Save / meta
+  exportSave: () => string
+  importSave: (encoded: string) => boolean
+  resetGame: () => void
 }
 
-export const useGameStore = create<GameStore>((set, get) => ({
-  skills: Object.fromEntries(skillsData.map((s) => [s.id, 0])),
-  resources: Object.fromEntries(resourcesData.map((r) => [r.id, 0])),
-  lifespan: BASE_LIFESPAN,
-  ticksLeft: (BASE_LIFESPAN - STARTING_AGE) * DAYS_PER_YEAR,
-  rebirths: 0,
-  age: STARTING_AGE,
-  days: 0,
-  isPaused: false,
-  isDead: false,
+const DEFAULT_STATE = {
+  theme: 'dark' as ThemeType,
+  activeTab: 'manual-labor' as TabType,
+  resources: { ...initialResources },
+  stats: {} as Record<string, number>,
+  activeJob: null as ActiveJob | null,
+}
 
-  // Add resources safely
-  addResource: (type, amount) =>
-    set((state) => ({
-      resources: {
-        ...state.resources,
-        [type]: (state.resources[type] ?? 0) + amount,
+export const useGameStore = create<GameStore>()(
+  persist(
+    (set, get) => ({
+      ...DEFAULT_STATE,
+
+      setTheme: (theme) => set({ theme }),
+      setActiveTab: (tab) => set({ activeTab: tab }),
+
+      addResource: (id, amount) =>
+        set((s) => ({
+          resources: { ...s.resources, [id]: (s.resources[id] ?? 0) + amount },
+        })),
+
+      spendResource: (id, amount) => {
+        const state = get()
+        if ((state.resources[id] ?? 0) < amount) return false
+        set((s) => ({
+          resources: { ...s.resources, [id]: (s.resources[id] ?? 0) - amount },
+        }))
+        return true
       },
-    })),
 
-  // Add skills safely
-  addSkill: (type, amount) =>
-    set((state) => {
-      if (state.isDead || state.isPaused) return state;
-      
-      return {
-        skills: {
-          ...state.skills,
-          [type]: (state.skills[type] ?? 0) + amount,
-        },
-      };
+      incrementStat: (key, amount = 1) =>
+        set((s) => ({
+          stats: { ...s.stats, [key]: (s.stats[key] ?? 0) + amount },
+        })),
+
+      startJob: (jobId, durationSeconds) => {
+        const now = Date.now()
+        set({
+          activeJob: {
+            jobId,
+            startTime: now,
+            endTime: now + durationSeconds * 1000,
+          },
+        })
+      },
+
+      completeJob: (jobId, rewardResourceId, amount) =>
+        set((s) => ({
+          activeJob: null,
+          resources: {
+            ...s.resources,
+            [rewardResourceId]: (s.resources[rewardResourceId] ?? 0) + amount,
+          },
+          stats: {
+            ...s.stats,
+            [`job_${jobId}_completed`]: (s.stats[`job_${jobId}_completed`] ?? 0) + 1,
+            [`${rewardResourceId}_earned`]: (s.stats[`${rewardResourceId}_earned`] ?? 0) + amount,
+          },
+        })),
+
+      cancelJob: () => set({ activeJob: null }),
+
+      exchange: (fromId, toId, rate, count) =>
+        set((s) => {
+          const available = s.resources[fromId] ?? 0
+          const cost = rate * count
+          if (available < cost) return s
+          return {
+            resources: {
+              ...s.resources,
+              [fromId]: available - cost,
+              [toId]: (s.resources[toId] ?? 0) + count,
+            },
+            stats: {
+              ...s.stats,
+              [`${fromId}_spent`]: (s.stats[`${fromId}_spent`] ?? 0) + cost,
+              [`${toId}_earned`]: (s.stats[`${toId}_earned`] ?? 0) + count,
+            },
+          }
+        }),
+
+      exportSave: () => {
+        const { theme, activeTab, resources, stats, activeJob } = get()
+        return btoa(JSON.stringify({ theme, activeTab, resources, stats, activeJob }))
+      },
+
+      importSave: (encoded) => {
+        try {
+          const data = JSON.parse(atob(encoded)) as Partial<GameStore>
+          const patch: Partial<typeof DEFAULT_STATE> = {}
+          if (data.theme === 'light' || data.theme === 'dark') patch.theme = data.theme
+          if (typeof data.activeTab === 'string') patch.activeTab = data.activeTab as TabType
+          if (data.resources && typeof data.resources === 'object') patch.resources = data.resources
+          if (data.stats && typeof data.stats === 'object') patch.stats = data.stats
+          if (data.activeJob !== undefined) patch.activeJob = data.activeJob
+          set(patch)
+          return true
+        } catch {
+          return false
+        }
+      },
+
+      resetGame: () => {
+        localStorage.removeItem(STORAGE_KEY)
+        set({
+          ...DEFAULT_STATE,
+          theme: get().theme,
+          resources: { ...initialResources },
+          stats: {},
+          activeJob: null,
+        })
+      },
     }),
-
-  // Buy skill action
-  buySkill: (id) => {
-    const state = get();
-    if (state.isDead || state.isPaused) return;
-
-    const skill = skillsData.find((s) => s.id === id);
-    if (!skill) return;
-
-    set((state) => {
-      const owned = state.skills[id] ?? 0;
-      const cost = Math.floor(skill.costs.baseCost * Math.pow(skill.costs.multiplier, owned));
-      const available = state.resources[skill.costs.resource as ResourceType] ?? 0;
-      const currentAge = state.age;
-
-      // Check age requirement
-      if (currentAge < skill.requirements.age) return state;
-
-      // Check resource requirements
-      for (const [reqResource, reqAmount] of Object.entries(skill.requirements.resources)) {
-        const currentAmount = state.skills[reqResource] ?? 0;
-        if (currentAmount < reqAmount) return state;
-      }
-
-      // Check if max level reached
-      if (owned >= skill.maxLevel) return state;
-
-      // Check if can afford
-      if (available < cost) return state;
-
-      return {
-        resources: { ...state.resources, [skill.costs.resource]: available - cost },
-        skills: { ...state.skills, [id]: owned + 1 },
-      };
-    });
-  },
-
-  // Prestige / rebirth action
-  prestige: () =>
-    set((state) => ({
-      skills: Object.fromEntries(skillsData.map((s) => [s.id, 0])),
-      resources: Object.fromEntries(resourcesData.map((r) => [r.id, 0])),
-      ticksLeft: (state.lifespan - STARTING_AGE) * DAYS_PER_YEAR,
-      rebirths: state.rebirths + 1,
-      age: STARTING_AGE,
-      days: 0,
-      isPaused: false,
-      isDead: false,
-    })),
-
-  setState: (newState) => set(() => newState),
-
-  reset: () =>
-    set(() => ({
-      skills: Object.fromEntries(skillsData.map((s) => [s.id, 0])),
-      resources: Object.fromEntries(resourcesData.map((r) => [r.id, 0])),
-      ticksLeft: (BASE_LIFESPAN - STARTING_AGE) * DAYS_PER_YEAR,
-      rebirths: 0,
-      age: STARTING_AGE,
-      days: 0,
-      isPaused: false,
-      isDead: false,
-    })),
-
-  togglePause: () =>
-    set((state) => ({
-      isPaused: !state.isPaused,
-    })),
-
-  calculateAge: () => {
-    const state = get();
-    const totalDays = state.days;
-    const years = Math.floor(totalDays / DAYS_PER_YEAR);
-    const remainingDays = totalDays % DAYS_PER_YEAR;
-    return { years: STARTING_AGE + years, days: remainingDays };
-  },
-}));
+    { name: STORAGE_KEY }
+  )
+)

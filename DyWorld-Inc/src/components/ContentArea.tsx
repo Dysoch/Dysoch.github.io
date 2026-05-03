@@ -1,63 +1,37 @@
-import { resourcesData } from "../data";
-import ClickerButton from "./ClickerButton";
-import SkillShop from "./SkillShop";
-import ResourceDisplay from "./ResourceDisplay";
-import Changelog from "./Changelog";
-import { useGameStore } from "../store/gameStore";
+import { useGameStore } from '../store/gameStore'
+import ManualLabor from '../pages/ManualLabor'
+import Statistics from '../pages/Statistics'
+import Market from '../pages/Market'
+import Bank from '../pages/Bank'
+import Settings from '../pages/Settings'
+import About from '../pages/About'
 
-type TabType = 'clickers' | 'skills' | 'stats' | 'settings' | 'changelog';
+export default function ContentArea() {
+  const activeTab = useGameStore((s) => s.activeTab)
 
-interface ContentAreaProps {
-  activeTab: TabType;
-}
+  const page = (() => {
+    switch (activeTab) {
+      case 'manual-labor': return <ManualLabor />
+      case 'statistics':   return <Statistics />
+      case 'market':       return <Market />
+      case 'bank':         return <Bank />
+      case 'settings':     return <Settings />
+      case 'about':        return <About />
+    }
+  })()
 
-export default function ContentArea({ activeTab }: ContentAreaProps) {
-  const { rebirths, isDead } = useGameStore();
-  
-  switch (activeTab) {
-    case 'clickers':
-      return (
-        <div style={{ padding: '20px', width: '100%' }}>
-          <h2>🖱️ Manual Gathering</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', width: '100%' }}>
-            {resourcesData.map((res) => (
-              <ClickerButton key={res.id} resource={res.id} />
-            ))}
-          </div>
-        </div>
-      );
-      
-    case 'skills':
-      return (
-        <div style={{ padding: '20px', width: '100%' }}>
-          <h2>⚡ Skill Tree</h2>
-          <SkillShop />
-        </div>
-      );
-      
-    case 'stats':
-      return (
-        <div style={{ padding: '20px', width: '100%' }}>
-          <h2>📊 Game Statistics</h2>
-          <span style={{ color: isDead ? '#ff6b6b' : 'white' }}>
-            🔄 Rebirths: {rebirths}
-          </span>
-          <ResourceDisplay />
-        </div>
-      );
-      
-    case 'settings':
-      return (
-        <div style={{ padding: '20px', width: '100%' }}>
-          <h2>⚙️ Game Settings</h2>
-          <p>Settings will be implemented here...</p>
-        </div>
-      );
-      
-    case 'changelog':
-      return <Changelog />;
-      
-    default:
-      return <div>Select a tab</div>;
-  }
+  return (
+    <main
+      style={{
+        position: 'fixed',
+        top: 56,
+        left: 220,
+        right: 0,
+        bottom: 0,
+        overflowY: 'auto',
+      }}
+    >
+      {page}
+    </main>
+  )
 }
