@@ -1,8 +1,8 @@
-name: Deploy Idle Game
+name: Deploy Apps
 
 on:
   push:
-    branches: [ main ]  # your source branch
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -10,7 +10,6 @@ permissions:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,18 +19,36 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      # ── idle-game ──────────────────────────────────────────
+      - name: Install dependencies (idle-game)
         run: npm ci
         working-directory: ./idle-game
 
-      - name: Build project
+      - name: Build (idle-game)
         run: npm run build
         working-directory: ./idle-game
 
+      # ── DyWorld-Inc ────────────────────────────────────────
+      - name: Install dependencies (DyWorld-Inc)
+        run: npm ci
+        working-directory: ./DyWorld-Inc
+
+      - name: Build (DyWorld-Inc)
+        run: npm run build
+        working-directory: ./DyWorld-Inc
+
+      # ── Assemble combined dist ─────────────────────────────
+      - name: Assemble deploy folder
+        run: |
+          mkdir -p deploy/idle-game
+          mkdir -p deploy/DyWorld-Inc
+          cp -r ./idle-game/dist/.   deploy/idle-game/
+          cp -r ./DyWorld-Inc/dist/. deploy/DyWorld-Inc/
+
+      # ── Single deploy ──────────────────────────────────────
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./idle-game/dist      # 👈 Vite build folder
-          destination_dir: idle-game         # ⚡ deploy into /idle-game on gh-pages
+          publish_dir: ./deploy
           publish_branch: gh-pages
