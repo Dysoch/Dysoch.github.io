@@ -1,0 +1,57 @@
+[
+  {
+    "id": "quarry",
+    "name": "Quarry",
+    "icon": "⛰️",
+    "description": "An open-pit quarry that passively mines stone.",
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 100 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "stone", "amountPerSecond": 0.05 }
+    ]
+  },
+  {
+    "id": "lumbermill",
+    "name": "Lumbermill",
+    "icon": "🏭",
+    "description": "A mill that processes timber into usable wood.",
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 150 },
+      { "resourceId": "stone", "amount": 5 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "wood", "amountPerSecond": 0.05 }
+    ]
+  },
+  {
+    "id": "shack",
+    "name": "Shack",
+    "icon": "🏚️",
+    "description": "A ramshackle dwelling that generates a trickle of rent.",
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 250 },
+      { "resourceId": "wood", "amount": 5 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "copper_coins", "amountPerSecond": 0.1 }
+    ]
+  },
+  {
+    "id": "house",
+    "name": "House",
+    "icon": "🏠",
+    "description": "A proper house with paying tenants.",
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 2000 },
+      { "resourceId": "wood", "amount": 25 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "copper_coins", "amountPerSecond": 1 }
+    ]
+  }
+]

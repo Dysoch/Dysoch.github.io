@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { APP_NAME, APP_VERSION } from '../constants'
+import { formatNumber } from '../utils/format'
+import resourcesData from '../content/resources.json'
+import type { Resource } from '../types'
+
+const capitalResources = (resourcesData as Resource[]).filter((r) => r.category === 'capital')
 
 export default function TopBar() {
   const [now, setNow] = useState(() => new Date())
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const { exportSave, importSave, resetGame } = useGameStore()
+  const { exportSave, importSave, resetGame, resources } = useGameStore()
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
@@ -75,18 +80,33 @@ export default function TopBar() {
       className="navbar navbar-expand px-3"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 56, zIndex: 1030 }}
     >
-      <span className="navbar-brand mb-0 h6 me-auto text-secondary fw-semibold">
+      {/* App name */}
+      <span className="navbar-brand mb-0 h6 me-3 text-secondary fw-semibold flex-shrink-0">
         {APP_NAME}
         <span className="ms-2 badge bg-secondary fw-normal" style={{ fontSize: '0.65rem' }}>
           v{APP_VERSION}
         </span>
       </span>
 
-      <span className="mx-auto text-body fw-semibold" style={{ fontVariantNumeric: 'tabular-nums' }}>
-        {formattedTime}
-      </span>
+      {/* Capital coin overview — centered */}
+      <div className="d-flex align-items-center gap-3 mx-auto" style={{ fontSize: '0.85rem' }}>
+        {capitalResources.map((r) => (
+          <span
+            key={r.id}
+            title={r.name}
+            style={{ cursor: 'default', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}
+          >
+            {r.icon} {formatNumber(resources[r.id] ?? 0)}
+          </span>
+        ))}
+        <span className="text-body-secondary" style={{ opacity: 0.4 }}>|</span>
+        <span className="text-body fw-semibold" style={{ fontVariantNumeric: 'tabular-nums', fontSize: '0.875rem' }}>
+          {formattedTime}
+        </span>
+      </div>
 
-      <div className="ms-auto" ref={dropdownRef} style={{ position: 'relative' }}>
+      {/* Menu */}
+      <div className="ms-3 flex-shrink-0" ref={dropdownRef} style={{ position: 'relative' }}>
         <button
           className="btn btn-outline-secondary btn-sm"
           onClick={() => setDropdownOpen((o) => !o)}

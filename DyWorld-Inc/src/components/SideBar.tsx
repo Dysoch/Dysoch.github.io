@@ -4,6 +4,7 @@ import { GAME_TABS, BOTTOM_TABS } from '../constants'
 export default function SideBar() {
   const activeTab = useGameStore((s) => s.activeTab)
   const setActiveTab = useGameStore((s) => s.setActiveTab)
+  const activeJob = useGameStore((s) => s.activeJob)
 
   return (
     <nav
@@ -30,6 +31,12 @@ export default function SideBar() {
           >
             <span style={{ fontSize: '1.1rem', width: 24, textAlign: 'center' }}>{tab.icon}</span>
             {tab.label}
+            {tab.id === 'manual-labor' && activeJob !== null && (
+              <span
+                className="rounded-circle bg-danger ms-auto flex-shrink-0"
+                style={{ width: 8, height: 8, display: 'inline-block' }}
+              />
+            )}
           </button>
         ))}
       </div>

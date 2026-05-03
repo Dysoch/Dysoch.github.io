@@ -43,5 +43,23 @@
     "description": "Beyond gold. Only the wealthiest possess these.",
     "category": "capital",
     "tier": 4
+  },
+  {
+    "id": "wood",
+    "name": "Wood",
+    "nameSingular": "Wood",
+    "icon": "🪵",
+    "description": "Freshly cut timber. Useful for building things.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "stone",
+    "name": "Stone",
+    "nameSingular": "Stone",
+    "icon": "🪨",
+    "description": "Rough stone hewn from the earth. A fundamental material.",
+    "category": "basic",
+    "tier": 0
   }
 ]

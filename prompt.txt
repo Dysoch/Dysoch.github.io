@@ -1,0 +1,17 @@
+Okay this works, for the most part.
+
+I dont like the scale for the next prestige. I want it to start at 10 bronze, and then slowly give more Insight the higher you get.
+this will allow a skill tree to be quite large (and a much later prestige down the line)
+
+The proposed skill trees look okay, but lets tweak a bit.
+- Hustle tree: add skills (with max levels) for upgrading min and max rewards, adds a skill to speed up the jobs (a general one that is very weak, and more specilized ones per job?), and a QOL skill that allows you to queue manual labor (first skill allows 5, then several upgrades to increase that?)
+- Industry: Increase output, and low costs. Seperate for each building
+- Commerce: skill that increases the price range
+these are the 3 trees for now, but make it easy to add multiple trees.
+I want each skill tree to be on a seperate tab
+
+we also need stats updated. Lifetime is now complete game, and add a column for this and one for previeus venture.
+
+Lets also work on adding upgrades, which are increases to outputs for both properties and manual pre prestige. 
+As to calculation, the flow is as follows: base * upgrades * prestige skills.
+This way prestige skills increase the most, and upgrades are weaker

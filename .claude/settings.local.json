@@ -5,18 +5,24 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Sort-Object)",
       "PowerShell($path = \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\"; Get-ChildItem -LiteralPath $path -Recurse | % { $_.FullName })",
-      "PowerShell($path = \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\idle-game\"; Get-ChildItem -LiteralPath $path -Recurse | % { $_.FullName })",
-      "PowerShell(Get-ChildItem -LiteralPath \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\idle-game\\\\src\\\\components\" -Recurse | % { $_.FullName })",
-      "PowerShell($path = \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\idle-game\\\\src\\\\hooks\"; if \\(Test-Path $path\\) { Get-ChildItem -LiteralPath $path -Recurse | % { $_.FullName } } else { \"Hooks directory does not exist\" })",
-      "PowerShell(Get-ChildItem -LiteralPath \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\idle-game\\\\src\\\\data\" -Recurse | % { $_.FullName })",
-      "PowerShell(Get-ChildItem -LiteralPath \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\idle-game\\\\src\\\\utils\" -Recurse | % { $_.FullName })",
       "Bash(Get-ChildItem -Recurse \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\")",
       "Bash(Select-Object FullName)",
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(npx vite *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5174/DyWorld-Inc/)",
-      "Bash(pkill -f \"vite --port 5174\")"
+      "Bash(pkill -f \"vite --port 5174\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\" -Recurse -Force)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\" -Recurse -Directory -Name)",
+      "Bash(Select-Object -First 50)",
+      "PowerShell(head -100)",
+      "Bash(npx tsc *)",
+      "PowerShell(cd \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\"; Get-ChildItem -Path . -Recurse -Depth 2 | Select-Object -ExpandProperty FullName | ForEach-Object { $_ -replace [regex]::Escape\\(\\(Get-Location\\).Path\\), '.' })",
+      "Bash(grep -E \"\\\\.\\(md|js|ts|json\\)$\")",
+      "Bash(dir \"C:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\" /b)"
+    ],
+    "deny": [
+      "Read(idle-game)"
     ]
   }
 }

@@ -1,6 +1,8 @@
 export type ThemeType = 'light' | 'dark'
+export type NumberFormatType = 'engineering' | 'scientific' | 'normal'
 export type TabType =
   | 'manual-labor'
+  | 'properties'
   | 'statistics'
   | 'market'
   | 'bank'
@@ -32,6 +34,11 @@ export interface JobReward {
   max: number
 }
 
+export interface JobCost {
+  resourceId: string
+  amount: number
+}
+
 export interface Job {
   id: string
   name: string
@@ -40,6 +47,7 @@ export interface Job {
   category: string
   durationSeconds: number
   rewards: JobReward[]
+  costs?: JobCost[]
 }
 
 export interface ExchangeRate {
@@ -53,3 +61,32 @@ export interface ActiveJob {
   startTime: number
   endTime: number
 }
+
+export interface BuildingCost {
+  resourceId: string
+  amount: number
+}
+
+export interface BuildingProduction {
+  resourceId: string
+  amountPerSecond: number
+}
+
+export interface Building {
+  id: string
+  name: string
+  icon: string
+  description: string
+  baseCost: BuildingCost[]
+  costMultiplier: number
+  production: BuildingProduction[]
+}
+
+export interface MarketItem {
+  resourceId: string
+  basePrice: number
+  minPrice: number
+  maxPrice: number
+}
+
+export type PriceTrend = 'up' | 'down' | 'same'

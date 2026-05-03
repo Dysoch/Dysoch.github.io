@@ -9,8 +9,69 @@
     "rewards": [
       {
         "resourceId": "copper_coins",
-        "min": 1,
-        "max": 50
+        "min": 0,
+        "max": 25
+      },
+      {
+        "resourceId": "stone",
+        "min": 0,
+        "max": 0.1
+      },
+      {
+        "resourceId": "wood",
+        "min": 0,
+        "max": 0.1
+      }
+    ]
+  },
+  {
+    "id": "mining",
+    "name": "Mining",
+    "description": "Chip away at rock faces to gather stone.",
+    "icon": "⛏️",
+    "category": "manual_labor",
+    "durationSeconds": 8,
+    "rewards": [
+      {
+        "resourceId": "stone",
+        "min": 0.1,
+        "max": 0.5
+      }
+    ]
+  },
+  {
+    "id": "woodcutting",
+    "name": "Woodcutting",
+    "description": "Fell trees and haul timber from the forest.",
+    "icon": "🪓",
+    "category": "manual_labor",
+    "durationSeconds": 8,
+    "rewards": [
+      {
+        "resourceId": "wood",
+        "min": 0.1,
+        "max": 0.5
+      }
+    ]
+  },
+  {
+    "id": "trade_at_market",
+    "name": "Trade at Market",
+    "description": "Head to market and haggle for a profit — or a loss.",
+    "icon": "🏪",
+    "category": "manual_labor",
+    "durationSeconds": 10,
+    "costs": [
+      {
+        "resourceId": "copper_coins",
+        "amount": 50
+      }
+    ],
+    "rewards": [
+      {
+        "resourceId": "copper_coins",
+        "min": 30,
+        "max": 100
       }
     ]
   }

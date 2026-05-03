@@ -2,33 +2,27 @@ import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatNumber } from '../utils/format'
 import jobsData from '../content/jobs.json'
-import type { Job } from '../types'
+import resourcesData from '../content/resources.json'
+import type { Job, Resource } from '../types'
 
 const jobs = jobsData as Job[]
+const resources = resourcesData as Resource[]
+const resourceMap = Object.fromEntries(resources.map((r) => [r.id, r]))
 
-function randomBetween(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min
+function canAffordJob(job: Job, balances: Record<string, number>): boolean {
+  if (!job.costs?.length) return true
+  return job.costs.every((c) => (balances[c.resourceId] ?? 0) >= c.amount)
 }
 
 export default function ManualLabor() {
-  const { activeJob, startJob, completeJob, resources } = useGameStore()
+  const { activeJob, startJob, resources: balances } = useGameStore()
   const [now, setNow] = useState(Date.now)
 
+  // Progress bar update — completion handled globally in App.tsx
   useEffect(() => {
-    const id = setInterval(() => {
-      setNow(Date.now())
-      const job = useGameStore.getState().activeJob
-      if (job && Date.now() >= job.endTime) {
-        const def = jobs.find((j) => j.id === job.jobId)
-        if (def) {
-          const reward = def.rewards[0]
-          const amount = randomBetween(reward.min, reward.max)
-          completeJob(job.jobId, reward.resourceId, amount)
-        }
-      }
-    }, 100)
+    const id = setInterval(() => setNow(Date.now()), 100)
     return () => clearInterval(id)
-  }, [completeJob])
+  }, [])
 
   return (
     <div className="p-4">
@@ -41,6 +35,7 @@ export default function ManualLabor() {
         {jobs.map((job) => {
           const isThisJobActive = activeJob !== null && activeJob.jobId === job.id
           const isAnyJobActive = activeJob !== null
+          const affordable = canAffordJob(job, balances)
 
           const elapsed = activeJob && isThisJobActive
             ? Math.min(now - activeJob.startTime, job.durationSeconds * 1000)
@@ -52,10 +47,9 @@ export default function ManualLabor() {
             ? Math.max(0, Math.ceil((activeJob.endTime - now) / 1000))
             : job.durationSeconds
 
-          const rewardSummary = job.rewards
-            .map((r) => `${r.min}–${r.max}`)
-            .join(', ')
           const rewardResource = job.rewards[0]
+          const rewardRes = resourceMap[rewardResource.resourceId]
+          const rewardLabel = rewardRes ? rewardRes.name : rewardResource.resourceId.replace(/_/g, ' ')
 
           return (
             <div className="col-12 col-md-6" key={job.id}>
@@ -74,9 +68,17 @@ export default function ManualLabor() {
 
                   <div className="mb-3" style={{ fontSize: '0.875rem' }}>
                     <span className="badge bg-secondary me-2">⏱ {job.durationSeconds}s</span>
-                    <span className="badge bg-success">
-                      +{rewardSummary} {rewardResource.resourceId.replace('_coins', '')} coins
+                    <span className="badge bg-success me-1">
+                      +{rewardResource.min}–{rewardResource.max} {rewardRes?.icon} {rewardLabel}
                     </span>
+                    {job.costs?.map((c) => {
+                      const costRes = resourceMap[c.resourceId]
+                      return (
+                        <span key={c.resourceId} className="badge bg-danger me-1">
+                          -{c.amount} {costRes?.icon} {costRes?.name ?? c.resourceId.replace(/_/g, ' ')}
+                        </span>
+                      )
+                    })}
                   </div>
 
                   {isThisJobActive && (
@@ -96,16 +98,23 @@ export default function ManualLabor() {
 
                   <button
                     className={`btn btn-sm w-100 ${isThisJobActive ? 'btn-outline-secondary' : 'btn-primary'}`}
-                    disabled={isAnyJobActive}
-                    onClick={() => startJob(job.id, job.durationSeconds)}
+                    disabled={isAnyJobActive || (!isThisJobActive && !affordable)}
+                    onClick={() => startJob(job.id, job.durationSeconds, job.costs)}
                   >
-                    {isThisJobActive ? 'In progress…' : 'Start'}
+                    {isThisJobActive ? 'In progress…' : !affordable ? 'Cannot afford' : 'Start'}
                   </button>
                 </div>
 
                 <div className="card-footer text-body-secondary" style={{ fontSize: '0.8rem' }}>
-                  Current{' '}
-                  {rewardResource.resourceId.replace('_', ' ')}: {formatNumber(resources[rewardResource.resourceId] ?? 0)}
+                  {rewardRes?.icon} {rewardLabel}: {formatNumber(balances[rewardResource.resourceId] ?? 0)}
+                  {job.costs?.filter(c => c.resourceId !== rewardResource.resourceId).map((c) => {
+                    const costRes = resourceMap[c.resourceId]
+                    return (
+                      <span key={c.resourceId} className="ms-2">
+                        | {costRes?.icon} {costRes?.name ?? c.resourceId.replace(/_/g, ' ')}: {formatNumber(balances[c.resourceId] ?? 0)}
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
             </div>

@@ -1,0 +1,14 @@
+[
+  {
+    "resourceId": "wood",
+    "basePrice": 5,
+    "minPrice": 2,
+    "maxPrice": 15
+  },
+  {
+    "resourceId": "stone",
+    "basePrice": 4,
+    "minPrice": 1,
+    "maxPrice": 12
+  }
+]

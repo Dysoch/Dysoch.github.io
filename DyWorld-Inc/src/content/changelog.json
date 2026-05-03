@@ -1,5 +1,28 @@
 [
   {
+    "version": "0.0.3",
+    "date": "2026-05-03",
+    "added": [
+      "Properties page — purchase buildings for passive resource income: Quarry (stone), Lumbermill (wood), Shack (copper coins), House (copper coins). Building cost scales 1.5× with each purchase",
+      "Offline progress — passive income accumulates while away and is applied when you return",
+      "Two new basic resources: Wood (🪵) and Stone (🪨)",
+      "Three new Manual Labor jobs: Mining (⛏️, 8s, earns stone), Woodcutting (🪓, 8s, earns wood), Trade at Market (🏪, 10s, costs 50 copper coins, earns 25–100 copper coins)",
+      "Number format setting in Settings → Gameplay: choose Engineering (K/M/B), Scientific (1.23e9), or Normal (1.23k / million / billion)",
+      "Market page — buy and sell Wood and Stone for copper coins. Prices fluctuate every 30 seconds within a min/max range. Supports 1×, 5×, 10×, 50×, and Max quantities for both buying and selling",
+      "Top bar now shows a live overview of all capital coin balances with tooltips",
+      "Manual Labor jobs now complete in the background on any page — no longer requires staying on the Manual Labor tab",
+      "Active job indicator — a red dot appears on the Manual Labor sidebar button when a job is running"
+    ],
+    "changed": [
+      "Settings page restructured with UI and Gameplay tabs; dark mode toggle moved to the UI tab",
+      "Statistics page now has tabs: Capital, Basic Resources, Manual Labor, and Properties"
+    ],
+    "fixed": [
+      "Manual Labor job statistics now correctly tracked per job — completing 'Beg for Coins' and 'Trade at Market' no longer inflates each other's earnings"
+    ],
+    "removed": []
+  },
+  {
     "version": "0.0.2",
     "date": "2026-05-03",
     "added": [

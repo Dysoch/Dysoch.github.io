@@ -1,5 +1,6 @@
 import { useGameStore } from '../store/gameStore'
 import ManualLabor from '../pages/ManualLabor'
+import Properties from '../pages/Properties'
 import Statistics from '../pages/Statistics'
 import Market from '../pages/Market'
 import Bank from '../pages/Bank'
@@ -12,6 +13,7 @@ export default function ContentArea() {
   const page = (() => {
     switch (activeTab) {
       case 'manual-labor': return <ManualLabor />
+      case 'properties':   return <Properties />
       case 'statistics':   return <Statistics />
       case 'market':       return <Market />
       case 'bank':         return <Bank />
