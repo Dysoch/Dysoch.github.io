@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import { formatNumber } from '../utils/format'
+import { formatNumber, formatDuration } from '../utils/format'
+import { getJobRewardMinMult, getJobRewardMaxMult, getJobDurationMult, getMaxQueueSize } from '../utils/multipliers'
 import jobsData from '../content/jobs.json'
 import resourcesData from '../content/resources.json'
 import type { Job, Resource } from '../types'
@@ -15,7 +16,11 @@ function canAffordJob(job: Job, balances: Record<string, number>): boolean {
 }
 
 export default function ManualLabor() {
-  const { activeJob, startJob, resources: balances } = useGameStore()
+  const {
+    activeJob, startJob, resources: balances,
+    purchasedUpgrades, purchasedSkills,
+    jobQueue, addToQueue, removeFromQueue, clearQueue,
+  } = useGameStore()
   const [now, setNow] = useState(Date.now)
 
   // Progress bar update — completion handled globally in App.tsx
@@ -23,6 +28,9 @@ export default function ManualLabor() {
     const id = setInterval(() => setNow(Date.now()), 100)
     return () => clearInterval(id)
   }, [])
+
+  const maxQueueSize = getMaxQueueSize(purchasedSkills)
+  const queueUnlocked = maxQueueSize > 0
 
   return (
     <div className="p-4">
@@ -37,39 +45,45 @@ export default function ManualLabor() {
           const isAnyJobActive = activeJob !== null
           const affordable = canAffordJob(job, balances)
 
+          const durMult = getJobDurationMult(job.id, purchasedSkills)
+          const effectiveDuration = job.durationSeconds * durMult
+
+          const rewardResource = job.rewards[0]
+          const minMult = getJobRewardMinMult(job.id, purchasedUpgrades, purchasedSkills)
+          const maxMult = getJobRewardMaxMult(job.id, purchasedUpgrades, purchasedSkills)
+          const displayMin = rewardResource.min * minMult
+          const displayMax = rewardResource.max * maxMult
+
           const elapsed = activeJob && isThisJobActive
-            ? Math.min(now - activeJob.startTime, job.durationSeconds * 1000)
+            ? Math.min(now - activeJob.startTime, effectiveDuration * 1000)
             : 0
           const progress = isThisJobActive
-            ? (elapsed / (job.durationSeconds * 1000)) * 100
+            ? (elapsed / (effectiveDuration * 1000)) * 100
             : 0
           const remaining = activeJob && isThisJobActive
             ? Math.max(0, Math.ceil((activeJob.endTime - now) / 1000))
-            : job.durationSeconds
+            : effectiveDuration
 
-          const rewardResource = job.rewards[0]
           const rewardRes = resourceMap[rewardResource.resourceId]
           const rewardLabel = rewardRes ? rewardRes.name : rewardResource.resourceId.replace(/_/g, ' ')
+
+          const isQueued = jobQueue.includes(job.id)
 
           return (
             <div className="col-12 col-md-6" key={job.id}>
               <div className={`card h-100 ${isThisJobActive ? 'border-primary' : ''}`}>
                 <div className="card-body">
-                  <div className="d-flex align-items-start justify-content-between mb-2">
-                    <div>
-                      <h5 className="card-title mb-1">
-                        {job.icon} {job.name}
-                      </h5>
-                      <p className="text-body-secondary mb-2" style={{ fontSize: '0.875rem' }}>
-                        {job.description}
-                      </p>
-                    </div>
+                  <div className="mb-2">
+                    <h5 className="card-title mb-1">{job.icon} {job.name}</h5>
+                    <p className="text-body-secondary mb-2" style={{ fontSize: '0.875rem' }}>
+                      {job.description}
+                    </p>
                   </div>
 
                   <div className="mb-3" style={{ fontSize: '0.875rem' }}>
-                    <span className="badge bg-secondary me-2">⏱ {job.durationSeconds}s</span>
+                    <span className="badge bg-secondary me-2">⏱ {formatDuration(effectiveDuration)}</span>
                     <span className="badge bg-success me-1">
-                      +{rewardResource.min}–{rewardResource.max} {rewardRes?.icon} {rewardLabel}
+                      +{formatNumber(displayMin)} – {formatNumber(displayMax)} {rewardRes?.icon} {rewardLabel}
                     </span>
                     {job.costs?.map((c) => {
                       const costRes = resourceMap[c.resourceId]
@@ -97,12 +111,22 @@ export default function ManualLabor() {
                   )}
 
                   <button
-                    className={`btn btn-sm w-100 ${isThisJobActive ? 'btn-outline-secondary' : 'btn-primary'}`}
+                    className={`btn btn-sm w-100 mb-1 ${isThisJobActive ? 'btn-outline-secondary' : 'btn-primary'}`}
                     disabled={isAnyJobActive || (!isThisJobActive && !affordable)}
-                    onClick={() => startJob(job.id, job.durationSeconds, job.costs)}
+                    onClick={() => startJob(job.id, effectiveDuration, job.costs)}
                   >
                     {isThisJobActive ? 'In progress…' : !affordable ? 'Cannot afford' : 'Start'}
                   </button>
+
+                  {queueUnlocked && (
+                    <button
+                      className="btn btn-sm btn-outline-secondary w-100"
+                      disabled={jobQueue.length >= maxQueueSize || !affordable || isQueued}
+                      onClick={() => addToQueue(job.id)}
+                    >
+                      {isQueued ? 'Queued' : '+ Queue'}
+                    </button>
+                  )}
                 </div>
 
                 <div className="card-footer text-body-secondary" style={{ fontSize: '0.8rem' }}>
@@ -121,6 +145,41 @@ export default function ManualLabor() {
           )
         })}
       </div>
+
+      {queueUnlocked && (
+        <div className="mt-4" style={{ maxWidth: 720 }}>
+          <div className="d-flex align-items-center justify-content-between mb-2">
+            <h5 className="mb-0">Job Queue ({jobQueue.length}/{maxQueueSize})</h5>
+            {jobQueue.length > 0 && (
+              <button className="btn btn-sm btn-outline-secondary" onClick={clearQueue}>
+                Clear Queue
+              </button>
+            )}
+          </div>
+          {jobQueue.length === 0 ? (
+            <p className="text-body-secondary" style={{ fontSize: '0.875rem' }}>
+              Queue is empty. Click "+ Queue" on a job while another is running to add it.
+            </p>
+          ) : (
+            <ol className="list-group list-group-numbered">
+              {jobQueue.map((qJobId, idx) => {
+                const qDef = jobs.find((j) => j.id === qJobId)
+                return (
+                  <li key={idx} className="list-group-item d-flex align-items-center justify-content-between">
+                    <span>{qDef?.icon} {qDef?.name ?? qJobId}</span>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => removeFromQueue(idx)}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,9 +1,11 @@
 import { useGameStore } from '../store/gameStore'
 import ManualLabor from '../pages/ManualLabor'
 import Properties from '../pages/Properties'
+import Upgrades from '../pages/Upgrades'
 import Statistics from '../pages/Statistics'
 import Market from '../pages/Market'
 import Bank from '../pages/Bank'
+import Prestige from '../pages/Prestige'
 import Settings from '../pages/Settings'
 import About from '../pages/About'
 
@@ -14,9 +16,11 @@ export default function ContentArea() {
     switch (activeTab) {
       case 'manual-labor': return <ManualLabor />
       case 'properties':   return <Properties />
+      case 'upgrades':     return <Upgrades />
       case 'statistics':   return <Statistics />
       case 'market':       return <Market />
       case 'bank':         return <Bank />
+      case 'prestige':     return <Prestige />
       case 'settings':     return <Settings />
       case 'about':        return <About />
     }

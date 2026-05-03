@@ -3,17 +3,18 @@
     "version": "0.0.3",
     "date": "2026-05-03",
     "added": [
-      "Properties page — purchase buildings for passive resource income: Quarry (stone), Lumbermill (wood), Shack (copper coins), House (copper coins). Building cost scales 1.5× with each purchase",
-      "Offline progress — passive income accumulates while away and is applied when you return",
-      "Two new basic resources: Wood (🪵) and Stone (🪨)",
-      "Three new Manual Labor jobs: Mining (⛏️, 8s, earns stone), Woodcutting (🪓, 8s, earns wood), Trade at Market (🏪, 10s, costs 50 copper coins, earns 25–100 copper coins)",
-      "Number format setting in Settings → Gameplay: choose Engineering (K/M/B), Scientific (1.23e9), or Normal (1.23k / million / billion)",
-      "Market page — buy and sell Wood and Stone for copper coins. Prices fluctuate every 30 seconds within a min/max range. Supports 1×, 5×, 10×, 50×, and Max quantities for both buying and selling",
-      "Top bar now shows a live overview of all capital coin balances with tooltips",
-      "Manual Labor jobs now complete in the background on any page — no longer requires staying on the Manual Labor tab",
-      "Active job indicator — a red dot appears on the Manual Labor sidebar button when a job is running"
+      "Prestige system — once you have 10 Bronze Coins, start a New Venture. You lose all resources and buildings but earn Insight, a permanent currency. Insight earned scales with capital accumulated that venture: more bronze/silver/gold earned before prestiging means more Insight (formula: floor(log2(weighted_capital + 1)), minimum 1). The Prestige page shows a live preview of how much Insight you would earn right now",
+      "Insight weights are config-driven (prestige_config.json): bronze ×1, silver ×1000, gold ×1,000,000, platinum ×1,000,000,000 — easy to tweak without touching code",
+      "Jobs with multiple rewards now all apply correctly on completion",
+      "Skill trees — spend Insight on permanent upgrades that persist across all ventures. Three trees: Hustle (job rewards, speed, queue), Industry (building output and cost per building), Commerce (market price range, buy/sell bonuses). Trees auto-expand as new skills are added to the JSON",
+      "Job Queue — unlock via the Hustle skill tree. Queue up to 5 jobs (upgradeable to 20); queued jobs start automatically when the current one finishes",
+      "Upgrades page — in-run upgrades that boost Manual Labor rewards and Property output. Resets on Prestige. Weaker than prestige skills but available every run",
+      "Venture statistics — Statistics page now shows three columns per metric: This Venture, Previous Venture, and All Time. All Time tracks cumulative totals across every run",
+      "Multiplier system — output formula is base × upgrades × prestige_skills. Upgrades and prestige skills stack multiplicatively",
+      "Properties page and Market page now display effective rates and prices when upgrades or skills are active"
     ],
     "changed": [
+      "Manual Labor job cards now show effective reward ranges and durations after multipliers are applied",
       "Settings page restructured with UI and Gameplay tabs; dark mode toggle moved to the UI tab",
       "Statistics page now has tabs: Capital, Basic Resources, Manual Labor, and Properties"
     ],

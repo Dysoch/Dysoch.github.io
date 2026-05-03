@@ -2,7 +2,7 @@
   {
     "fromId": "copper_coins",
     "toId": "bronze_coins",
-    "rate": 1000000000
+    "rate": 100
   },
   {
     "fromId": "bronze_coins",

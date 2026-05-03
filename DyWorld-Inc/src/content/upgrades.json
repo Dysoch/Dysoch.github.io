@@ -1,0 +1,122 @@
+[
+  {
+    "id": "beg_max_1",
+    "category": "manual_labor",
+    "name": "Beg Harder",
+    "description": "Beg for Coins maximum reward +25% per level.",
+    "target": "beg_for_coins",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }]
+    ]
+  },
+  {
+    "id": "mining_max_1",
+    "category": "manual_labor",
+    "name": "Better Tools",
+    "description": "Mining maximum reward +25% per level.",
+    "target": "mining",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "stone", "amount": 10 }],
+      [{ "resourceId": "stone", "amount": 25 }],
+      [{ "resourceId": "stone", "amount": 50 }]
+    ]
+  },
+  {
+    "id": "woodcutting_max_1",
+    "category": "manual_labor",
+    "name": "Sharper Axe",
+    "description": "Woodcutting maximum reward +25% per level.",
+    "target": "woodcutting",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "wood", "amount": 10 }],
+      [{ "resourceId": "wood", "amount": 25 }],
+      [{ "resourceId": "wood", "amount": 50 }]
+    ]
+  },
+  {
+    "id": "trade_max_1",
+    "category": "manual_labor",
+    "name": "Market Savvy",
+    "description": "Trade at Market maximum reward +15% per level.",
+    "target": "trade_at_market",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.15,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 200 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }]
+    ]
+  },
+  {
+    "id": "quarry_output_1",
+    "category": "property",
+    "name": "Quarry Overhaul",
+    "description": "Quarry output +25% per level.",
+    "target": "quarry",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "stone", "amount": 10 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "stone", "amount": 25 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }]
+    ]
+  },
+  {
+    "id": "lumbermill_output_1",
+    "category": "property",
+    "name": "Mill Overhaul",
+    "description": "Lumbermill output +25% per level.",
+    "target": "lumbermill",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "wood", "amount": 10 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "wood", "amount": 25 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "wood", "amount": 50 }]
+    ]
+  },
+  {
+    "id": "shack_output_1",
+    "category": "property",
+    "name": "Shack Renovation",
+    "description": "Shack output +25% per level.",
+    "target": "shack",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "wood", "amount": 5 }],
+      [{ "resourceId": "copper_coins", "amount": 2500 }, { "resourceId": "wood", "amount": 15 }],
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 30 }]
+    ]
+  },
+  {
+    "id": "house_output_1",
+    "category": "property",
+    "name": "House Renovation",
+    "description": "House output +25% per level.",
+    "target": "house",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 10 }],
+      [{ "resourceId": "copper_coins", "amount": 12000 }, { "resourceId": "wood", "amount": 25 }],
+      [{ "resourceId": "copper_coins", "amount": 25000 }, { "resourceId": "wood", "amount": 50 }]
+    ]
+  }
+]

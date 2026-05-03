@@ -6,6 +6,7 @@ import SideBar from './components/SideBar'
 import ContentArea from './components/ContentArea'
 import jobsData from './content/jobs.json'
 import type { Job } from './types'
+import { getJobRewardMinMult, getJobRewardMaxMult } from './utils/multipliers'
 
 const jobs = jobsData as Job[]
 
@@ -32,16 +33,21 @@ export default function App() {
     return () => clearInterval(id)
   }, [tickPassiveIncome])
 
-  // Job completion — global so it works on every page
+  // Job completion — global so it works on every page, applies multipliers
   useEffect(() => {
     const id = setInterval(() => {
-      const job = useGameStore.getState().activeJob
+      const state = useGameStore.getState()
+      const job = state.activeJob
       if (job && Date.now() >= job.endTime) {
         const def = jobs.find((j) => j.id === job.jobId)
         if (def) {
-          const reward = def.rewards[0]
-          const amount = randomBetween(reward.min, reward.max)
-          useGameStore.getState().completeJob(job.jobId, reward.resourceId, amount)
+          const minMult = getJobRewardMinMult(job.jobId, state.purchasedUpgrades, state.purchasedSkills)
+          const maxMult = getJobRewardMaxMult(job.jobId, state.purchasedUpgrades, state.purchasedSkills)
+          const rewards = def.rewards.map((r) => ({
+            resourceId: r.resourceId,
+            amount: randomBetween(r.min * minMult, r.max * maxMult),
+          }))
+          state.completeJob(job.jobId, rewards)
         }
       }
     }, 100)

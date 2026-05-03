@@ -1,5 +1,6 @@
 import { useGameStore } from '../store/gameStore'
 import { formatNumber } from '../utils/format'
+import { getBuildingOutputMult, getBuildingCostMult } from '../utils/multipliers'
 import buildingsData from '../content/buildings.json'
 import resourcesData from '../content/resources.json'
 import type { Building, BuildingCost, Resource } from '../types'
@@ -8,10 +9,10 @@ const buildings = buildingsData as Building[]
 const resources = resourcesData as Resource[]
 const resourceMap = Object.fromEntries(resources.map((r) => [r.id, r]))
 
-function getCurrentCost(building: Building, owned: number): BuildingCost[] {
+function getCurrentCost(building: Building, owned: number, costMult: number): BuildingCost[] {
   return building.baseCost.map((c) => ({
     resourceId: c.resourceId,
-    amount: Math.floor(c.amount * Math.pow(building.costMultiplier, owned)),
+    amount: Math.floor(c.amount * Math.pow(building.costMultiplier, owned) * costMult),
   }))
 }
 
@@ -20,7 +21,7 @@ function canAfford(costs: BuildingCost[], balances: Record<string, number>): boo
 }
 
 export default function Properties() {
-  const { buildings: owned, resources: balances, buyBuilding } = useGameStore()
+  const { buildings: owned, resources: balances, buyBuilding, purchasedUpgrades, purchasedSkills } = useGameStore()
 
   return (
     <div className="p-4">
@@ -32,7 +33,9 @@ export default function Properties() {
       <div className="row g-3" style={{ maxWidth: 720 }}>
         {buildings.map((building) => {
           const ownedCount = owned[building.id] ?? 0
-          const currentCost = getCurrentCost(building, ownedCount)
+          const costMult = getBuildingCostMult(building.id, purchasedSkills)
+          const outputMult = getBuildingOutputMult(building.id, purchasedUpgrades, purchasedSkills)
+          const currentCost = getCurrentCost(building, ownedCount, costMult)
           const affordable = canAfford(currentCost, balances)
 
           return (
@@ -55,10 +58,11 @@ export default function Properties() {
                   <div className="mb-2" style={{ fontSize: '0.875rem' }}>
                     {building.production.map((p) => {
                       const res = resourceMap[p.resourceId]
-                      const totalPerSec = p.amountPerSecond * ownedCount
+                      const effectivePerSec = p.amountPerSecond * outputMult
+                      const totalPerSec = effectivePerSec * ownedCount
                       return (
                         <div key={p.resourceId} className="text-success">
-                          {res?.icon} +{p.amountPerSecond}/s per building
+                          {res?.icon} +{effectivePerSec.toFixed(3)}/s per building
                           {ownedCount > 0 && (
                             <span className="text-body-secondary ms-1">
                               ({formatNumber(totalPerSec)}/s total)
@@ -74,11 +78,10 @@ export default function Properties() {
                     {currentCost.map((c, i) => {
                       const res = resourceMap[c.resourceId]
                       const have = balances[c.resourceId] ?? 0
-                      const canCover = have >= c.amount
                       return (
                         <span
                           key={c.resourceId}
-                          className={`${i > 0 ? 'ms-2' : ''} ${canCover ? '' : 'text-danger'}`}
+                          className={`${i > 0 ? 'ms-2' : ''} ${have >= c.amount ? '' : 'text-danger'}`}
                         >
                           {res?.icon} {formatNumber(c.amount)} {res?.name}
                         </span>

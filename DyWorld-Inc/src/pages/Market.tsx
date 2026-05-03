@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatNumber } from '../utils/format'
+import { getMarketBuyMult, getMarketSellMult, getMarketCeilingMult, getMarketFloorMult } from '../utils/multipliers'
 import marketItemsData from '../content/market_items.json'
 import resourcesData from '../content/resources.json'
 import type { MarketItem, Resource } from '../types'
@@ -17,6 +18,7 @@ export default function Market() {
     lastMarketTick,
     buyMarketResource,
     sellMarketResource,
+    purchasedSkills,
   } = useGameStore()
 
   const [now, setNow] = useState(Date.now)
@@ -28,6 +30,11 @@ export default function Market() {
 
   const nextUpdateIn = Math.max(0, Math.ceil(30 - (now - lastMarketTick) / 1000))
   const copper = resources['copper_coins'] ?? 0
+
+  const buyMult = getMarketBuyMult(purchasedSkills)
+  const sellMult = getMarketSellMult(purchasedSkills)
+  const ceilingMult = getMarketCeilingMult(purchasedSkills)
+  const floorMult = getMarketFloorMult(purchasedSkills)
 
   return (
     <div className="p-4">
@@ -47,7 +54,12 @@ export default function Market() {
           const trend = marketPriceTrend[item.resourceId] ?? 'same'
           const balance = resources[item.resourceId] ?? 0
 
-          const maxBuy = Math.floor(copper / price)
+          const effectiveBuyPrice = price * buyMult
+          const effectiveSellPrice = price * sellMult
+          const effectiveMin = item.minPrice * floorMult
+          const effectiveMax = item.maxPrice * ceilingMult
+
+          const maxBuy = Math.floor(copper / effectiveBuyPrice)
           const maxSell = Math.floor(balance)
 
           const trendIcon = trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'
@@ -57,12 +69,8 @@ export default function Market() {
             <div className="col-12 col-md-6" key={item.resourceId}>
               <div className="card h-100">
                 <div className="card-body">
-
-                  {/* Header: name + current price */}
                   <div className="d-flex align-items-center justify-content-between mb-1">
-                    <h5 className="card-title mb-0">
-                      {res?.icon} {res?.name}
-                    </h5>
+                    <h5 className="card-title mb-0">{res?.icon} {res?.name}</h5>
                     <div className="d-flex align-items-center gap-1">
                       <span className="fw-semibold">🟤 {formatNumber(price)}</span>
                       <span className={trendClass} style={{ fontSize: '1.1rem', lineHeight: 1 }}>{trendIcon}</span>
@@ -70,23 +78,23 @@ export default function Market() {
                   </div>
 
                   <div className="text-body-secondary mb-3" style={{ fontSize: '0.75rem' }}>
-                    Price range: 🟤 {item.minPrice} – {item.maxPrice} per unit
+                    Range: 🟤 {formatNumber(effectiveMin)} – {formatNumber(effectiveMax)} per unit
+                    {buyMult !== 1 && <span className="ms-2">Buy: 🟤 {formatNumber(effectiveBuyPrice)}</span>}
+                    {sellMult !== 1 && <span className="ms-2">Sell: 🟤 {formatNumber(effectiveSellPrice)}</span>}
                   </div>
 
-                  {/* Buy section */}
                   <div className="mb-3">
                     <div className="text-body-secondary mb-1" style={{ fontSize: '0.8rem' }}>
                       Buy <span className="text-body-secondary">(spend 🟤 copper)</span>
                     </div>
                     <div className="d-flex flex-wrap gap-1">
                       {QUANTITIES.map((qty) => {
-                        const cost = price * qty
-                        const canBuy = copper >= cost
+                        const cost = effectiveBuyPrice * qty
                         return (
                           <button
                             key={qty}
                             className="btn btn-sm btn-outline-success"
-                            disabled={!canBuy}
+                            disabled={copper < cost}
                             title={`Cost: ${formatNumber(cost)} copper`}
                             onClick={() => buyMarketResource(item.resourceId, qty)}
                           >
@@ -97,7 +105,7 @@ export default function Market() {
                       <button
                         className="btn btn-sm btn-success"
                         disabled={maxBuy <= 0}
-                        title={maxBuy > 0 ? `Buy ${maxBuy} for ${formatNumber(price * maxBuy)} copper` : 'Cannot afford any'}
+                        title={maxBuy > 0 ? `Buy ${maxBuy} for ${formatNumber(effectiveBuyPrice * maxBuy)} copper` : 'Cannot afford any'}
                         onClick={() => buyMarketResource(item.resourceId, maxBuy)}
                       >
                         Max ({formatNumber(maxBuy)})
@@ -105,20 +113,18 @@ export default function Market() {
                     </div>
                   </div>
 
-                  {/* Sell section */}
                   <div>
                     <div className="text-body-secondary mb-1" style={{ fontSize: '0.8rem' }}>
                       Sell <span className="text-body-secondary">(gain 🟤 copper)</span>
                     </div>
                     <div className="d-flex flex-wrap gap-1">
                       {QUANTITIES.map((qty) => {
-                        const revenue = price * qty
-                        const canSell = balance >= qty
+                        const revenue = effectiveSellPrice * qty
                         return (
                           <button
                             key={qty}
                             className="btn btn-sm btn-outline-danger"
-                            disabled={!canSell}
+                            disabled={balance < qty}
                             title={`Gain: ${formatNumber(revenue)} copper`}
                             onClick={() => sellMarketResource(item.resourceId, qty)}
                           >
@@ -129,7 +135,7 @@ export default function Market() {
                       <button
                         className="btn btn-sm btn-danger"
                         disabled={maxSell <= 0}
-                        title={maxSell > 0 ? `Sell ${maxSell} for ${formatNumber(price * maxSell)} copper` : 'Nothing to sell'}
+                        title={maxSell > 0 ? `Sell ${maxSell} for ${formatNumber(effectiveSellPrice * maxSell)} copper` : 'Nothing to sell'}
                         onClick={() => sellMarketResource(item.resourceId, maxSell)}
                       >
                         Max ({formatNumber(maxSell)})

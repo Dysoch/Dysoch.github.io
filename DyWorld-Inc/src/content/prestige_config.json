@@ -1,0 +1,12 @@
+{
+  "requirement": {
+    "resourceId": "bronze_coins",
+    "amount": 10
+  },
+  "insightWeights": [
+    { "resourceId": "bronze_coins",   "weight": 1 },
+    { "resourceId": "silver_coins",   "weight": 1000 },
+    { "resourceId": "gold_coins",     "weight": 1000000 },
+    { "resourceId": "platinum_coins", "weight": 1000000000 }
+  ]
+}
