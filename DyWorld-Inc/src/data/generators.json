@@ -1,0 +1,16 @@
+[
+  {
+    "id": "sawmill",
+    "resource": "wood",
+    "name": "Sawmill Worker",
+    "baseCost": 50,
+    "multiplier": 1.25
+  },
+  {
+    "id": "miner",
+    "resource": "stone",
+    "name": "Miner",
+    "baseCost": 20,
+    "multiplier": 1.25
+  }
+]

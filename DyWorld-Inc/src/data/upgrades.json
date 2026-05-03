@@ -1,0 +1,18 @@
+[
+  {
+    "id": "clickBoostCoins",
+    "resource": "coins",
+    "name": "Click Boost",
+    "type": "click",
+    "cost": 50,
+    "value": 2
+  },
+  {
+    "id": "autoGenBoostGems",
+    "resource": "gems",
+    "name": "AutoGen Boost",
+    "type": "auto",
+    "cost": 100,
+    "value": 2
+  }
+]
