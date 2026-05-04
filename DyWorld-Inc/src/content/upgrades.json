@@ -118,5 +118,35 @@
       [{ "resourceId": "copper_coins", "amount": 12000 }, { "resourceId": "wood", "amount": 25 }],
       [{ "resourceId": "copper_coins", "amount": 25000 }, { "resourceId": "wood", "amount": 50 }]
     ]
+  },
+  {
+    "id": "crafting_speed_1",
+    "category": "crafting",
+    "name": "Workshop Tools",
+    "description": "All crafts 20% faster per level.",
+    "target": "all",
+    "effect": "craft_speed_mult",
+    "magnitude": 0.8,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 15000 }, { "resourceId": "wood", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 40000 }, { "resourceId": "wood", "amount": 100 }]
+    ]
+  },
+  {
+    "id": "crafting_output_1",
+    "category": "crafting",
+    "name": "Quality Materials",
+    "description": "All craft outputs +20% per level (rounded).",
+    "target": "all",
+    "effect": "craft_output_mult",
+    "magnitude": 1.2,
+    "maxLevel": 3,
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "stone", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 15000 }, { "resourceId": "stone", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 40000 }, { "resourceId": "stone", "amount": 100 }]
+    ]
   }
 ]

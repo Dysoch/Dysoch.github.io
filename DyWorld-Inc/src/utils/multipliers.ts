@@ -113,3 +113,49 @@ export function getMaxQueueSize(purchasedSkills: Record<string, number>): number
   const level = purchasedSkills[queueSkill.id] ?? 0
   return queueSkill.magnitude * level
 }
+
+// --- Crafting multipliers ---
+
+// Returns duration multiplier < 1 for faster crafting.
+export function getCraftDurationMult(
+  recipeId: string,
+  purchasedSkills: Record<string, number>,
+  purchasedUpgrades: Record<string, number>
+): number {
+  return skillMult('craft_speed_mult', 'all', purchasedSkills) *
+         skillMult('craft_speed_mult', recipeId, purchasedSkills) *
+         upgradeMult('craft_speed_mult', 'all', purchasedUpgrades)
+}
+
+// Returns output multiplier > 1 (applied to output amounts, then rounded).
+export function getCraftOutputMult(purchasedUpgrades: Record<string, number>): number {
+  return upgradeMult('craft_output_mult', 'all', purchasedUpgrades)
+}
+
+// Returns number of simultaneous craft slots (base 1 + skill bonus).
+export function getCraftWorkerCount(purchasedSkills: Record<string, number>): number {
+  const workerSkill = skills.find((s) => s.effect === 'craft_worker_count')
+  if (!workerSkill) return 1
+  const level = purchasedSkills[workerSkill.id] ?? 0
+  return 1 + workerSkill.magnitude * level
+}
+
+// Returns probability (0–0.95) that inputs are not consumed on craft.
+export function getCraftFreeChance(purchasedSkills: Record<string, number>): number {
+  let total = 0
+  for (const s of skills) {
+    if (s.effect !== 'craft_free_chance') continue
+    total += s.magnitude * (purchasedSkills[s.id] ?? 0)
+  }
+  return Math.min(total, 0.95)
+}
+
+// Returns probability (0–0.95) that output is doubled on craft.
+export function getCraftDoubleChance(purchasedSkills: Record<string, number>): number {
+  let total = 0
+  for (const s of skills) {
+    if (s.effect !== 'craft_double_chance') continue
+    total += s.magnitude * (purchasedSkills[s.id] ?? 0)
+  }
+  return Math.min(total, 0.95)
+}

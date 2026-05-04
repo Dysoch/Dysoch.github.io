@@ -19,7 +19,10 @@
       "Bash(npx tsc *)",
       "PowerShell(cd \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\"; Get-ChildItem -Path . -Recurse -Depth 2 | Select-Object -ExpandProperty FullName | ForEach-Object { $_ -replace [regex]::Escape\\(\\(Get-Location\\).Path\\), '.' })",
       "Bash(grep -E \"\\\\.\\(md|js|ts|json\\)$\")",
-      "Bash(dir \"C:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\" /b)"
+      "Bash(dir \"C:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\" /b)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\\\\\" -Recurse -Force | Select-Object -Property FullName | ForEach-Object { $_.FullName } | Sort-Object)",
+      "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\\\\\\\\src\" -type f)",
+      "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\" -name \"package.json\" -o -name \"README.md\")"
     ],
     "deny": [
       "Read(idle-game)"

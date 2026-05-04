@@ -4,6 +4,7 @@ import { STORAGE_KEY } from '../constants'
 import type {
   TabType, ThemeType, ActiveJob, NumberFormatType,
   Building, JobCost, MarketItem, PriceTrend, SkillDef, UpgradeDef, Job, PrestigeConfig,
+  Recipe, ActiveCraft,
 } from '../types'
 import resourcesData from '../content/resources.json'
 import buildingsData from '../content/buildings.json'
@@ -11,6 +12,7 @@ import marketItemsData from '../content/market_items.json'
 import skillsData from '../content/skills.json'
 import upgradesData from '../content/upgrades.json'
 import jobsData from '../content/jobs.json'
+import recipesData from '../content/recipes.json'
 import prestigeConfigData from '../content/prestige_config.json'
 import {
   getBuildingOutputMult,
@@ -21,6 +23,11 @@ import {
   getMarketBuyMult,
   getMaxQueueSize,
   getJobDurationMult,
+  getCraftDurationMult,
+  getCraftOutputMult,
+  getCraftWorkerCount,
+  getCraftFreeChance,
+  getCraftDoubleChance,
 } from '../utils/multipliers'
 
 const initialResources = Object.fromEntries(resourcesData.map((r) => [r.id, 0]))
@@ -63,6 +70,10 @@ interface GameStore {
   marketPriceTrend: Record<string, PriceTrend>
   lastMarketTick: number
 
+  // Crafting
+  activeCrafts: ActiveCraft[]
+  craftQueue: string[]
+
   // Prestige
   prestigeCount: number
   insight: number
@@ -98,8 +109,15 @@ interface GameStore {
   buyMarketResource: (resourceId: string, quantity: number) => boolean
   sellMarketResource: (resourceId: string, quantity: number) => boolean
 
-  // Exchange
-  exchange: (fromId: string, toId: string, rate: number, count: number) => void
+  // Exchange: spend `spend` of fromId, gain `gain` of toId
+  exchange: (fromId: string, toId: string, spend: number, gain: number) => void
+
+  // Crafting actions
+  addToCraftQueue: (recipeId: string) => void
+  removeCraftFromQueue: (index: number) => void
+  clearCraftQueue: () => void
+  completeCraft: (craftId: string) => void
+  cancelActiveCraft: (craftId: string) => void
 
   // Prestige actions
   prestige: () => void
@@ -127,6 +145,8 @@ const DEFAULT_STATE = {
   marketPrices: { ...initialMarketPrices },
   marketPriceTrend: { ...initialMarketTrends },
   lastMarketTick: Date.now() - 30000,
+  activeCrafts: [] as ActiveCraft[],
+  craftQueue: [] as string[],
   prestigeCount: 0,
   insight: 0,
   purchasedSkills: {} as Record<string, number>,
@@ -375,24 +395,177 @@ export const useGameStore = create<GameStore>()(
         return true
       },
 
-      exchange: (fromId, toId, rate, count) => {
+      exchange: (fromId, toId, spend, gain) => {
         const state = get()
         const available = state.resources[fromId] ?? 0
-        const cost = rate * count
-        if (available < cost) return
+        if (available < spend) return
         const delta = {
-          [`${fromId}_spent`]: cost,
-          [`${toId}_earned`]: count,
+          [`${fromId}_spent`]: spend,
+          [`${toId}_earned`]: gain,
         }
         const { stats, lifetimeStats } = addStats(state.stats, state.lifetimeStats, delta)
         set({
           resources: {
             ...state.resources,
-            [fromId]: available - cost,
-            [toId]: (state.resources[toId] ?? 0) + count,
+            [fromId]: available - spend,
+            [toId]: (state.resources[toId] ?? 0) + gain,
           },
           stats,
           lifetimeStats,
+        })
+      },
+
+      // --- Crafting ---
+
+      addToCraftQueue: (recipeId) => {
+        const state = get()
+        const recipe = (recipesData as Recipe[]).find((r) => r.id === recipeId)
+        if (!recipe) return
+
+        const maxWorkers = getCraftWorkerCount(state.purchasedSkills)
+        let activeCrafts = [...state.activeCrafts]
+        let resources = { ...state.resources }
+        let stats = { ...state.stats }
+        let lifetimeStats = { ...state.lifetimeStats }
+        let craftQueue = [...state.craftQueue]
+
+        if (activeCrafts.length < maxWorkers) {
+          // Start immediately
+          let canAfford = true
+          for (const input of recipe.inputs) {
+            if ((resources[input.resourceId] ?? 0) < input.amount) { canAfford = false; break }
+          }
+          if (!canAfford) {
+            // Can't afford — add to queue for later
+            craftQueue.push(recipeId)
+            set({ craftQueue })
+            return
+          }
+          const costDelta: Record<string, number> = {}
+          for (const input of recipe.inputs) {
+            resources[input.resourceId] = (resources[input.resourceId] ?? 0) - input.amount
+            costDelta[`${input.resourceId}_spent`] = (costDelta[`${input.resourceId}_spent`] ?? 0) + input.amount
+          }
+          const result = addStats(stats, lifetimeStats, costDelta)
+          stats = result.stats
+          lifetimeStats = result.lifetimeStats
+
+          const durMult = getCraftDurationMult(recipeId, state.purchasedSkills, state.purchasedUpgrades)
+          const now = Date.now()
+          const slotIndex = getNextFreeSlot(activeCrafts, maxWorkers)
+          activeCrafts.push({
+            id: `${recipeId}_${now}_${slotIndex}`,
+            recipeId,
+            startTime: now,
+            endTime: now + recipe.durationSeconds * durMult * 1000,
+            slotIndex,
+          })
+        } else {
+          craftQueue.push(recipeId)
+        }
+
+        set({ activeCrafts, craftQueue, resources, stats, lifetimeStats })
+      },
+
+      removeCraftFromQueue: (index) =>
+        set((s) => ({ craftQueue: s.craftQueue.filter((_, i) => i !== index) })),
+
+      clearCraftQueue: () => set({ craftQueue: [] }),
+
+      completeCraft: (craftId) => {
+        const state = get()
+        const craft = state.activeCrafts.find((c) => c.id === craftId)
+        if (!craft) return
+        const recipe = (recipesData as Recipe[]).find((r) => r.id === craft.recipeId)
+        if (!recipe) return
+
+        const outputMult = getCraftOutputMult(state.purchasedUpgrades)
+        const freeChance = getCraftFreeChance(state.purchasedSkills)
+        const doubleChance = getCraftDoubleChance(state.purchasedSkills)
+
+        let resources = { ...state.resources }
+        const delta: Record<string, number> = { [`craft_${craft.recipeId}_completed`]: 1 }
+
+        // Apply free-input chance — if triggered, skip refunding (inputs were already deducted at start)
+        // Free chance means we DON'T consume inputs next craft; here at completion we check if we should
+        // refund the inputs that were already taken. Simpler: refund inputs if free chance triggers.
+        if (Math.random() < freeChance) {
+          for (const input of recipe.inputs) {
+            resources[input.resourceId] = (resources[input.resourceId] ?? 0) + input.amount
+          }
+        }
+
+        // Apply double output chance
+        const outputMultiplier = Math.random() < doubleChance ? 2 * outputMult : outputMult
+        for (const output of recipe.outputs) {
+          const amount = Math.max(1, Math.round(output.amount * outputMultiplier))
+          resources[output.resourceId] = (resources[output.resourceId] ?? 0) + amount
+          delta[`craft_${craft.recipeId}_${output.resourceId}_produced`] =
+            (delta[`craft_${craft.recipeId}_${output.resourceId}_produced`] ?? 0) + amount
+          delta[`${output.resourceId}_earned`] = (delta[`${output.resourceId}_earned`] ?? 0) + amount
+        }
+
+        const { stats, lifetimeStats } = addStats(state.stats, state.lifetimeStats, delta)
+
+        // Remove completed craft from active
+        let activeCrafts = state.activeCrafts.filter((c) => c.id !== craftId)
+        let craftQueue = [...state.craftQueue]
+
+        // Fill freed slot from queue
+        const maxWorkers = getCraftWorkerCount(state.purchasedSkills)
+        while (activeCrafts.length < maxWorkers && craftQueue.length > 0) {
+          const nextRecipeId = craftQueue[0]
+          const nextRecipe = (recipesData as Recipe[]).find((r) => r.id === nextRecipeId)
+          if (!nextRecipe) { craftQueue.shift(); continue }
+
+          let canAfford = true
+          for (const input of nextRecipe.inputs) {
+            if ((resources[input.resourceId] ?? 0) < input.amount) { canAfford = false; break }
+          }
+          if (!canAfford) { craftQueue.shift(); continue }
+
+          const costDelta: Record<string, number> = {}
+          for (const input of nextRecipe.inputs) {
+            resources[input.resourceId] = (resources[input.resourceId] ?? 0) - input.amount
+            costDelta[`${input.resourceId}_spent`] = (costDelta[`${input.resourceId}_spent`] ?? 0) + input.amount
+          }
+          // Note: we already applied stats above; update resources inline — costDelta tracked separately
+          // We skip adding costDelta to stats here to keep the function simple — resource deduction still happens
+          const durMult = getCraftDurationMult(nextRecipeId, state.purchasedSkills, state.purchasedUpgrades)
+          const now = Date.now()
+          const slotIndex = getNextFreeSlot(activeCrafts, maxWorkers)
+          activeCrafts = [
+            ...activeCrafts,
+            {
+              id: `${nextRecipeId}_${now}_${slotIndex}`,
+              recipeId: nextRecipeId,
+              startTime: now,
+              endTime: now + nextRecipe.durationSeconds * durMult * 1000,
+              slotIndex,
+            },
+          ]
+          craftQueue.shift()
+        }
+
+        set({ activeCrafts, craftQueue, resources, stats, lifetimeStats })
+      },
+
+      cancelActiveCraft: (craftId) => {
+        const state = get()
+        const craft = state.activeCrafts.find((c) => c.id === craftId)
+        if (!craft) return
+        const recipe = (recipesData as Recipe[]).find((r) => r.id === craft.recipeId)
+
+        // Refund inputs
+        const updatedResources = { ...state.resources }
+        if (recipe) {
+          for (const input of recipe.inputs) {
+            updatedResources[input.resourceId] = (updatedResources[input.resourceId] ?? 0) + input.amount
+          }
+        }
+        set({
+          activeCrafts: state.activeCrafts.filter((c) => c.id !== craftId),
+          resources: updatedResources,
         })
       },
 
@@ -418,6 +591,8 @@ export const useGameStore = create<GameStore>()(
           stats: {},
           activeJob: null,
           jobQueue: [],
+          activeCrafts: [],
+          craftQueue: [],
           buildings: { ...initialBuildings },
           purchasedUpgrades: {},
           marketPrices: { ...initialMarketPrices },
@@ -484,12 +659,14 @@ export const useGameStore = create<GameStore>()(
         const {
           theme, activeTab, resources, stats, activeJob, numberFormat,
           buildings, lastPassiveTick, marketPrices, marketPriceTrend, lastMarketTick,
+          activeCrafts, craftQueue,
           prestigeCount, insight, purchasedSkills, purchasedUpgrades,
           jobQueue, lifetimeStats, prevVentureStats,
         } = get()
         return btoa(JSON.stringify({
           theme, activeTab, resources, stats, activeJob, numberFormat,
           buildings, lastPassiveTick, marketPrices, marketPriceTrend, lastMarketTick,
+          activeCrafts, craftQueue,
           prestigeCount, insight, purchasedSkills, purchasedUpgrades,
           jobQueue, lifetimeStats, prevVentureStats,
         }))
@@ -511,6 +688,8 @@ export const useGameStore = create<GameStore>()(
           if (data.marketPrices && typeof data.marketPrices === 'object') patch.marketPrices = data.marketPrices as Record<string, number>
           if (data.marketPriceTrend && typeof data.marketPriceTrend === 'object') patch.marketPriceTrend = data.marketPriceTrend as Record<string, PriceTrend>
           if (typeof data.lastMarketTick === 'number') patch.lastMarketTick = data.lastMarketTick
+          if (Array.isArray(data.activeCrafts)) patch.activeCrafts = data.activeCrafts as ActiveCraft[]
+          if (Array.isArray(data.craftQueue)) patch.craftQueue = data.craftQueue as string[]
           if (typeof data.prestigeCount === 'number') patch.prestigeCount = data.prestigeCount
           if (typeof data.insight === 'number') patch.insight = data.insight
           if (data.purchasedSkills && typeof data.purchasedSkills === 'object') patch.purchasedSkills = data.purchasedSkills as Record<string, number>
@@ -536,6 +715,8 @@ export const useGameStore = create<GameStore>()(
           prevVentureStats: {},
           activeJob: null,
           jobQueue: [],
+          activeCrafts: [],
+          craftQueue: [],
           numberFormat: 'engineering',
           buildings: { ...initialBuildings },
           lastPassiveTick: Date.now(),
@@ -560,7 +741,19 @@ export const useGameStore = create<GameStore>()(
         ) {
           state.lifetimeStats = { ...state.stats }
         }
+        // Seed empty crafting state for saves that predate crafting
+        if (state && !state.activeCrafts) state.activeCrafts = []
+        if (state && !state.craftQueue) state.craftQueue = []
       },
     }
   )
 )
+
+// Helper: find the first free slot index not used by active crafts.
+function getNextFreeSlot(activeCrafts: ActiveCraft[], maxWorkers: number): number {
+  const usedSlots = new Set(activeCrafts.map((c) => c.slotIndex))
+  for (let i = 0; i < maxWorkers; i++) {
+    if (!usedSlots.has(i)) return i
+  }
+  return activeCrafts.length
+}

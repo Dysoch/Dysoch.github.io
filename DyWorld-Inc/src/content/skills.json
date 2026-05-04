@@ -238,5 +238,53 @@
     "effect": "market_buy_mult",
     "magnitude": 0.95,
     "target": "all"
+  },
+  {
+    "id": "craft_speed_all",
+    "tree": "craft",
+    "treeLabel": "Craft",
+    "name": "Efficient Hands",
+    "description": "All crafts -5% duration per level.",
+    "maxLevel": 5,
+    "costs": [1, 1, 2, 2, 3],
+    "effect": "craft_speed_mult",
+    "magnitude": 0.95,
+    "target": "all"
+  },
+  {
+    "id": "craft_workers",
+    "tree": "craft",
+    "treeLabel": "Craft",
+    "name": "Extra Workbench",
+    "description": "Unlock an additional crafting slot (+1 per level).",
+    "maxLevel": 3,
+    "costs": [3, 4, 5],
+    "effect": "craft_worker_count",
+    "magnitude": 1,
+    "target": "all"
+  },
+  {
+    "id": "craft_efficiency",
+    "tree": "craft",
+    "treeLabel": "Craft",
+    "name": "Resource Saver",
+    "description": "+8% chance per level to craft without consuming inputs.",
+    "maxLevel": 3,
+    "costs": [2, 3, 4],
+    "effect": "craft_free_chance",
+    "magnitude": 0.08,
+    "target": "all"
+  },
+  {
+    "id": "craft_yield",
+    "tree": "craft",
+    "treeLabel": "Craft",
+    "name": "Double Batch",
+    "description": "+8% chance per level to produce double output.",
+    "maxLevel": 3,
+    "costs": [2, 3, 4],
+    "effect": "craft_double_chance",
+    "magnitude": 0.08,
+    "target": "all"
   }
 ]

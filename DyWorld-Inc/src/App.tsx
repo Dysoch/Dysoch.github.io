@@ -54,6 +54,18 @@ export default function App() {
     return () => clearInterval(id)
   }, [])
 
+  // Craft completion — checks all active crafts every 100ms
+  useEffect(() => {
+    const id = setInterval(() => {
+      const state = useGameStore.getState()
+      const readyCrafts = state.activeCrafts.filter((c) => Date.now() >= c.endTime)
+      for (const craft of readyCrafts) {
+        useGameStore.getState().completeCraft(craft.id)
+      }
+    }, 100)
+    return () => clearInterval(id)
+  }, [])
+
   // Market price updates — immediate catch-up if stale, then every 30s
   useEffect(() => {
     if (Date.now() - useGameStore.getState().lastMarketTick >= 30000) {

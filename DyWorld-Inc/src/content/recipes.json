@@ -1,0 +1,59 @@
+[
+  {
+    "id": "plank",
+    "name": "Plank",
+    "icon": "🪓",
+    "description": "Process raw wood into smooth planks.",
+    "category": "wood",
+    "inputs": [
+      { "resourceId": "wood", "amount": 3 }
+    ],
+    "outputs": [
+      { "resourceId": "plank", "amount": 1 }
+    ],
+    "durationSeconds": 10
+  },
+  {
+    "id": "cut_stone",
+    "name": "Cut Stone",
+    "icon": "🏛️",
+    "description": "Shape rough stone into precisely cut blocks.",
+    "category": "stone",
+    "inputs": [
+      { "resourceId": "stone", "amount": 3 }
+    ],
+    "outputs": [
+      { "resourceId": "cut_stone", "amount": 1 }
+    ],
+    "durationSeconds": 10
+  },
+  {
+    "id": "brick",
+    "name": "Brick",
+    "icon": "🧱",
+    "description": "Fire stone in a kiln — requires copper coins as fuel.",
+    "category": "stone",
+    "inputs": [
+      { "resourceId": "stone", "amount": 2 },
+      { "resourceId": "copper_coins", "amount": 10 }
+    ],
+    "outputs": [
+      { "resourceId": "brick", "amount": 2 }
+    ],
+    "durationSeconds": 15
+  },
+  {
+    "id": "furniture",
+    "name": "Furniture",
+    "icon": "🛋️",
+    "description": "Craft quality furniture from processed planks.",
+    "category": "wood",
+    "inputs": [
+      { "resourceId": "plank", "amount": 3 }
+    ],
+    "outputs": [
+      { "resourceId": "furniture", "amount": 1 }
+    ],
+    "durationSeconds": 30
+  }
+]

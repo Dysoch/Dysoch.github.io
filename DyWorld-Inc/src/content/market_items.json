@@ -10,5 +10,29 @@
     "basePrice": 4,
     "minPrice": 1,
     "maxPrice": 12
+  },
+  {
+    "resourceId": "plank",
+    "basePrice": 12,
+    "minPrice": 5,
+    "maxPrice": 28
+  },
+  {
+    "resourceId": "cut_stone",
+    "basePrice": 10,
+    "minPrice": 4,
+    "maxPrice": 22
+  },
+  {
+    "resourceId": "brick",
+    "basePrice": 18,
+    "minPrice": 7,
+    "maxPrice": 38
+  },
+  {
+    "resourceId": "furniture",
+    "basePrice": 60,
+    "minPrice": 25,
+    "maxPrice": 130
   }
 ]

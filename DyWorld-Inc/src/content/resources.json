@@ -61,5 +61,41 @@
     "description": "Rough stone hewn from the earth. A fundamental material.",
     "category": "basic",
     "tier": 0
+  },
+  {
+    "id": "plank",
+    "name": "Planks",
+    "nameSingular": "Plank",
+    "icon": "🪓",
+    "description": "Smooth wooden planks, ready for construction or sale.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "cut_stone",
+    "name": "Cut Stone",
+    "nameSingular": "Cut Stone",
+    "icon": "🏛️",
+    "description": "Precisely shaped stone blocks, far more useful than raw stone.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "brick",
+    "name": "Bricks",
+    "nameSingular": "Brick",
+    "icon": "🧱",
+    "description": "Sturdy fired bricks — premium construction material.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "furniture",
+    "name": "Furniture",
+    "nameSingular": "Furniture",
+    "icon": "🛋️",
+    "description": "Quality furniture crafted from processed wood. Sells well.",
+    "category": "crafted",
+    "tier": 2
   }
 ]

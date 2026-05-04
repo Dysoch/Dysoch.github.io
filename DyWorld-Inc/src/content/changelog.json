@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.0.4",
+    "date": "2026-05-04",
+    "added": [
+      "Crafting system — convert raw materials into refined goods using the new Crafting page. Crafts take time to complete and consume inputs when started",
+      "Crafting queue — unlimited queue depth. Queued crafts auto-start when a workbench slot frees up",
+      "Four new craftable resources: Planks (3 wood → 1 plank, 10s), Cut Stone (3 stone → 1 cut stone, 10s), Bricks (2 stone + 10 copper → 2 bricks, 15s), Furniture (3 planks → 1 furniture, 30s). All are sellable at the Market",
+      "Craft prestige skill tree — four new permanent skills: Efficient Hands (all crafts faster), Extra Workbench (unlock additional simultaneous craft slots), Resource Saver (chance to not consume inputs), Double Batch (chance to produce double output)",
+      "Two new crafting upgrades on the Upgrades page: Workshop Tools (all crafts 20% faster per level) and Quality Materials (craft output +20% per level, rounded)",
+      "Bank rework — balances section now shows only capital currency tiers (no raw materials clutter). Added Downgrade section so you can break higher-tier coins back down to lower-tier coins"
+    ],
+    "changed": [
+      "Exchange rate reduced from 1,000,000,000:1 to 10,000:1 — bronze coins are now achievable as an early mid-game milestone instead of a near-impossible late-game goal",
+      "Crafting tab added to the sidebar between Upgrades and Market"
+    ],
+    "fixed": [],
+    "removed": []
+  },
+  {
     "version": "0.0.3",
     "date": "2026-05-03",
     "added": [

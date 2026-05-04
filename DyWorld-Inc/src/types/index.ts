@@ -4,9 +4,10 @@ export type TabType =
   | 'manual-labor'
   | 'properties'
   | 'upgrades'
-  | 'statistics'
+  | 'crafting'
   | 'market'
   | 'bank'
+  | 'statistics'
   | 'prestige'
   | 'settings'
   | 'about'
@@ -126,4 +127,33 @@ export interface UpgradeDef {
   magnitude: number
   maxLevel: number
   costsPerLevel: Array<Array<{ resourceId: string; amount: number }>>
+}
+
+export interface RecipeInput {
+  resourceId: string
+  amount: number
+}
+
+export interface RecipeOutput {
+  resourceId: string
+  amount: number
+}
+
+export interface Recipe {
+  id: string
+  name: string
+  icon: string
+  description: string
+  category: string
+  inputs: RecipeInput[]
+  outputs: RecipeOutput[]
+  durationSeconds: number
+}
+
+export interface ActiveCraft {
+  id: string
+  recipeId: string
+  startTime: number
+  endTime: number
+  slotIndex: number
 }
