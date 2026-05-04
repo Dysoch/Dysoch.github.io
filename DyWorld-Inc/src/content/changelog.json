@@ -1,5 +1,26 @@
 [
   {
+    "version": "0.0.5",
+    "date": "2026-05-04",
+    "added": [
+      "Progression system — jobs, buildings, recipes, and upgrades now unlock gradually based on your progress. New players start with only Beg for Coins; Mining, Woodcutting, and Trade at Market appear as you gather resources. Buildings, recipes, and upgrades unlock in a similar chain, keeping the early game focused",
+      "Building consumption — buildings can now require resources to operate. Consumption is checked first each tick: if the full amount cannot be paid the building produces nothing that tick. Shacks and Houses have a small copper coin upkeep. The new Exchanger Mk I converts Copper Coins into Bronze Coins passively, but burns 1 000 copper/sec per building — it must be fed to keep running",
+      "Exchanger Mk I — a new building (unlocks after earning 10 000 copper coins) that passively produces Bronze Coins by consuming Copper Coins. Produces 0.1 bronze/sec per building but consumes 1 000 copper/sec per building. Shuts down silently when starved of copper",
+      "Statistics: Crafted Resources tab — shows balance, earned, and spent stats for all craftable goods (Planks, Cut Stone, Bricks, Furniture)",
+      "Statistics: Crafting tab — shows per-recipe completion counts and total output produced, across This Run, Previous Run, and All Time",
+      "Crafting upgrades now visible — Workshop Tools and Quality Materials appear on the Upgrades page once you have completed at least one craft"
+    ],
+    "changed": [
+      "Crafting queue now pre-consumes resources when adding to the queue (not when the craft starts). Removing an item from the queue refunds its inputs. This prevents resource over-spending when filling all worker slots",
+      "Job progress bar now uses the actual stored end time as its baseline instead of recalculating duration from current skills. Buying a speed skill mid-job no longer causes the bar to show 100% before the job finishes",
+      "When a job is in its final moments (0 seconds remaining) the status label changes to 'Finishing…' to indicate the game is processing completion"
+    ],
+    "fixed": [
+      "Manual job progress bar could visually hang at 100% if a speed skill was purchased after the job started, causing the displayed duration to disagree with the actual end time"
+    ],
+    "removed": []
+  },
+  {
     "version": "0.0.4",
     "date": "2026-05-04",
     "added": [

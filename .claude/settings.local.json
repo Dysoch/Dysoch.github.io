@@ -22,7 +22,8 @@
       "Bash(dir \"C:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\" /b)",
       "PowerShell(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\\\\\" -Recurse -Force | Select-Object -Property FullName | ForEach-Object { $_.FullName } | Sort-Object)",
       "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\\\\\\\\src\" -type f)",
-      "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\" -name \"package.json\" -o -name \"README.md\")"
+      "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\" -name \"package.json\" -o -name \"README.md\")",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\" -Recurse | Where-Object { $_.PSIsContainer } | Select-Object -First 25 | ForEach-Object { $_.FullName })"
     ],
     "deny": [
       "Read(idle-game)"

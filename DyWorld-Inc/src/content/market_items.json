@@ -12,16 +12,28 @@
     "maxPrice": 12
   },
   {
+    "resourceId": "wheat",
+    "basePrice": 2,
+    "minPrice": 1,
+    "maxPrice": 4
+  },
+  {
+    "resourceId": "bread",
+    "basePrice": 4,
+    "minPrice": 2,
+    "maxPrice": 8
+  },
+  {
     "resourceId": "plank",
     "basePrice": 12,
-    "minPrice": 5,
-    "maxPrice": 28
+    "minPrice": 6,
+    "maxPrice": 45
   },
   {
     "resourceId": "cut_stone",
     "basePrice": 10,
     "minPrice": 4,
-    "maxPrice": 22
+    "maxPrice": 48
   },
   {
     "resourceId": "brick",

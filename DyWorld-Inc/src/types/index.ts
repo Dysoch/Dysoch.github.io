@@ -1,5 +1,14 @@
 export type ThemeType = 'light' | 'dark'
 export type NumberFormatType = 'engineering' | 'scientific' | 'normal'
+
+export type UnlockCondition =
+  | { type: 'always' }
+  | { type: 'stat'; key: string; amount: number }
+  | { type: 'life_stat'; key: string; amount: number }
+  | { type: 'skill'; skillId: string; level: number }
+  | { type: 'upgrade'; upgradeId: string; level: number }
+  | { type: 'prestige'; count: number }
+
 export type TabType =
   | 'manual-labor'
   | 'properties'
@@ -51,6 +60,7 @@ export interface Job {
   durationSeconds: number
   rewards: JobReward[]
   costs?: JobCost[]
+  unlock?: UnlockCondition
 }
 
 export interface ExchangeRate {
@@ -83,6 +93,8 @@ export interface Building {
   baseCost: BuildingCost[]
   costMultiplier: number
   production: BuildingProduction[]
+  consumption?: BuildingProduction[]
+  unlock?: UnlockCondition
 }
 
 export interface MarketItem {
@@ -127,6 +139,7 @@ export interface UpgradeDef {
   magnitude: number
   maxLevel: number
   costsPerLevel: Array<Array<{ resourceId: string; amount: number }>>
+  unlock?: UnlockCondition
 }
 
 export interface RecipeInput {
@@ -148,6 +161,7 @@ export interface Recipe {
   inputs: RecipeInput[]
   outputs: RecipeOutput[]
   durationSeconds: number
+  unlock?: UnlockCondition
 }
 
 export interface ActiveCraft {

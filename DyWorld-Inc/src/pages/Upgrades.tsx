@@ -1,18 +1,16 @@
 import { useGameStore } from '../store/gameStore'
 import { formatNumber } from '../utils/format'
+import { isUnlocked } from '../utils/unlock'
 import upgradesData from '../content/upgrades.json'
 import resourcesData from '../content/resources.json'
 import jobsData from '../content/jobs.json'
 import buildingsData from '../content/buildings.json'
 import type { UpgradeDef, Resource, Job, Building } from '../types'
 
-const upgrades = upgradesData as UpgradeDef[]
+const allUpgrades = upgradesData as UpgradeDef[]
 const resourceMap = Object.fromEntries((resourcesData as Resource[]).map((r) => [r.id, r]))
 const jobMap = Object.fromEntries((jobsData as Job[]).map((j) => [j.id, j]))
 const buildingMap = Object.fromEntries((buildingsData as Building[]).map((b) => [b.id, b]))
-
-const manualLaborUpgrades = upgrades.filter((u) => u.category === 'manual_labor')
-const propertyUpgrades    = upgrades.filter((u) => u.category === 'property')
 
 function targetLabel(upg: UpgradeDef): string {
   const job = jobMap[upg.target]
@@ -29,13 +27,24 @@ function effectMultiplierLabel(upg: UpgradeDef, level: number): string {
 }
 
 export default function Upgrades() {
-  const { resources: balances, purchasedUpgrades, buyUpgrade } = useGameStore()
+  const {
+    resources: balances, purchasedUpgrades, buyUpgrade,
+    purchasedSkills, stats, lifetimeStats, prestigeCount,
+  } = useGameStore()
+
+  const unlockState = { stats, lifetimeStats, purchasedSkills, purchasedUpgrades, prestigeCount }
+  const visibleUpgrades = allUpgrades.filter((u) => isUnlocked(u.unlock, unlockState))
+
+  const manualLaborUpgrades = visibleUpgrades.filter((u) => u.category === 'manual_labor')
+  const propertyUpgrades    = visibleUpgrades.filter((u) => u.category === 'property')
+  const craftingUpgrades    = visibleUpgrades.filter((u) => u.category === 'crafting')
 
   function renderSection(title: string, icon: string, list: UpgradeDef[]) {
+    if (list.length === 0) return null
     return (
       <div className="mb-5">
         <h5 className="mb-3">{icon} {title}</h5>
-        <div className="row g-3" style={{ maxWidth: 720 }}>
+        <div className="row g-2" style={{ maxWidth: 1500 }}>
           {list.map((upg) => {
             const currentLevel = purchasedUpgrades[upg.id] ?? 0
             const isMaxed = currentLevel >= upg.maxLevel
@@ -45,7 +54,7 @@ export default function Upgrades() {
             )
 
             return (
-              <div className="col-12 col-md-6" key={upg.id}>
+              <div className="col-12 col-md-3" key={upg.id}>
                 <div className={`card h-100 ${canAfford ? 'border-primary' : ''}`}>
                   <div className="card-body">
                     <div className="d-flex align-items-start justify-content-between mb-1">
@@ -101,14 +110,22 @@ export default function Upgrades() {
     )
   }
 
+  const hasAny = visibleUpgrades.length > 0
+
   return (
     <div className="p-4">
       <h2>⬆️ Upgrades</h2>
       <p className="text-body-secondary mb-4">
         One-time purchases that boost outputs within this venture. Upgrades reset on Prestige.
       </p>
+      {!hasAny && (
+        <p className="text-body-secondary fst-italic">
+          No upgrades available yet. Complete jobs and build properties to unlock them.
+        </p>
+      )}
       {renderSection('Manual Labor', '⛏️', manualLaborUpgrades)}
       {renderSection('Properties', '🏗️', propertyUpgrades)}
+      {renderSection('Crafting', '🔨', craftingUpgrades)}
     </div>
   )
 }

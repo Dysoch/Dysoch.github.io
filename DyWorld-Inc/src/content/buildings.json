@@ -1,9 +1,24 @@
 [
   {
+    "id": "farm",
+    "name": "Farm",
+    "icon": "⛰️",
+    "description": "An nice plot of land with some wheat.",
+    "unlock": { "type": "stat", "key": "wheat_earned", "amount": 1 },
+    "baseCost": [
+      { "resourceId": "stone", "amount": 5 }
+    ],
+    "costMultiplier": 1.25,
+    "production": [
+      { "resourceId": "wheat", "amountPerSecond": 0.05 }
+    ]
+  },
+  {
     "id": "quarry",
     "name": "Quarry",
     "icon": "⛰️",
     "description": "An open-pit quarry that passively mines stone.",
+    "unlock": { "type": "stat", "key": "stone_earned", "amount": 10 },
     "baseCost": [
       { "resourceId": "copper_coins", "amount": 100 }
     ],
@@ -17,6 +32,7 @@
     "name": "Lumbermill",
     "icon": "🏭",
     "description": "A mill that processes timber into usable wood.",
+    "unlock": { "type": "stat", "key": "wood_earned", "amount": 10 },
     "baseCost": [
       { "resourceId": "copper_coins", "amount": 150 },
       { "resourceId": "stone", "amount": 5 }
@@ -30,7 +46,8 @@
     "id": "shack",
     "name": "Shack",
     "icon": "🏚️",
-    "description": "A ramshackle dwelling that generates a trickle of rent.",
+    "description": "A ramshackle dwelling that generates a trickle of rent. Requires a little wood every now and then",
+    "unlock": { "type": "stat", "key": "copper_coins_earned", "amount": 500 },
     "baseCost": [
       { "resourceId": "copper_coins", "amount": 250 },
       { "resourceId": "wood", "amount": 5 }
@@ -38,13 +55,35 @@
     "costMultiplier": 1.5,
     "production": [
       { "resourceId": "copper_coins", "amountPerSecond": 0.1 }
+    ],
+    "consumption": [
+      { "resourceId": "wood", "amountPerSecond": 0.01 }
+    ]
+  },
+  {
+    "id": "exchanger_1",
+    "name": "Exchanger Mk I",
+    "icon": "🏚️",
+    "description": "A exchanger to passively convert copper to bronze.",
+    "unlock": { "type": "stat", "key": "copper_coins_earned", "amount": 10000 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 250 },
+      { "resourceId": "wood", "amount": 5 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "bronze_coins", "amountPerSecond": 0.1 }
+    ],
+    "consumption": [
+      { "resourceId": "copper_coins", "amountPerSecond": 1000 }
     ]
   },
   {
     "id": "house",
     "name": "House",
     "icon": "🏠",
-    "description": "A proper house with paying tenants.",
+    "description": "A proper house with paying tenants. Requires bread to keep happy",
+    "unlock": { "type": "stat", "key": "building_shack_count", "amount": 10 },
     "baseCost": [
       { "resourceId": "copper_coins", "amount": 2000 },
       { "resourceId": "wood", "amount": 25 }
@@ -52,6 +91,9 @@
     "costMultiplier": 1.5,
     "production": [
       { "resourceId": "copper_coins", "amountPerSecond": 1 }
+    ],
+    "consumption": [
+      { "resourceId": "bread", "amountPerSecond": 0.1 }
     ]
   }
 ]

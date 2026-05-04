@@ -37,7 +37,7 @@ function ExchangeCard({
   const canExchange1 = available >= spendPer
 
   return (
-    <div className="col-12 col-md-6">
+    <div className="col-12 col-md-3">
       <div className={`card h-100 ${canExchange1 ? 'border-success' : ''}`}>
         <div className="card-body">
           <div className="d-flex align-items-center gap-2 mb-3">
@@ -118,7 +118,7 @@ export default function Bank() {
 
       {/* Upgrade: low → high */}
       <h5 className="mb-3">Upgrade (lower → higher tier)</h5>
-      <div className="row g-3 mb-4" style={{ maxWidth: 720 }}>
+      <div className="row g-3 mb-4" style={{ maxWidth: 1500 }}>
         {exchangeRates.map((rate: ExchangeRate) => {
           const available = balances[rate.fromId] ?? 0
           const maxCount = Math.floor(available / rate.rate)
@@ -140,7 +140,7 @@ export default function Bank() {
 
       {/* Downgrade: high → low */}
       <h5 className="mb-3">Downgrade (higher → lower tier)</h5>
-      <div className="row g-3" style={{ maxWidth: 720 }}>
+      <div className="row g-3" style={{ maxWidth: 1500 }}>
         {[...exchangeRates].reverse().map((rate: ExchangeRate) => {
           const available = balances[rate.toId] ?? 0
           const maxCount = available  // can break down all of them (1 at a time shown as ×)

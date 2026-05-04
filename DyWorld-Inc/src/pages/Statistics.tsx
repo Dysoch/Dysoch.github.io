@@ -4,19 +4,23 @@ import { formatNumber } from '../utils/format'
 import resourcesData from '../content/resources.json'
 import jobsData from '../content/jobs.json'
 import buildingsData from '../content/buildings.json'
-import type { Resource, Job, Building } from '../types'
+import recipesData from '../content/recipes.json'
+import type { Resource, Job, Building, Recipe } from '../types'
 
 const resources = resourcesData as Resource[]
 const jobs = jobsData as Job[]
 const buildings = buildingsData as Building[]
+const recipes = recipesData as Recipe[]
 
-type StatsTab = 'capital' | 'basic' | 'manual-labor' | 'properties'
+type StatsTab = 'capital' | 'basic' | 'crafted' | 'manual-labor' | 'properties' | 'crafting'
 
 const STATS_TABS: { id: StatsTab; label: string }[] = [
   { id: 'capital',      label: '💰 Capital' },
   { id: 'basic',        label: '🪵 Basic Resources' },
+  { id: 'crafted',      label: '🔨 Crafted Resources' },
   { id: 'manual-labor', label: '⛏️ Manual Labor' },
   { id: 'properties',   label: '🏗️ Properties' },
+  { id: 'crafting',     label: '🔨 Crafting' },
 ]
 
 function fmt(n: number) {
@@ -29,6 +33,7 @@ export default function Statistics() {
 
   const capitalResources = resources.filter((r) => r.category === 'capital')
   const basicResources   = resources.filter((r) => r.category === 'basic')
+  const craftedResources = resources.filter((r) => r.category === 'crafted')
 
   function ResourceTable({ list }: { list: Resource[] }) {
     return (
@@ -128,6 +133,15 @@ export default function Statistics() {
         </div>
       )}
 
+      {activeStatsTab === 'crafted' && (
+        <div>
+          <div className="text-body-secondary mb-2" style={{ fontSize: '0.8rem' }}>
+            This Venture / Previous Venture / All Time
+          </div>
+          <ResourceTable list={craftedResources} />
+        </div>
+      )}
+
       {activeStatsTab === 'manual-labor' && (
         <div className="card" style={{ maxWidth: 640 }}>
           <div className="card-header fw-semibold">⛏️ Manual Labor</div>
@@ -212,6 +226,52 @@ export default function Statistics() {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {activeStatsTab === 'crafting' && (
+        <div className="d-flex flex-column gap-4">
+          <div className="card" style={{ maxWidth: 640 }}>
+            <div className="card-header fw-semibold">🔨 Recipe Completions</div>
+            <div className="card-body p-0">
+              <table className="table table-sm mb-0">
+                <thead>
+                  <tr>
+                    <th style={{ fontSize: '0.8rem' }}>Stat</th>
+                    <th className="text-end" style={{ fontSize: '0.8rem' }}>This Run</th>
+                    <th className="text-end" style={{ fontSize: '0.8rem' }}>Prev Run</th>
+                    <th className="text-end" style={{ fontSize: '0.8rem' }}>All Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recipes.map((recipe) => (
+                    <StatRow3
+                      key={`${recipe.id}_comp`}
+                      label={`${recipe.icon} ${recipe.name} — completions`}
+                      thisVal={stats[`craft_${recipe.id}_completed`] ?? 0}
+                      prevVal={prevVentureStats[`craft_${recipe.id}_completed`] ?? 0}
+                      allVal={lifetimeStats[`craft_${recipe.id}_completed`] ?? 0}
+                    />
+                  ))}
+                  {recipes.flatMap((recipe) =>
+                    recipe.outputs.map((out) => {
+                      const res = resources.find((r) => r.id === out.resourceId)
+                      const key = `craft_${recipe.id}_${out.resourceId}_produced`
+                      return (
+                        <StatRow3
+                          key={`${recipe.id}_${out.resourceId}_prod`}
+                          label={`${recipe.icon} ${recipe.name} — ${res?.name ?? out.resourceId} produced`}
+                          thisVal={stats[key] ?? 0}
+                          prevVal={prevVentureStats[key] ?? 0}
+                          allVal={lifetimeStats[key] ?? 0}
+                        />
+                      )
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

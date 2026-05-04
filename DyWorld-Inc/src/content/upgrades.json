@@ -3,14 +3,22 @@
     "id": "beg_max_1",
     "category": "manual_labor",
     "name": "Beg Harder",
-    "description": "Beg for Coins maximum reward +25% per level.",
+    "description": "Beg for Coins maximum reward +50% per level.",
     "target": "beg_for_coins",
     "effect": "job_reward_max_mult",
-    "magnitude": 1.25,
-    "maxLevel": 3,
+    "magnitude": 1.50,
+    "maxLevel": 10,
+    "unlock": { "type": "stat", "key": "job_beg_for_coins_completed", "amount": 5 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 500 }],
       [{ "resourceId": "copper_coins", "amount": 1000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }],
       [{ "resourceId": "copper_coins", "amount": 2000 }]
     ]
   },
@@ -22,11 +30,19 @@
     "target": "mining",
     "effect": "job_reward_max_mult",
     "magnitude": 1.25,
-    "maxLevel": 3,
+    "maxLevel": 10,
+    "unlock": { "type": "stat", "key": "job_mining_completed", "amount": 5 },
     "costsPerLevel": [
       [{ "resourceId": "stone", "amount": 10 }],
       [{ "resourceId": "stone", "amount": 25 }],
-      [{ "resourceId": "stone", "amount": 50 }]
+      [{ "resourceId": "stone", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "stone", "amount": 250 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "stone", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "stone", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 16000 }, { "resourceId": "stone", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 32000 }, { "resourceId": "stone", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 64000 }, { "resourceId": "stone", "amount": 500 }]
     ]
   },
   {
@@ -38,6 +54,7 @@
     "effect": "job_reward_max_mult",
     "magnitude": 1.25,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "job_woodcutting_completed", "amount": 5 },
     "costsPerLevel": [
       [{ "resourceId": "wood", "amount": 10 }],
       [{ "resourceId": "wood", "amount": 25 }],
@@ -53,10 +70,27 @@
     "effect": "job_reward_max_mult",
     "magnitude": 1.15,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "job_trade_at_market_completed", "amount": 5 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 200 }],
       [{ "resourceId": "copper_coins", "amount": 500 }],
       [{ "resourceId": "copper_coins", "amount": 1000 }]
+    ]
+  },
+  {
+    "id": "farm_output_1",
+    "category": "property",
+    "name": "Farm Overhaul",
+    "description": "Farm output +50% per level.",
+    "target": "farm",
+    "effect": "building_output_mult",
+    "magnitude": 1.5,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_farm_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "stone", "amount": 10 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "stone", "amount": 25 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }]
     ]
   },
   {
@@ -68,6 +102,7 @@
     "effect": "building_output_mult",
     "magnitude": 1.25,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "building_quarry_count", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "stone", "amount": 10 }],
       [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "stone", "amount": 25 }],
@@ -83,6 +118,7 @@
     "effect": "building_output_mult",
     "magnitude": 1.25,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "building_lumbermill_count", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "wood", "amount": 10 }],
       [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "wood", "amount": 25 }],
@@ -98,6 +134,7 @@
     "effect": "building_output_mult",
     "magnitude": 1.25,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "building_shack_count", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "wood", "amount": 5 }],
       [{ "resourceId": "copper_coins", "amount": 2500 }, { "resourceId": "wood", "amount": 15 }],
@@ -113,6 +150,7 @@
     "effect": "building_output_mult",
     "magnitude": 1.25,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "building_house_count", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 10 }],
       [{ "resourceId": "copper_coins", "amount": 12000 }, { "resourceId": "wood", "amount": 25 }],
@@ -128,6 +166,7 @@
     "effect": "craft_speed_mult",
     "magnitude": 0.8,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "craft_plank_completed", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 20 }],
       [{ "resourceId": "copper_coins", "amount": 15000 }, { "resourceId": "wood", "amount": 50 }],
@@ -143,6 +182,7 @@
     "effect": "craft_output_mult",
     "magnitude": 1.2,
     "maxLevel": 3,
+    "unlock": { "type": "stat", "key": "craft_cut_stone_completed", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "stone", "amount": 20 }],
       [{ "resourceId": "copper_coins", "amount": 15000 }, { "resourceId": "stone", "amount": 50 }],

@@ -54,6 +54,15 @@
     "tier": 0
   },
   {
+    "id": "wheat",
+    "name": "Wheat",
+    "nameSingular": "Wheat",
+    "icon": "🌾",
+    "description": "Freshly grown wheat. Not very tasty though.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
     "id": "stone",
     "name": "Stone",
     "nameSingular": "Stone",
@@ -61,6 +70,15 @@
     "description": "Rough stone hewn from the earth. A fundamental material.",
     "category": "basic",
     "tier": 0
+  },
+  {
+    "id": "bread",
+    "name": "Bread",
+    "nameSingular": "Bread",
+    "icon": "🥖",
+    "description": "Nice smoldering bread",
+    "category": "crafted",
+    "tier": 1
   },
   {
     "id": "plank",

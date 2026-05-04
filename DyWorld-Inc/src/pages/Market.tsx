@@ -47,7 +47,7 @@ export default function Market() {
         <span className="fw-semibold">next update in {nextUpdateIn}s</span>
       </p>
 
-      <div className="row g-3" style={{ maxWidth: 720 }}>
+      <div className="row g-2" style={{ maxWidth: 1500 }}>
         {marketItems.map((item) => {
           const res = resourceMap[item.resourceId]
           const price = marketPrices[item.resourceId] ?? item.basePrice
@@ -66,7 +66,7 @@ export default function Market() {
           const trendClass = trend === 'up' ? 'text-success' : trend === 'down' ? 'text-danger' : 'text-body-secondary'
 
           return (
-            <div className="col-12 col-md-6" key={item.resourceId}>
+            <div className="col-12 col-lg-3" key={item.resourceId}>
               <div className="card h-100">
                 <div className="card-body">
                   <div className="d-flex align-items-center justify-content-between mb-1">

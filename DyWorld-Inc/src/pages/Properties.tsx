@@ -1,11 +1,12 @@
 import { useGameStore } from '../store/gameStore'
 import { formatNumber } from '../utils/format'
 import { getBuildingOutputMult, getBuildingCostMult } from '../utils/multipliers'
+import { isUnlocked } from '../utils/unlock'
 import buildingsData from '../content/buildings.json'
 import resourcesData from '../content/resources.json'
 import type { Building, BuildingCost, Resource } from '../types'
 
-const buildings = buildingsData as Building[]
+const allBuildings = buildingsData as Building[]
 const resources = resourcesData as Resource[]
 const resourceMap = Object.fromEntries(resources.map((r) => [r.id, r]))
 
@@ -21,7 +22,13 @@ function canAfford(costs: BuildingCost[], balances: Record<string, number>): boo
 }
 
 export default function Properties() {
-  const { buildings: owned, resources: balances, buyBuilding, purchasedUpgrades, purchasedSkills } = useGameStore()
+  const {
+    buildings: owned, resources: balances, buyBuilding,
+    purchasedUpgrades, purchasedSkills, stats, lifetimeStats, prestigeCount,
+  } = useGameStore()
+
+  const unlockState = { stats, lifetimeStats, purchasedSkills, purchasedUpgrades, prestigeCount }
+  const buildings = allBuildings.filter((b) => isUnlocked(b.unlock, unlockState))
 
   return (
     <div className="p-4">
@@ -30,7 +37,7 @@ export default function Properties() {
         Purchase buildings to generate passive income. Cost increases with each purchase.
       </p>
 
-      <div className="row g-3" style={{ maxWidth: 720 }}>
+      <div className="row g-2" style={{ maxWidth: 1500 }}>
         {buildings.map((building) => {
           const ownedCount = owned[building.id] ?? 0
           const costMult = getBuildingCostMult(building.id, purchasedSkills)
@@ -39,7 +46,7 @@ export default function Properties() {
           const affordable = canAfford(currentCost, balances)
 
           return (
-            <div className="col-12 col-md-6" key={building.id}>
+            <div className="col-12 col-md-3" key={building.id}>
               <div className="card h-100">
                 <div className="card-body">
                   <div className="d-flex align-items-start justify-content-between mb-2">
@@ -63,6 +70,20 @@ export default function Properties() {
                       return (
                         <div key={p.resourceId} className="text-success">
                           {res?.icon} +{effectivePerSec.toFixed(3)}/s per building
+                          {ownedCount > 0 && (
+                            <span className="text-body-secondary ms-1">
+                              ({formatNumber(totalPerSec)}/s total)
+                            </span>
+                          )}
+                        </div>
+                      )
+                    })}
+                    {building.consumption?.map((c) => {
+                      const res = resourceMap[c.resourceId]
+                      const totalPerSec = c.amountPerSecond * ownedCount
+                      return (
+                        <div key={`cons_${c.resourceId}`} className="text-danger">
+                          {res?.icon} -{c.amountPerSecond.toFixed(3)}/s per building
                           {ownedCount > 0 && (
                             <span className="text-body-secondary ms-1">
                               ({formatNumber(totalPerSec)}/s total)

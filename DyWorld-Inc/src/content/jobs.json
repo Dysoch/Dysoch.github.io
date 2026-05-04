@@ -6,19 +6,26 @@
     "icon": "🙏",
     "category": "manual_labor",
     "durationSeconds": 5,
+    "unlock": { "type": "always" },
     "rewards": [
       {
         "resourceId": "copper_coins",
         "min": 0,
         "max": 25
-      },
+      }
+    ]
+  },
+  {
+    "id": "forage",
+    "name": "Forage",
+    "description": "Forage for some food",
+    "icon": "👨‍🌾",
+    "category": "manual_labor",
+    "durationSeconds": 5,
+    "unlock": { "type": "always" },
+    "rewards": [
       {
-        "resourceId": "stone",
-        "min": 0,
-        "max": 0.1
-      },
-      {
-        "resourceId": "wood",
+        "resourceId": "wheat",
         "min": 0,
         "max": 0.1
       }
@@ -31,6 +38,7 @@
     "icon": "⛏️",
     "category": "manual_labor",
     "durationSeconds": 8,
+    "unlock": { "type": "stat", "key": "copper_coins_earned", "amount": 10 },
     "rewards": [
       {
         "resourceId": "stone",
@@ -46,6 +54,7 @@
     "icon": "🪓",
     "category": "manual_labor",
     "durationSeconds": 8,
+    "unlock": { "type": "stat", "key": "stone_earned", "amount": 1 },
     "rewards": [
       {
         "resourceId": "wood",
@@ -61,6 +70,7 @@
     "icon": "🏪",
     "category": "manual_labor",
     "durationSeconds": 10,
+    "unlock": { "type": "stat", "key": "wood_earned", "amount": 5 },
     "costs": [
       {
         "resourceId": "copper_coins",

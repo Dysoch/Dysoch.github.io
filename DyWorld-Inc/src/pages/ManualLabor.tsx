@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatNumber, formatDuration } from '../utils/format'
 import { getJobRewardMinMult, getJobRewardMaxMult, getJobDurationMult, getMaxQueueSize } from '../utils/multipliers'
+import { isUnlocked } from '../utils/unlock'
 import jobsData from '../content/jobs.json'
 import resourcesData from '../content/resources.json'
 import type { Job, Resource } from '../types'
 
-const jobs = jobsData as Job[]
+const allJobs = jobsData as Job[]
 const resources = resourcesData as Resource[]
 const resourceMap = Object.fromEntries(resources.map((r) => [r.id, r]))
 
@@ -20,6 +21,7 @@ export default function ManualLabor() {
     activeJob, startJob, resources: balances,
     purchasedUpgrades, purchasedSkills,
     jobQueue, addToQueue, removeFromQueue, clearQueue,
+    stats, lifetimeStats, prestigeCount,
   } = useGameStore()
   const [now, setNow] = useState(Date.now)
 
@@ -31,6 +33,8 @@ export default function ManualLabor() {
 
   const maxQueueSize = getMaxQueueSize(purchasedSkills)
   const queueUnlocked = maxQueueSize > 0
+  const unlockState = { stats, lifetimeStats, purchasedSkills, purchasedUpgrades, prestigeCount }
+  const jobs = allJobs.filter((j) => isUnlocked(j.unlock, unlockState))
 
   return (
     <div className="p-4">
@@ -39,7 +43,7 @@ export default function ManualLabor() {
         Work jobs to earn resources. Only one job can run at a time.
       </p>
 
-      <div className="row g-3" style={{ maxWidth: 720 }}>
+      <div className="row g-2" style={{ maxWidth: 1500 }}>
         {jobs.map((job) => {
           const isThisJobActive = activeJob !== null && activeJob.jobId === job.id
           const isAnyJobActive = activeJob !== null
@@ -54,15 +58,18 @@ export default function ManualLabor() {
           const displayMin = rewardResource.min * minMult
           const displayMax = rewardResource.max * maxMult
 
+          // Use actual stored endTime as basis so skills purchased mid-job don't desync the bar
+          const actualDurationMs = activeJob && isThisJobActive
+            ? activeJob.endTime - activeJob.startTime
+            : effectiveDuration * 1000
           const elapsed = activeJob && isThisJobActive
-            ? Math.min(now - activeJob.startTime, effectiveDuration * 1000)
+            ? Math.min(now - activeJob.startTime, actualDurationMs)
             : 0
-          const progress = isThisJobActive
-            ? (elapsed / (effectiveDuration * 1000)) * 100
-            : 0
+          const progress = isThisJobActive ? (elapsed / actualDurationMs) * 100 : 0
           const remaining = activeJob && isThisJobActive
             ? Math.max(0, Math.ceil((activeJob.endTime - now) / 1000))
             : effectiveDuration
+          const isFinishing = isThisJobActive && remaining === 0
 
           const rewardRes = resourceMap[rewardResource.resourceId]
           const rewardLabel = rewardRes ? rewardRes.name : rewardResource.resourceId.replace(/_/g, ' ')
@@ -70,7 +77,7 @@ export default function ManualLabor() {
           const isQueued = jobQueue.includes(job.id)
 
           return (
-            <div className="col-12 col-md-6" key={job.id}>
+            <div className="col-12 col-md-3" key={job.id}>
               <div className={`card h-100 ${isThisJobActive ? 'border-primary' : ''}`}>
                 <div className="card-body">
                   <div className="mb-2">
@@ -98,7 +105,9 @@ export default function ManualLabor() {
                   {isThisJobActive && (
                     <div className="mb-3">
                       <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.8rem' }}>
-                        <span className="text-primary">Working…</span>
+                        <span className={isFinishing ? 'text-warning' : 'text-primary'}>
+                          {isFinishing ? 'Finishing…' : 'Working…'}
+                        </span>
                         <span className="text-body-secondary">{remaining}s remaining</span>
                       </div>
                       <div className="progress" style={{ height: 8 }}>
@@ -131,7 +140,7 @@ export default function ManualLabor() {
 
                 <div className="card-footer text-body-secondary" style={{ fontSize: '0.8rem' }}>
                   {rewardRes?.icon} {rewardLabel}: {formatNumber(balances[rewardResource.resourceId] ?? 0)}
-                  {job.costs?.filter(c => c.resourceId !== rewardResource.resourceId).map((c) => {
+                  {job.costs?.filter((c) => c.resourceId !== rewardResource.resourceId).map((c) => {
                     const costRes = resourceMap[c.resourceId]
                     return (
                       <span key={c.resourceId} className="ms-2">
@@ -163,7 +172,7 @@ export default function ManualLabor() {
           ) : (
             <ol className="list-group list-group-numbered">
               {jobQueue.map((qJobId, idx) => {
-                const qDef = jobs.find((j) => j.id === qJobId)
+                const qDef = allJobs.find((j) => j.id === qJobId)
                 return (
                   <li key={idx} className="list-group-item d-flex align-items-center justify-content-between">
                     <span>{qDef?.icon} {qDef?.name ?? qJobId}</span>

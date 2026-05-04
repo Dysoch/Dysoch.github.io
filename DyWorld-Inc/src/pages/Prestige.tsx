@@ -41,7 +41,7 @@ export default function Prestige() {
   const treeSkills = skills.filter((s) => s.tree === activeTree)
 
   return (
-    <div className="p-4" style={{ maxWidth: 800 }}>
+    <div className="p-4" style={{ maxWidth: 1500 }}>
       <h2>✨ Prestige</h2>
       <p className="text-body-secondary mb-4">
         Reset your venture in exchange for Insight — a permanent currency spent on skills that persist across all runs.
@@ -114,7 +114,7 @@ export default function Prestige() {
         ))}
       </ul>
 
-      <div className="row g-3">
+      <div className="row g-2">
         {treeSkills.map((skill) => {
           const currentLevel = purchasedSkills[skill.id] ?? 0
           const isMaxed = currentLevel >= skill.maxLevel
@@ -122,7 +122,7 @@ export default function Prestige() {
           const canBuy = !isMaxed && nextCost !== null && insight >= nextCost
 
           return (
-            <div className="col-12 col-md-6" key={skill.id}>
+            <div className="col-12 col-md-3" key={skill.id}>
               <div className={`card h-100 ${canBuy ? 'border-warning' : ''} ${isMaxed ? 'opacity-75' : ''}`}>
                 <div className="card-body">
                   <div className="d-flex align-items-start justify-content-between mb-1">

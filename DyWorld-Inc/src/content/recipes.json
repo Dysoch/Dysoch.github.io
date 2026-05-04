@@ -1,10 +1,26 @@
 [
   {
+    "id": "bread",
+    "name": "Bread",
+    "icon": "🥖",
+    "description": "Process raw wheat into bread, somehow",
+    "category": "food",
+    "unlock": { "type": "stat", "key": "wheat_earned", "amount": 1 },
+    "inputs": [
+      { "resourceId": "wheat", "amount": 1 }
+    ],
+    "outputs": [
+      { "resourceId": "bread", "amount": 1 }
+    ],
+    "durationSeconds": 5
+  },
+  {
     "id": "plank",
     "name": "Plank",
     "icon": "🪓",
     "description": "Process raw wood into smooth planks.",
     "category": "wood",
+    "unlock": { "type": "stat", "key": "wood_earned", "amount": 10 },
     "inputs": [
       { "resourceId": "wood", "amount": 3 }
     ],
@@ -19,6 +35,7 @@
     "icon": "🏛️",
     "description": "Shape rough stone into precisely cut blocks.",
     "category": "stone",
+    "unlock": { "type": "stat", "key": "stone_earned", "amount": 10 },
     "inputs": [
       { "resourceId": "stone", "amount": 3 }
     ],
@@ -33,6 +50,7 @@
     "icon": "🧱",
     "description": "Fire stone in a kiln — requires copper coins as fuel.",
     "category": "stone",
+    "unlock": { "type": "stat", "key": "craft_cut_stone_completed", "amount": 3 },
     "inputs": [
       { "resourceId": "stone", "amount": 2 },
       { "resourceId": "copper_coins", "amount": 10 }
@@ -48,6 +66,7 @@
     "icon": "🛋️",
     "description": "Craft quality furniture from processed planks.",
     "category": "wood",
+    "unlock": { "type": "stat", "key": "craft_plank_completed", "amount": 3 },
     "inputs": [
       { "resourceId": "plank", "amount": 3 }
     ],

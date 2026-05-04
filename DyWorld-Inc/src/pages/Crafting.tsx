@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatNumber, formatDuration } from '../utils/format'
+import { isUnlocked } from '../utils/unlock'
 import recipesData from '../content/recipes.json'
 import resourcesData from '../content/resources.json'
 import type { Recipe, Resource } from '../types'
@@ -12,7 +13,7 @@ import {
   getCraftOutputMult,
 } from '../utils/multipliers'
 
-const recipes = recipesData as Recipe[]
+const allRecipes = recipesData as Recipe[]
 const resources = resourcesData as Resource[]
 const resourceMap = Object.fromEntries(resources.map((r) => [r.id, r]))
 
@@ -55,8 +56,14 @@ export default function Crafting() {
     purchasedUpgrades,
     removeCraftFromQueue,
     clearCraftQueue,
-    cancelActiveCraft,
+    cancelActiveCraft, 
+    stats, 
+    lifetimeStats,
+    prestigeCount,
   } = useGameStore()
+
+  const unlockState = { stats, lifetimeStats, purchasedSkills, purchasedUpgrades, prestigeCount }
+  const recipes = allRecipes.filter((r) => isUnlocked(r.unlock, unlockState))
 
   const maxWorkers = getCraftWorkerCount(purchasedSkills)
   const freeChance = getCraftFreeChance(purchasedSkills)
@@ -109,7 +116,7 @@ export default function Crafting() {
 
           <div className="d-flex flex-column gap-2 mb-3">
             {slots.map((craft, idx) => {
-              const recipe = craft ? recipes.find((r) => r.id === craft.recipeId) : null
+              const recipe = craft ? allRecipes.find((r) => r.id === craft.recipeId) : null
               return (
                 <div key={idx} className={`card ${craft ? 'border-warning' : ''}`}>
                   <div className="card-body py-2 px-3">
@@ -173,7 +180,7 @@ export default function Crafting() {
               style={{ maxHeight: 400, overflowY: 'auto' }}
             >
               {craftQueue.map((recipeId, idx) => {
-                const r = recipes.find((rec) => rec.id === recipeId)
+                const r = allRecipes.find((rec) => rec.id === recipeId)
                 return (
                   <div
                     key={idx}
