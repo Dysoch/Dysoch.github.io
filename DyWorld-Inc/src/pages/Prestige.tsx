@@ -74,6 +74,7 @@ export default function Prestige() {
 
           <div className="text-body-secondary mb-3" style={{ fontSize: '0.8rem' }}>
             Based on bronze/silver/gold/platinum earned this venture. Earn more capital before prestiging to get more Insight.
+            Higher coins earn more Insight.
           </div>
 
           <button
@@ -92,7 +93,7 @@ export default function Prestige() {
 
           {!canPrestige && (
             <div className="text-body-secondary mt-2" style={{ fontSize: '0.875rem' }}>
-              Collect {reqAmount} Bronze Coins to prestige. Exchange Copper → Bronze at the Bank (1 billion copper per bronze).
+              Collect {reqAmount} Bronze Coins to prestige. Exchange Copper → Bronze at the Bank (10.000 copper per bronze).
             </div>
           )}
         </div>
