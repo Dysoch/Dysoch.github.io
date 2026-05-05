@@ -672,6 +672,8 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         const maxSize = getMaxQueueSize(state.purchasedSkills)
         if (maxSize === 0 || state.jobQueue.length >= maxSize) return
+        if (state.activeJob?.jobId === jobId) return
+        if (state.jobQueue.includes(jobId)) return
         set({ jobQueue: [...state.jobQueue, jobId] })
       },
 

@@ -130,7 +130,7 @@ export default function ManualLabor() {
                   {queueUnlocked && (
                     <button
                       className="btn btn-sm btn-outline-secondary w-100"
-                      disabled={jobQueue.length >= maxQueueSize || !affordable || isQueued}
+                      disabled={jobQueue.length >= maxQueueSize || !affordable || isQueued || isThisJobActive}
                       onClick={() => addToQueue(job.id)}
                     >
                       {isQueued ? 'Queued' : '+ Queue'}
