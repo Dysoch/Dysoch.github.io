@@ -54,6 +54,24 @@
     "tier": 0
   },
   {
+    "id": "earth",
+    "name": "Earth",
+    "nameSingular": "Earth",
+    "icon": "🌍",
+    "description": "Loose earth and soil. Foundation of all construction.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "clay",
+    "name": "Clay",
+    "nameSingular": "Clay",
+    "icon": "🫙",
+    "description": "Malleable clay, perfect for bricks and pottery.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
     "id": "wheat",
     "name": "Wheat",
     "nameSingular": "Wheat",
@@ -68,6 +86,96 @@
     "nameSingular": "Stone",
     "icon": "🪨",
     "description": "Rough stone hewn from the earth. A fundamental material.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "iron_ore",
+    "name": "Iron Ore",
+    "nameSingular": "Iron Ore",
+    "icon": "🔴",
+    "description": "Raw iron ore hewn from deep rock.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "coal",
+    "name": "Coal",
+    "nameSingular": "Coal",
+    "icon": "⬛",
+    "description": "Black coal, essential fuel for smelting.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "fiber",
+    "name": "Fiber",
+    "nameSingular": "Fiber",
+    "icon": "🌿",
+    "description": "Tough plant fibers for rope and cloth.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "sand",
+    "name": "Sand",
+    "nameSingular": "Sand",
+    "icon": "🏖️",
+    "description": "Fine river sand, key to glassmaking.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "herbs",
+    "name": "Herbs",
+    "nameSingular": "Herb",
+    "icon": "🌱",
+    "description": "Aromatic herbs with medicinal properties.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "leather",
+    "name": "Leather",
+    "nameSingular": "Leather",
+    "icon": "🟫",
+    "description": "Cured animal hide, tough and versatile.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "fish",
+    "name": "Fish",
+    "nameSingular": "Fish",
+    "icon": "🐟",
+    "description": "Fresh-caught fish, a reliable food source.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "wool",
+    "name": "Wool",
+    "nameSingular": "Wool",
+    "icon": "🐑",
+    "description": "Fluffy wool sheared from sheep.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "gems",
+    "name": "Gems",
+    "nameSingular": "Gem",
+    "icon": "🔮",
+    "description": "Rough uncut gemstones from deep rock.",
+    "category": "basic",
+    "tier": 0
+  },
+  {
+    "id": "salt",
+    "name": "Salt",
+    "nameSingular": "Salt",
+    "icon": "🧂",
+    "description": "Coarse mineral salt, used for preservation.",
     "category": "basic",
     "tier": 0
   },
@@ -108,11 +216,101 @@
     "tier": 1
   },
   {
+    "id": "iron_bar",
+    "name": "Iron Bars",
+    "nameSingular": "Iron Bar",
+    "icon": "🔩",
+    "description": "Smelted iron bars, ready for forging.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "rope",
+    "name": "Rope",
+    "nameSingular": "Rope",
+    "icon": "🪢",
+    "description": "Twisted fiber rope, sturdy and versatile.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "cloth",
+    "name": "Cloth",
+    "nameSingular": "Cloth",
+    "icon": "🪡",
+    "description": "Woven cloth made from plant fiber.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "glass",
+    "name": "Glass",
+    "nameSingular": "Glass",
+    "icon": "🪟",
+    "description": "Blown glass, fragile but valuable.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "yarn",
+    "name": "Yarn",
+    "nameSingular": "Yarn",
+    "icon": "🧶",
+    "description": "Spun yarn from raw wool.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "ale",
+    "name": "Ale",
+    "nameSingular": "Ale",
+    "icon": "🍺",
+    "description": "Brewed ale from grain and herbs.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
+    "id": "leather_goods",
+    "name": "Leather Goods",
+    "nameSingular": "Leather Good",
+    "icon": "👝",
+    "description": "Handcrafted leather items and pouches.",
+    "category": "crafted",
+    "tier": 1
+  },
+  {
     "id": "furniture",
     "name": "Furniture",
     "nameSingular": "Furniture",
     "icon": "🛋️",
     "description": "Quality furniture crafted from processed wood. Sells well.",
+    "category": "crafted",
+    "tier": 2
+  },
+  {
+    "id": "tool",
+    "name": "Tools",
+    "nameSingular": "Tool",
+    "icon": "🔧",
+    "description": "Iron tools that dramatically improve work efficiency.",
+    "category": "crafted",
+    "tier": 2
+  },
+  {
+    "id": "medicine",
+    "name": "Medicine",
+    "nameSingular": "Medicine",
+    "icon": "💊",
+    "description": "Herbal remedies to keep workers healthy.",
+    "category": "crafted",
+    "tier": 2
+  },
+  {
+    "id": "gem_jewelry",
+    "name": "Gem Jewelry",
+    "nameSingular": "Gem Jewelry",
+    "icon": "💍",
+    "description": "Polished gem jewelry of great value.",
     "category": "crafted",
     "tier": 2
   }

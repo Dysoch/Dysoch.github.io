@@ -22,6 +22,7 @@ export default function Market() {
   } = useGameStore()
 
   const [now, setNow] = useState(Date.now)
+  const [activeTab, setActiveTab] = useState<'raw' | 'crafted'>('raw')
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000)
@@ -36,19 +37,44 @@ export default function Market() {
   const ceilingMult = getMarketCeilingMult(purchasedSkills)
   const floorMult = getMarketFloorMult(purchasedSkills)
 
+  const filteredItems = marketItems.filter((item) => {
+    const res = resourceMap[item.resourceId]
+    if (activeTab === 'raw') return !res || res.category === 'basic'
+    return res?.category === 'crafted'
+  })
+
   return (
     <div className="p-4">
       <h2>🏪 Market</h2>
       <p className="text-body-secondary mb-1">
-        Buy and sell basic resources for copper coins.
+        Buy and sell resources for copper coins.
       </p>
-      <p className="mb-4" style={{ fontSize: '0.8rem' }}>
+      <p className="mb-3" style={{ fontSize: '0.8rem' }}>
         <span className="text-body-secondary">Prices update every 30 seconds — </span>
         <span className="fw-semibold">next update in {nextUpdateIn}s</span>
       </p>
 
+      <ul className="nav nav-tabs mb-4">
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === 'raw' ? 'active' : ''}`}
+            onClick={() => setActiveTab('raw')}
+          >
+            Raw Materials
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === 'crafted' ? 'active' : ''}`}
+            onClick={() => setActiveTab('crafted')}
+          >
+            Crafted Goods
+          </button>
+        </li>
+      </ul>
+
       <div className="row g-2" style={{ maxWidth: 1500 }}>
-        {marketItems.map((item) => {
+        {filteredItems.map((item) => {
           const res = resourceMap[item.resourceId]
           const price = marketPrices[item.resourceId] ?? item.basePrice
           const trend = marketPriceTrend[item.resourceId] ?? 'same'

@@ -11,6 +11,20 @@ const cfg = prestigeConfigData as PrestigeConfig
 // Auto-generate tree tabs from unique tree values — adding a new tree only requires JSON entries
 const trees = [...new Map(skills.map((s) => [s.tree, { id: s.tree, label: s.treeLabel }])).values()]
 
+function skillEffectLabel(skill: SkillDef, level: number): string {
+  if (level === 0) return ''
+  if (skill.effect === 'job_queue_size') {
+    return `(+${Math.round(skill.magnitude * level)} queue slots)`
+  }
+  if (skill.effect === 'craft_worker_count') {
+    return `(+${Math.round(skill.magnitude * level)} craft slots)`
+  }
+  if (skill.effect === 'craft_free_chance' || skill.effect === 'craft_double_chance') {
+    return `(+${(skill.magnitude * level * 100).toFixed(0)}% chance)`
+  }
+  return `(×${Math.pow(skill.magnitude, level).toFixed(2)} at L${level})`
+}
+
 function computeInsight(stats: Record<string, number>): number {
   let score = 0
   for (const { resourceId, weight } of cfg.insightWeights) {
@@ -134,6 +148,9 @@ export default function Prestige() {
                   </div>
                   <p className="text-body-secondary mb-2" style={{ fontSize: '0.875rem' }}>
                     {skill.description}
+                    {currentLevel > 0 && (
+                      <span className="ms-1 text-success">{skillEffectLabel(skill, currentLevel)}</span>
+                    )}
                   </p>
                   {!isMaxed && nextCost !== null && (
                     <div className="mb-2">

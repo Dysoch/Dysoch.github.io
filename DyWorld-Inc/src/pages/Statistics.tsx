@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { formatNumber } from '../utils/format'
+import {
+  getJobRewardMinMult, getJobRewardMaxMult, getJobDurationMult,
+  getBuildingOutputMult, getBuildingCostMult,
+  getMarketSellMult, getMarketBuyMult, getMarketCeilingMult, getMarketFloorMult,
+  getCraftDurationMult, getCraftOutputMult, getCraftWorkerCount,
+  getCraftFreeChance, getCraftDoubleChance,
+} from '../utils/multipliers'
 import resourcesData from '../content/resources.json'
 import jobsData from '../content/jobs.json'
 import buildingsData from '../content/buildings.json'
@@ -12,7 +19,7 @@ const jobs = jobsData as Job[]
 const buildings = buildingsData as Building[]
 const recipes = recipesData as Recipe[]
 
-type StatsTab = 'capital' | 'basic' | 'crafted' | 'manual-labor' | 'properties' | 'crafting'
+type StatsTab = 'capital' | 'basic' | 'crafted' | 'manual-labor' | 'properties' | 'crafting' | 'modifiers'
 
 const STATS_TABS: { id: StatsTab; label: string }[] = [
   { id: 'capital',      label: '💰 Capital' },
@@ -21,14 +28,27 @@ const STATS_TABS: { id: StatsTab; label: string }[] = [
   { id: 'manual-labor', label: '⛏️ Manual Labor' },
   { id: 'properties',   label: '🏗️ Properties' },
   { id: 'crafting',     label: '🔨 Crafting' },
+  { id: 'modifiers',    label: '⚡ Modifiers' },
 ]
+
+function multFmt(val: number): string {
+  return `×${val.toFixed(2)}`
+}
+function reductionFmt(val: number): string {
+  const pct = ((1 - val) * 100).toFixed(1)
+  return `${multFmt(val)} (−${pct}%)`
+}
+function bonusFmt(val: number): string {
+  const pct = ((val - 1) * 100).toFixed(1)
+  return `${multFmt(val)} (+${pct}%)`
+}
 
 function fmt(n: number) {
   return formatNumber(n)
 }
 
 export default function Statistics() {
-  const { resources: balances, stats, prevVentureStats, lifetimeStats } = useGameStore()
+  const { resources: balances, stats, prevVentureStats, lifetimeStats, purchasedSkills, purchasedUpgrades } = useGameStore()
   const [activeStatsTab, setActiveStatsTab] = useState<StatsTab>('capital')
 
   const capitalResources = resources.filter((r) => r.category === 'capital')
@@ -229,6 +249,207 @@ export default function Statistics() {
           </div>
         </div>
       )}
+
+      {activeStatsTab === 'modifiers' && (() => {
+        const activeJobRows = jobs.map((job) => ({
+          job,
+          minMult: getJobRewardMinMult(job.id, purchasedUpgrades, purchasedSkills),
+          maxMult: getJobRewardMaxMult(job.id, purchasedUpgrades, purchasedSkills),
+          durMult: getJobDurationMult(job.id, purchasedSkills),
+        })).filter((r) => r.minMult !== 1 || r.maxMult !== 1 || r.durMult !== 1)
+
+        const activeBuildingRows = buildings.map((b) => ({
+          building: b,
+          outputMult: getBuildingOutputMult(b.id, purchasedUpgrades, purchasedSkills),
+          costMult: getBuildingCostMult(b.id, purchasedSkills),
+        })).filter((r) => r.outputMult !== 1 || r.costMult !== 1)
+
+        const sellMult    = getMarketSellMult(purchasedSkills)
+        const buyMult     = getMarketBuyMult(purchasedSkills)
+        const ceilMult    = getMarketCeilingMult(purchasedSkills)
+        const floorMult   = getMarketFloorMult(purchasedSkills)
+        const craftDur    = getCraftDurationMult('all', purchasedSkills, purchasedUpgrades)
+        const craftOut    = getCraftOutputMult(purchasedUpgrades)
+        const craftSlots  = getCraftWorkerCount(purchasedSkills)
+        const freeChance  = getCraftFreeChance(purchasedSkills)
+        const dblChance   = getCraftDoubleChance(purchasedSkills)
+
+        return (
+          <div className="d-flex flex-column gap-4" style={{ maxWidth: 900 }}>
+
+            {/* Jobs */}
+            <div>
+              <h5 className="mb-2">⛏️ Job Modifiers</h5>
+              {activeJobRows.length === 0 ? (
+                <p className="text-body-secondary fst-italic" style={{ fontSize: '0.875rem' }}>
+                  No job modifiers active. Buy skills on the Prestige page and upgrades on the Upgrades page.
+                </p>
+              ) : (
+                <div className="card">
+                  <div className="card-body p-0">
+                    <table className="table table-sm mb-0">
+                      <thead>
+                        <tr>
+                          <th style={{ fontSize: '0.8rem' }}>Job</th>
+                          <th className="text-end" style={{ fontSize: '0.8rem' }}>Reward Min</th>
+                          <th className="text-end" style={{ fontSize: '0.8rem' }}>Reward Max</th>
+                          <th className="text-end" style={{ fontSize: '0.8rem' }}>Duration</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activeJobRows.map(({ job, minMult, maxMult, durMult }) => (
+                          <tr key={job.id}>
+                            <td style={{ fontSize: '0.875rem' }}>{job.icon} {job.name}</td>
+                            <td className="text-end text-success" style={{ fontSize: '0.875rem' }}>
+                              {minMult !== 1 ? bonusFmt(minMult) : <span className="text-body-secondary">—</span>}
+                            </td>
+                            <td className="text-end text-success" style={{ fontSize: '0.875rem' }}>
+                              {maxMult !== 1 ? bonusFmt(maxMult) : <span className="text-body-secondary">—</span>}
+                            </td>
+                            <td className="text-end text-info" style={{ fontSize: '0.875rem' }}>
+                              {durMult !== 1 ? reductionFmt(durMult) : <span className="text-body-secondary">—</span>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Buildings */}
+            <div>
+              <h5 className="mb-2">🏗️ Building Modifiers</h5>
+              {activeBuildingRows.length === 0 ? (
+                <p className="text-body-secondary fst-italic" style={{ fontSize: '0.875rem' }}>
+                  No building modifiers active. Buy upgrades on the Upgrades page and skills on the Prestige page.
+                </p>
+              ) : (
+                <div className="card">
+                  <div className="card-body p-0">
+                    <table className="table table-sm mb-0">
+                      <thead>
+                        <tr>
+                          <th style={{ fontSize: '0.8rem' }}>Building</th>
+                          <th className="text-end" style={{ fontSize: '0.8rem' }}>Output</th>
+                          <th className="text-end" style={{ fontSize: '0.8rem' }}>Cost</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activeBuildingRows.map(({ building, outputMult, costMult }) => (
+                          <tr key={building.id}>
+                            <td style={{ fontSize: '0.875rem' }}>{building.icon} {building.name}</td>
+                            <td className="text-end text-success" style={{ fontSize: '0.875rem' }}>
+                              {outputMult !== 1 ? bonusFmt(outputMult) : <span className="text-body-secondary">—</span>}
+                            </td>
+                            <td className="text-end text-info" style={{ fontSize: '0.875rem' }}>
+                              {costMult !== 1 ? reductionFmt(costMult) : <span className="text-body-secondary">—</span>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Market */}
+            <div>
+              <h5 className="mb-2">🏪 Market Modifiers</h5>
+              <div className="card">
+                <div className="card-body p-0">
+                  <table className="table table-sm mb-0">
+                    <thead>
+                      <tr>
+                        <th style={{ fontSize: '0.8rem' }}>Modifier</th>
+                        <th className="text-end" style={{ fontSize: '0.8rem' }}>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Sell Price</td>
+                        <td className={`text-end fw-semibold ${sellMult !== 1 ? 'text-success' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {sellMult !== 1 ? bonusFmt(sellMult) : <span className="text-body-secondary">×1.00 (no bonus)</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Buy Price</td>
+                        <td className={`text-end fw-semibold ${buyMult !== 1 ? 'text-info' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {buyMult !== 1 ? reductionFmt(buyMult) : <span className="text-body-secondary">×1.00 (no bonus)</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Price Ceiling</td>
+                        <td className={`text-end fw-semibold ${ceilMult !== 1 ? 'text-success' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {ceilMult !== 1 ? bonusFmt(ceilMult) : <span className="text-body-secondary">×1.00 (no bonus)</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Price Floor</td>
+                        <td className={`text-end fw-semibold ${floorMult !== 1 ? 'text-info' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {floorMult !== 1 ? reductionFmt(floorMult) : <span className="text-body-secondary">×1.00 (no bonus)</span>}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Crafting */}
+            <div>
+              <h5 className="mb-2">🔨 Crafting Modifiers</h5>
+              <div className="card">
+                <div className="card-body p-0">
+                  <table className="table table-sm mb-0">
+                    <thead>
+                      <tr>
+                        <th style={{ fontSize: '0.8rem' }}>Modifier</th>
+                        <th className="text-end" style={{ fontSize: '0.8rem' }}>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Craft Speed</td>
+                        <td className={`text-end fw-semibold ${craftDur !== 1 ? 'text-info' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {craftDur !== 1 ? reductionFmt(craftDur) : <span className="text-body-secondary">×1.00 (no bonus)</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Output Bonus</td>
+                        <td className={`text-end fw-semibold ${craftOut !== 1 ? 'text-success' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {craftOut !== 1 ? bonusFmt(craftOut) : <span className="text-body-secondary">×1.00 (no bonus)</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Craft Slots</td>
+                        <td className={`text-end fw-semibold ${craftSlots > 1 ? 'text-success' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {craftSlots}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Free Craft Chance</td>
+                        <td className={`text-end fw-semibold ${freeChance > 0 ? 'text-success' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {freeChance > 0 ? `${(freeChance * 100).toFixed(0)}%` : <span className="text-body-secondary">0% (no bonus)</span>}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-body-secondary" style={{ fontSize: '0.875rem' }}>Double Output Chance</td>
+                        <td className={`text-end fw-semibold ${dblChance > 0 ? 'text-success' : ''}`} style={{ fontSize: '0.875rem' }}>
+                          {dblChance > 0 ? `${(dblChance * 100).toFixed(0)}%` : <span className="text-body-secondary">0% (no bonus)</span>}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )
+      })()}
 
       {activeStatsTab === 'crafting' && (
         <div className="d-flex flex-column gap-4">

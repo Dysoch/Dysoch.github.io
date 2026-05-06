@@ -10,26 +10,26 @@
     "maxLevel": 10,
     "unlock": { "type": "stat", "key": "job_beg_for_coins_completed", "amount": 5 },
     "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 200 }],
       [{ "resourceId": "copper_coins", "amount": 500 }],
       [{ "resourceId": "copper_coins", "amount": 1000 }],
       [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }],
-      [{ "resourceId": "copper_coins", "amount": 2000 }]
+      [{ "resourceId": "copper_coins", "amount": 5000 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }]
     ]
   },
   {
     "id": "mining_max_1",
     "category": "manual_labor",
     "name": "Better Tools",
-    "description": "Mining maximum reward +25% per level.",
+    "description": "Mining maximum reward +20% per level.",
     "target": "mining",
     "effect": "job_reward_max_mult",
-    "magnitude": 1.25,
+    "magnitude": 1.2,
     "maxLevel": 10,
     "unlock": { "type": "stat", "key": "job_mining_completed", "amount": 5 },
     "costsPerLevel": [
@@ -39,26 +39,33 @@
       [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 100 }],
       [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "stone", "amount": 250 }],
       [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "stone", "amount": 500 }],
-      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "stone", "amount": 500 }],
-      [{ "resourceId": "copper_coins", "amount": 16000 }, { "resourceId": "stone", "amount": 500 }],
-      [{ "resourceId": "copper_coins", "amount": 32000 }, { "resourceId": "stone", "amount": 500 }],
-      [{ "resourceId": "copper_coins", "amount": 64000 }, { "resourceId": "stone", "amount": 500 }]
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "cut_stone", "amount": 40 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "cut_stone", "amount": 75 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "cut_stone", "amount": 250 }],
+      [{ "resourceId": "bronze_coins", "amount": 15 }, { "resourceId": "cut_stone", "amount": 500 }]
     ]
   },
   {
     "id": "woodcutting_max_1",
     "category": "manual_labor",
     "name": "Sharper Axe",
-    "description": "Woodcutting maximum reward +25% per level.",
+    "description": "Woodcutting maximum reward +33% per level.",
     "target": "woodcutting",
     "effect": "job_reward_max_mult",
-    "magnitude": 1.25,
-    "maxLevel": 3,
+    "magnitude": 1.33,
+    "maxLevel": 10,
     "unlock": { "type": "stat", "key": "job_woodcutting_completed", "amount": 5 },
     "costsPerLevel": [
       [{ "resourceId": "wood", "amount": 10 }],
       [{ "resourceId": "wood", "amount": 25 }],
-      [{ "resourceId": "wood", "amount": 50 }]
+      [{ "resourceId": "wood", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "wood", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "wood", "amount": 250 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "wood", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "plank", "amount": 40 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "plank", "amount": 75 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "plank", "amount": 250 }],
+      [{ "resourceId": "bronze_coins", "amount": 15 }, { "resourceId": "plank", "amount": 500 }]
     ]
   },
   {
@@ -75,6 +82,188 @@
       [{ "resourceId": "copper_coins", "amount": 200 }],
       [{ "resourceId": "copper_coins", "amount": 500 }],
       [{ "resourceId": "copper_coins", "amount": 1000 }]
+    ]
+  },
+  {
+    "id": "gather_fiber_max_1",
+    "category": "manual_labor",
+    "name": "Fiber Bundle",
+    "description": "Gather Fiber maximum reward +25% per level.",
+    "target": "gather_fiber",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 8,
+    "unlock": { "type": "stat", "key": "job_gather_fiber_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "fiber", "amount": 10 }],
+      [{ "resourceId": "fiber", "amount": 25 }],
+      [{ "resourceId": "fiber", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "fiber", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "fiber", "amount": 200 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "fiber", "amount": 400 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "cloth", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "cloth", "amount": 30 }]
+    ]
+  },
+  {
+    "id": "fishing_max_1",
+    "category": "manual_labor",
+    "name": "Fisher's Luck",
+    "description": "Fishing maximum reward +25% per level.",
+    "target": "fishing",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 8,
+    "unlock": { "type": "stat", "key": "job_fishing_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "fish", "amount": 10 }],
+      [{ "resourceId": "fish", "amount": 25 }],
+      [{ "resourceId": "fish", "amount": 60 }],
+      [{ "resourceId": "copper_coins", "amount": 400 }, { "resourceId": "fish", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 1200 }, { "resourceId": "fish", "amount": 200 }],
+      [{ "resourceId": "copper_coins", "amount": 3000 }, { "resourceId": "fish", "amount": 400 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "ale", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "ale", "amount": 30 }]
+    ]
+  },
+  {
+    "id": "hunting_max_1",
+    "category": "manual_labor",
+    "name": "Sharp Eye",
+    "description": "Hunting maximum reward +20% per level.",
+    "target": "hunting",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.20,
+    "maxLevel": 8,
+    "unlock": { "type": "stat", "key": "job_hunting_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "leather", "amount": 8 }],
+      [{ "resourceId": "leather", "amount": 20 }],
+      [{ "resourceId": "leather", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 600 }, { "resourceId": "leather", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "leather", "amount": 200 }],
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "leather", "amount": 400 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "leather_goods", "amount": 15 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "leather_goods", "amount": 40 }]
+    ]
+  },
+  {
+    "id": "sand_collection_max_1",
+    "category": "manual_labor",
+    "name": "River Sieve",
+    "description": "Sand Collection maximum reward +25% per level.",
+    "target": "sand_collection",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 8,
+    "unlock": { "type": "stat", "key": "job_sand_collection_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "sand", "amount": 15 }],
+      [{ "resourceId": "sand", "amount": 40 }],
+      [{ "resourceId": "sand", "amount": 80 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "sand", "amount": 150 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "sand", "amount": 300 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "sand", "amount": 600 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "glass", "amount": 5 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "glass", "amount": 15 }]
+    ]
+  },
+  {
+    "id": "shepherding_max_1",
+    "category": "manual_labor",
+    "name": "Shepherd's Bounty",
+    "description": "Shepherding maximum reward +25% per level.",
+    "target": "shepherding",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 6,
+    "unlock": { "type": "stat", "key": "job_shepherding_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "wool", "amount": 10 }],
+      [{ "resourceId": "wool", "amount": 25 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "wool", "amount": 60 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "wool", "amount": 150 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "yarn", "amount": 20 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "yarn", "amount": 60 }]
+    ]
+  },
+  {
+    "id": "iron_prospecting_max_1",
+    "category": "manual_labor",
+    "name": "Deeper Shafts",
+    "description": "Iron Prospecting maximum reward +20% per level.",
+    "target": "iron_prospecting",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.20,
+    "maxLevel": 8,
+    "unlock": { "type": "stat", "key": "job_iron_prospecting_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "stone", "amount": 20 }],
+      [{ "resourceId": "stone", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "stone", "amount": 100 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "cut_stone", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "cut_stone", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "iron_bar", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "iron_bar", "amount": 25 }],
+      [{ "resourceId": "bronze_coins", "amount": 6 }, { "resourceId": "iron_bar", "amount": 60 }]
+    ]
+  },
+  {
+    "id": "herb_gathering_max_1",
+    "category": "manual_labor",
+    "name": "Herb Lore",
+    "description": "Herb Gathering maximum reward +25% per level.",
+    "target": "herb_gathering",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.25,
+    "maxLevel": 8,
+    "unlock": { "type": "stat", "key": "job_herb_gathering_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "herbs", "amount": 10 }],
+      [{ "resourceId": "herbs", "amount": 25 }],
+      [{ "resourceId": "herbs", "amount": 60 }],
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "herbs", "amount": 120 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "herbs", "amount": 250 }],
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "cloth", "amount": 20 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "medicine", "amount": 5 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "medicine", "amount": 15 }]
+    ]
+  },
+  {
+    "id": "gem_mining_max_1",
+    "category": "manual_labor",
+    "name": "Jeweler's Find",
+    "description": "Gem Mining maximum reward +15% per level.",
+    "target": "gem_mining",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.15,
+    "maxLevel": 6,
+    "unlock": { "type": "stat", "key": "job_gem_mining_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "iron_ore", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "iron_ore", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "iron_bar", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "iron_bar", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 6 }, { "resourceId": "gem_jewelry", "amount": 2 }],
+      [{ "resourceId": "bronze_coins", "amount": 12 }, { "resourceId": "gem_jewelry", "amount": 6 }]
+    ]
+  },
+  {
+    "id": "contract_max_1",
+    "category": "manual_labor",
+    "name": "Guild Reputation",
+    "description": "Contract Work maximum reward +15% per level.",
+    "target": "contract_work",
+    "effect": "job_reward_max_mult",
+    "magnitude": 1.15,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "job_contract_work_completed", "amount": 5 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 500 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }],
+      [{ "resourceId": "copper_coins", "amount": 5000 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }],
+      [{ "resourceId": "bronze_coins", "amount": 6 }]
     ]
   },
   {
@@ -133,16 +322,23 @@
     "id": "shack_output_1",
     "category": "property",
     "name": "Shack Renovation",
-    "description": "Shack output +25% per level.",
+    "description": "Shack output +30% per level.",
     "target": "shack",
     "effect": "building_output_mult",
-    "magnitude": 1.25,
-    "maxLevel": 3,
+    "magnitude": 1.3,
+    "maxLevel": 10,
     "unlock": { "type": "stat", "key": "building_shack_count", "amount": 1 },
     "costsPerLevel": [
-      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "wood", "amount": 5 }],
-      [{ "resourceId": "copper_coins", "amount": 2500 }, { "resourceId": "wood", "amount": 15 }],
-      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 30 }]
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "wood", "amount": 5 }],
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "wood", "amount": 15 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "copper_coins", "amount": 2500 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "copper_coins", "amount": 7500 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "wood", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 10 }, { "resourceId": "wood", "amount": 30 }]
     ]
   },
   {
@@ -162,6 +358,222 @@
     ]
   },
   {
+    "id": "coal_pit_output_1",
+    "category": "property",
+    "name": "Coal Pit Overhaul",
+    "description": "Coal Pit output +30% per level.",
+    "target": "coal_pit",
+    "effect": "building_output_mult",
+    "magnitude": 1.3,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_coal_pit_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 300 }, { "resourceId": "stone", "amount": 10 }],
+      [{ "resourceId": "copper_coins", "amount": 800 }, { "resourceId": "stone", "amount": 30 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "stone", "amount": 75 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "cut_stone", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 4 }, { "resourceId": "cut_stone", "amount": 100 }]
+    ]
+  },
+  {
+    "id": "fishery_output_1",
+    "category": "property",
+    "name": "Fishery Overhaul",
+    "description": "Fishery output +30% per level.",
+    "target": "fishery",
+    "effect": "building_output_mult",
+    "magnitude": 1.3,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_fishery_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "wood", "amount": 20 }, { "resourceId": "copper_coins", "amount": 200 }],
+      [{ "resourceId": "wood", "amount": 50 }, { "resourceId": "copper_coins", "amount": 600 }],
+      [{ "resourceId": "copper_coins", "amount": 2000 }, { "resourceId": "fish", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "fish", "amount": 80 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "fish", "amount": 200 }]
+    ]
+  },
+  {
+    "id": "iron_mine_output_1",
+    "category": "property",
+    "name": "Iron Mine Overhaul",
+    "description": "Iron Mine output +25% per level.",
+    "target": "iron_mine",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_iron_mine_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "cut_stone", "amount": 10 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "cut_stone", "amount": 25 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "cut_stone", "amount": 60 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "iron_bar", "amount": 15 }],
+      [{ "resourceId": "bronze_coins", "amount": 6 }, { "resourceId": "iron_bar", "amount": 50 }]
+    ]
+  },
+  {
+    "id": "smeltery_output_1",
+    "category": "property",
+    "name": "Blast Furnace",
+    "description": "Smeltery output +30% per level.",
+    "target": "smeltery",
+    "effect": "building_output_mult",
+    "magnitude": 1.3,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_smeltery_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "iron_bar", "amount": 5 }],
+      [{ "resourceId": "copper_coins", "amount": 3000 }, { "resourceId": "iron_bar", "amount": 15 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "iron_bar", "amount": 40 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "iron_bar", "amount": 80 }],
+      [{ "resourceId": "bronze_coins", "amount": 7 }, { "resourceId": "iron_bar", "amount": 150 }]
+    ]
+  },
+  {
+    "id": "tannery_output_1",
+    "category": "property",
+    "name": "Tannery Overhaul",
+    "description": "Tannery output +25% per level.",
+    "target": "tannery",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_tannery_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "leather", "amount": 15 }, { "resourceId": "copper_coins", "amount": 500 }],
+      [{ "resourceId": "leather", "amount": 40 }, { "resourceId": "copper_coins", "amount": 1500 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "leather_goods", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "leather_goods", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 6 }, { "resourceId": "leather_goods", "amount": 80 }]
+    ]
+  },
+  {
+    "id": "brewery_output_1",
+    "category": "property",
+    "name": "Master Brewer",
+    "description": "Brewery output +30% per level.",
+    "target": "brewery",
+    "effect": "building_output_mult",
+    "magnitude": 1.3,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_brewery_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "wheat", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "wheat", "amount": 50 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "ale", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "ale", "amount": 30 }],
+      [{ "resourceId": "bronze_coins", "amount": 6 }, { "resourceId": "ale", "amount": 80 }]
+    ]
+  },
+  {
+    "id": "tavern_output_1",
+    "category": "property",
+    "name": "Tavern Renovation",
+    "description": "Tavern output +25% per level.",
+    "target": "tavern",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_tavern_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 3000 }, { "resourceId": "wood", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 8000 }, { "resourceId": "wood", "amount": 50 }, { "resourceId": "bread", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 20000 }, { "resourceId": "bread", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "bread", "amount": 100 }],
+      [{ "resourceId": "bronze_coins", "amount": 7 }, { "resourceId": "bread", "amount": 200 }]
+    ]
+  },
+  {
+    "id": "workshop_output_1",
+    "category": "property",
+    "name": "Master Craftsman",
+    "description": "Workshop output +25% per level.",
+    "target": "workshop",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_workshop_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "iron_bar", "amount": 10 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "iron_bar", "amount": 25 }, { "resourceId": "plank", "amount": 20 }],
+      [{ "resourceId": "bronze_coins", "amount": 4 }, { "resourceId": "iron_bar", "amount": 60 }, { "resourceId": "plank", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 8 }, { "resourceId": "iron_bar", "amount": 120 }],
+      [{ "resourceId": "bronze_coins", "amount": 20 }, { "resourceId": "iron_bar", "amount": 250 }]
+    ]
+  },
+  {
+    "id": "gem_cutter_output_1",
+    "category": "property",
+    "name": "Precision Cuts",
+    "description": "Gem Cutter output +20% per level.",
+    "target": "gem_cutter",
+    "effect": "building_output_mult",
+    "magnitude": 1.2,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_gem_cutter_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "iron_bar", "amount": 5 }],
+      [{ "resourceId": "bronze_coins", "amount": 4 }, { "resourceId": "iron_bar", "amount": 15 }],
+      [{ "resourceId": "bronze_coins", "amount": 8 }, { "resourceId": "gem_jewelry", "amount": 3 }],
+      [{ "resourceId": "bronze_coins", "amount": 15 }, { "resourceId": "gem_jewelry", "amount": 8 }],
+      [{ "resourceId": "bronze_coins", "amount": 30 }, { "resourceId": "gem_jewelry", "amount": 20 }]
+    ]
+  },
+  {
+    "id": "spinning_mill_output_1",
+    "category": "property",
+    "name": "Mill Upgrade",
+    "description": "Spinning Mill output +25% per level.",
+    "target": "spinning_mill",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_spinning_mill_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "wool", "amount": 15 }],
+      [{ "resourceId": "copper_coins", "amount": 1500 }, { "resourceId": "wool", "amount": 40 }],
+      [{ "resourceId": "copper_coins", "amount": 4000 }, { "resourceId": "yarn", "amount": 20 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "yarn", "amount": 60 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "yarn", "amount": 150 }]
+    ]
+  },
+  {
+    "id": "herbalist_output_1",
+    "category": "property",
+    "name": "Garden Expansion",
+    "description": "Herbalist output +30% per level.",
+    "target": "herbalist",
+    "effect": "building_output_mult",
+    "magnitude": 1.3,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_herbalist_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "wood", "amount": 20 }, { "resourceId": "copper_coins", "amount": 200 }],
+      [{ "resourceId": "wood", "amount": 50 }, { "resourceId": "copper_coins", "amount": 600 }],
+      [{ "resourceId": "wood", "amount": 100 }, { "resourceId": "copper_coins", "amount": 2000 }],
+      [{ "resourceId": "copper_coins", "amount": 6000 }, { "resourceId": "herbs", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "herbs", "amount": 150 }]
+    ]
+  },
+  {
+    "id": "glassworks_output_1",
+    "category": "property",
+    "name": "Tempered Glass",
+    "description": "Glassworks output +25% per level.",
+    "target": "glassworks",
+    "effect": "building_output_mult",
+    "magnitude": 1.25,
+    "maxLevel": 5,
+    "unlock": { "type": "stat", "key": "building_glassworks_count", "amount": 1 },
+    "costsPerLevel": [
+      [{ "resourceId": "copper_coins", "amount": 800 }, { "resourceId": "sand", "amount": 20 }],
+      [{ "resourceId": "copper_coins", "amount": 2500 }, { "resourceId": "sand", "amount": 60 }],
+      [{ "resourceId": "copper_coins", "amount": 6000 }, { "resourceId": "glass", "amount": 5 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "glass", "amount": 15 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "glass", "amount": 40 }]
+    ]
+  },
+  {
     "id": "crafting_speed_1",
     "category": "crafting",
     "name": "Workshop Tools",
@@ -172,9 +584,9 @@
     "maxLevel": 3,
     "unlock": { "type": "stat", "key": "craft_plank_completed", "amount": 1 },
     "costsPerLevel": [
-      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "wood", "amount": 20 }],
-      [{ "resourceId": "copper_coins", "amount": 15000 }, { "resourceId": "wood", "amount": 50 }],
-      [{ "resourceId": "copper_coins", "amount": 40000 }, { "resourceId": "wood", "amount": 100 }]
+      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "plank", "amount": 20 }],
+      [{ "resourceId": "bronze_coins", "amount": 2 }, { "resourceId": "plank", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "plank", "amount": 100 }]
     ]
   },
   {
@@ -188,9 +600,9 @@
     "maxLevel": 3,
     "unlock": { "type": "stat", "key": "craft_cut_stone_completed", "amount": 1 },
     "costsPerLevel": [
-      [{ "resourceId": "copper_coins", "amount": 5000 }, { "resourceId": "stone", "amount": 20 }],
-      [{ "resourceId": "copper_coins", "amount": 15000 }, { "resourceId": "stone", "amount": 50 }],
-      [{ "resourceId": "copper_coins", "amount": 40000 }, { "resourceId": "stone", "amount": 100 }]
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "cut_stone", "amount": 20 }],
+      [{ "resourceId": "bronze_coins", "amount": 3 }, { "resourceId": "cut_stone", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 7 }, { "resourceId": "cut_stone", "amount": 100 }]
     ]
   }
 ]

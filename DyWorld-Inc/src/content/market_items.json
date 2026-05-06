@@ -6,6 +6,18 @@
     "maxPrice": 15
   },
   {
+    "resourceId": "earth",
+    "basePrice": 2,
+    "minPrice": 1,
+    "maxPrice": 5
+  },
+  {
+    "resourceId": "clay",
+    "basePrice": 3,
+    "minPrice": 1,
+    "maxPrice": 8
+  },
+  {
     "resourceId": "stone",
     "basePrice": 4,
     "minPrice": 1,
@@ -16,6 +28,66 @@
     "basePrice": 2,
     "minPrice": 1,
     "maxPrice": 4
+  },
+  {
+    "resourceId": "iron_ore",
+    "basePrice": 6,
+    "minPrice": 2,
+    "maxPrice": 18
+  },
+  {
+    "resourceId": "coal",
+    "basePrice": 4,
+    "minPrice": 1,
+    "maxPrice": 12
+  },
+  {
+    "resourceId": "fiber",
+    "basePrice": 3,
+    "minPrice": 1,
+    "maxPrice": 8
+  },
+  {
+    "resourceId": "sand",
+    "basePrice": 2,
+    "minPrice": 1,
+    "maxPrice": 6
+  },
+  {
+    "resourceId": "herbs",
+    "basePrice": 6,
+    "minPrice": 2,
+    "maxPrice": 18
+  },
+  {
+    "resourceId": "leather",
+    "basePrice": 8,
+    "minPrice": 3,
+    "maxPrice": 22
+  },
+  {
+    "resourceId": "fish",
+    "basePrice": 4,
+    "minPrice": 2,
+    "maxPrice": 10
+  },
+  {
+    "resourceId": "wool",
+    "basePrice": 7,
+    "minPrice": 2,
+    "maxPrice": 20
+  },
+  {
+    "resourceId": "gems",
+    "basePrice": 50,
+    "minPrice": 20,
+    "maxPrice": 150
+  },
+  {
+    "resourceId": "salt",
+    "basePrice": 5,
+    "minPrice": 2,
+    "maxPrice": 14
   },
   {
     "resourceId": "bread",
@@ -42,9 +114,69 @@
     "maxPrice": 38
   },
   {
+    "resourceId": "iron_bar",
+    "basePrice": 25,
+    "minPrice": 10,
+    "maxPrice": 70
+  },
+  {
+    "resourceId": "rope",
+    "basePrice": 14,
+    "minPrice": 5,
+    "maxPrice": 38
+  },
+  {
+    "resourceId": "cloth",
+    "basePrice": 18,
+    "minPrice": 7,
+    "maxPrice": 50
+  },
+  {
+    "resourceId": "glass",
+    "basePrice": 35,
+    "minPrice": 12,
+    "maxPrice": 90
+  },
+  {
+    "resourceId": "yarn",
+    "basePrice": 16,
+    "minPrice": 6,
+    "maxPrice": 42
+  },
+  {
+    "resourceId": "ale",
+    "basePrice": 20,
+    "minPrice": 8,
+    "maxPrice": 55
+  },
+  {
+    "resourceId": "leather_goods",
+    "basePrice": 28,
+    "minPrice": 10,
+    "maxPrice": 72
+  },
+  {
     "resourceId": "furniture",
     "basePrice": 60,
     "minPrice": 25,
     "maxPrice": 130
+  },
+  {
+    "resourceId": "tool",
+    "basePrice": 80,
+    "minPrice": 30,
+    "maxPrice": 200
+  },
+  {
+    "resourceId": "medicine",
+    "basePrice": 70,
+    "minPrice": 25,
+    "maxPrice": 180
+  },
+  {
+    "resourceId": "gem_jewelry",
+    "basePrice": 150,
+    "minPrice": 60,
+    "maxPrice": 400
   }
 ]

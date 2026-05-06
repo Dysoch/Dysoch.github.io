@@ -72,10 +72,10 @@
     ],
     "costMultiplier": 1.5,
     "production": [
-      { "resourceId": "bronze_coins", "amountPerSecond": 0.1 }
+      { "resourceId": "bronze_coins", "amountPerSecond": 0.001 }
     ],
     "consumption": [
-      { "resourceId": "copper_coins", "amountPerSecond": 1000 }
+      { "resourceId": "copper_coins", "amountPerSecond": 10 }
     ]
   },
   {
@@ -94,6 +94,269 @@
     ],
     "consumption": [
       { "resourceId": "bread", "amountPerSecond": 0.1 }
+    ]
+  },
+  {
+    "id": "clay_pit",
+    "name": "Clay Pit",
+    "icon": "🕳️",
+    "description": "An open pit dug for raw clay.",
+    "unlock": { "type": "stat", "key": "clay_earned", "amount": 1 },
+    "baseCost": [
+      { "resourceId": "stone", "amount": 3 }
+    ],
+    "costMultiplier": 1.25,
+    "production": [
+      { "resourceId": "clay", "amountPerSecond": 0.04 }
+    ]
+  },
+  {
+    "id": "sand_pit",
+    "name": "Sand Pit",
+    "icon": "🏜️",
+    "description": "A riverside sand extraction operation.",
+    "unlock": { "type": "stat", "key": "sand_earned", "amount": 1 },
+    "baseCost": [
+      { "resourceId": "stone", "amount": 5 },
+      { "resourceId": "wood", "amount": 3 }
+    ],
+    "costMultiplier": 1.25,
+    "production": [
+      { "resourceId": "sand", "amountPerSecond": 0.05 }
+    ]
+  },
+  {
+    "id": "herbalist",
+    "name": "Herbalist",
+    "icon": "🌿",
+    "description": "A garden cultivating medicinal herbs.",
+    "unlock": { "type": "stat", "key": "herbs_earned", "amount": 1 },
+    "baseCost": [
+      { "resourceId": "wood", "amount": 10 },
+      { "resourceId": "copper_coins", "amount": 200 }
+    ],
+    "costMultiplier": 1.3,
+    "production": [
+      { "resourceId": "herbs", "amountPerSecond": 0.03 }
+    ]
+  },
+  {
+    "id": "fishery",
+    "name": "Fishery",
+    "icon": "🐟",
+    "description": "A fish pond and dock for steady fresh catches.",
+    "unlock": { "type": "stat", "key": "fish_earned", "amount": 5 },
+    "baseCost": [
+      { "resourceId": "wood", "amount": 15 },
+      { "resourceId": "stone", "amount": 5 },
+      { "resourceId": "copper_coins", "amount": 200 }
+    ],
+    "costMultiplier": 1.3,
+    "production": [
+      { "resourceId": "fish", "amountPerSecond": 0.03 }
+    ]
+  },
+  {
+    "id": "coal_pit",
+    "name": "Coal Pit",
+    "icon": "⛏️",
+    "description": "A surface coal mine for steady fuel.",
+    "unlock": { "type": "stat", "key": "coal_earned", "amount": 5 },
+    "baseCost": [
+      { "resourceId": "stone", "amount": 10 },
+      { "resourceId": "copper_coins", "amount": 300 }
+    ],
+    "costMultiplier": 1.35,
+    "production": [
+      { "resourceId": "coal", "amountPerSecond": 0.04 }
+    ]
+  },
+  {
+    "id": "spinning_mill",
+    "name": "Spinning Mill",
+    "icon": "🧶",
+    "description": "A mill that spins raw wool into usable yarn.",
+    "unlock": { "type": "stat", "key": "wool_earned", "amount": 10 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 500 },
+      { "resourceId": "wood", "amount": 15 }
+    ],
+    "costMultiplier": 1.35,
+    "production": [
+      { "resourceId": "yarn", "amountPerSecond": 0.02 }
+    ],
+    "consumption": [
+      { "resourceId": "wool", "amountPerSecond": 0.04 }
+    ]
+  },
+  {
+    "id": "tannery",
+    "name": "Tannery",
+    "icon": "🟫",
+    "description": "A workshop that cures hides into quality leather goods.",
+    "unlock": { "type": "stat", "key": "leather_earned", "amount": 10 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 600 },
+      { "resourceId": "wood", "amount": 15 }
+    ],
+    "costMultiplier": 1.4,
+    "production": [
+      { "resourceId": "leather_goods", "amountPerSecond": 0.01 }
+    ],
+    "consumption": [
+      { "resourceId": "leather", "amountPerSecond": 0.03 }
+    ]
+  },
+  {
+    "id": "iron_mine",
+    "name": "Iron Mine",
+    "icon": "🪨",
+    "description": "A deep shaft mine extracting iron ore.",
+    "unlock": { "type": "stat", "key": "iron_ore_earned", "amount": 10 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 500 },
+      { "resourceId": "cut_stone", "amount": 10 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "iron_ore", "amountPerSecond": 0.03 }
+    ],
+    "consumption": [
+      { "resourceId": "coal", "amountPerSecond": 0.01 }
+    ]
+  },
+  {
+    "id": "smeltery",
+    "name": "Smeltery",
+    "icon": "🔥",
+    "description": "A hot furnace converting ore to metal bars.",
+    "unlock": { "type": "stat", "key": "iron_ore_earned", "amount": 30 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 1000 },
+      { "resourceId": "cut_stone", "amount": 20 },
+      { "resourceId": "brick", "amount": 10 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "iron_bar", "amountPerSecond": 0.01 }
+    ],
+    "consumption": [
+      { "resourceId": "iron_ore", "amountPerSecond": 0.05 },
+      { "resourceId": "coal", "amountPerSecond": 0.02 }
+    ]
+  },
+  {
+    "id": "rope_maker",
+    "name": "Rope Maker",
+    "icon": "🪢",
+    "description": "A workshop turning fiber into rope.",
+    "unlock": { "type": "stat", "key": "fiber_earned", "amount": 20 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 400 },
+      { "resourceId": "wood", "amount": 10 }
+    ],
+    "costMultiplier": 1.3,
+    "production": [
+      { "resourceId": "rope", "amountPerSecond": 0.02 }
+    ],
+    "consumption": [
+      { "resourceId": "fiber", "amountPerSecond": 0.05 }
+    ]
+  },
+  {
+    "id": "brewery",
+    "name": "Brewery",
+    "icon": "🍺",
+    "description": "A brewery crafting fine ale from grain and herbs.",
+    "unlock": { "type": "stat", "key": "wheat_earned", "amount": 50 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 1500 },
+      { "resourceId": "wood", "amount": 20 },
+      { "resourceId": "brick", "amount": 5 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "ale", "amountPerSecond": 0.01 }
+    ],
+    "consumption": [
+      { "resourceId": "wheat", "amountPerSecond": 0.08 },
+      { "resourceId": "herbs", "amountPerSecond": 0.01 }
+    ]
+  },
+  {
+    "id": "glassworks",
+    "name": "Glassworks",
+    "icon": "🪟",
+    "description": "A furnace crafting fine glass from sand.",
+    "unlock": { "type": "stat", "key": "sand_earned", "amount": 30 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 800 },
+      { "resourceId": "brick", "amount": 15 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "glass", "amountPerSecond": 0.008 }
+    ],
+    "consumption": [
+      { "resourceId": "sand", "amountPerSecond": 0.06 },
+      { "resourceId": "coal", "amountPerSecond": 0.02 }
+    ]
+  },
+  {
+    "id": "tavern",
+    "name": "Tavern",
+    "icon": "🍻",
+    "description": "A lively tavern generating steady coin from patrons.",
+    "unlock": { "type": "stat", "key": "building_house_count", "amount": 5 },
+    "baseCost": [
+      { "resourceId": "copper_coins", "amount": 3000 },
+      { "resourceId": "wood", "amount": 30 },
+      { "resourceId": "brick", "amount": 10 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "copper_coins", "amountPerSecond": 3 }
+    ],
+    "consumption": [
+      { "resourceId": "wheat", "amountPerSecond": 0.2 }
+    ]
+  },
+  {
+    "id": "workshop",
+    "name": "Workshop",
+    "icon": "🔧",
+    "description": "A craftsman's workshop turning iron into tools.",
+    "unlock": { "type": "stat", "key": "iron_bar_earned", "amount": 10 },
+    "baseCost": [
+      { "resourceId": "bronze_coins", "amount": 2 },
+      { "resourceId": "iron_bar", "amount": 10 },
+      { "resourceId": "plank", "amount": 20 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "tool", "amountPerSecond": 0.005 }
+    ],
+    "consumption": [
+      { "resourceId": "iron_bar", "amountPerSecond": 0.015 },
+      { "resourceId": "plank", "amountPerSecond": 0.01 }
+    ]
+  },
+  {
+    "id": "gem_cutter",
+    "name": "Gem Cutter",
+    "icon": "💍",
+    "description": "A jeweler's workshop cutting gems into fine jewelry.",
+    "unlock": { "type": "stat", "key": "gems_earned", "amount": 5 },
+    "baseCost": [
+      { "resourceId": "bronze_coins", "amount": 3 },
+      { "resourceId": "iron_bar", "amount": 5 }
+    ],
+    "costMultiplier": 1.5,
+    "production": [
+      { "resourceId": "gem_jewelry", "amountPerSecond": 0.003 }
+    ],
+    "consumption": [
+      { "resourceId": "gems", "amountPerSecond": 0.015 }
     ]
   }
 ]

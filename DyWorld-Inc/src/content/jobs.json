@@ -27,7 +27,17 @@
       {
         "resourceId": "wheat",
         "min": 0,
-        "max": 0.1
+        "max": 0.5
+      },
+      {
+        "resourceId": "earth",
+        "min": 0,
+        "max": 0.04
+      },
+      {
+        "resourceId": "clay",
+        "min": 0,
+        "max": 0.01
       }
     ]
   },
@@ -44,6 +54,11 @@
         "resourceId": "stone",
         "min": 0.1,
         "max": 0.5
+      },
+      {
+        "resourceId": "earth",
+        "min": 0,
+        "max": 0.08
       }
     ]
   },
@@ -82,6 +97,222 @@
         "resourceId": "copper_coins",
         "min": 30,
         "max": 100
+      }
+    ]
+  },
+  {
+    "id": "gather_fiber",
+    "name": "Gather Fiber",
+    "description": "Pull fiber from tall grass and plant stalks.",
+    "icon": "🌿",
+    "category": "manual_labor",
+    "durationSeconds": 6,
+    "unlock": { "type": "stat", "key": "wood_earned", "amount": 5 },
+    "rewards": [
+      {
+        "resourceId": "fiber",
+        "min": 0.2,
+        "max": 0.8
+      },
+      {
+        "resourceId": "herbs",
+        "min": 0,
+        "max": 0.05
+      }
+    ]
+  },
+  {
+    "id": "fishing",
+    "name": "Fishing",
+    "description": "Cast a line into nearby rivers and ponds.",
+    "icon": "🐟",
+    "category": "manual_labor",
+    "durationSeconds": 7,
+    "unlock": { "type": "stat", "key": "wheat_earned", "amount": 5 },
+    "rewards": [
+      {
+        "resourceId": "fish",
+        "min": 0.2,
+        "max": 0.8
+      },
+      {
+        "resourceId": "herbs",
+        "min": 0,
+        "max": 0.03
+      }
+    ]
+  },
+  {
+    "id": "sand_collection",
+    "name": "Sand Collection",
+    "description": "Scoop sand from riverbanks and dry beds.",
+    "icon": "🏜️",
+    "category": "manual_labor",
+    "durationSeconds": 6,
+    "unlock": { "type": "stat", "key": "clay_earned", "amount": 1 },
+    "rewards": [
+      {
+        "resourceId": "sand",
+        "min": 0.3,
+        "max": 1.0
+      },
+      {
+        "resourceId": "clay",
+        "min": 0.02,
+        "max": 0.1
+      }
+    ]
+  },
+  {
+    "id": "hunting",
+    "name": "Hunting",
+    "description": "Track and hunt game in the nearby forests.",
+    "icon": "🏹",
+    "category": "manual_labor",
+    "durationSeconds": 10,
+    "unlock": { "type": "stat", "key": "wood_earned", "amount": 20 },
+    "rewards": [
+      {
+        "resourceId": "leather",
+        "min": 0.1,
+        "max": 0.4
+      },
+      {
+        "resourceId": "fiber",
+        "min": 0,
+        "max": 0.1
+      }
+    ]
+  },
+  {
+    "id": "iron_prospecting",
+    "name": "Iron Prospecting",
+    "description": "Dig for iron ore in rocky hillsides.",
+    "icon": "⛏️",
+    "category": "manual_labor",
+    "durationSeconds": 12,
+    "unlock": { "type": "stat", "key": "job_mining_completed", "amount": 10 },
+    "rewards": [
+      {
+        "resourceId": "iron_ore",
+        "min": 0.1,
+        "max": 0.4
+      },
+      {
+        "resourceId": "coal",
+        "min": 0.05,
+        "max": 0.2
+      }
+    ]
+  },
+  {
+    "id": "herb_gathering",
+    "name": "Herb Gathering",
+    "description": "Search the forest for medicinal herbs.",
+    "icon": "🌱",
+    "category": "manual_labor",
+    "durationSeconds": 8,
+    "unlock": { "type": "stat", "key": "job_forage_completed", "amount": 10 },
+    "rewards": [
+      {
+        "resourceId": "herbs",
+        "min": 0.2,
+        "max": 0.6
+      },
+      {
+        "resourceId": "fiber",
+        "min": 0.05,
+        "max": 0.2
+      }
+    ]
+  },
+  {
+    "id": "shepherding",
+    "name": "Shepherding",
+    "description": "Tend a flock and collect wool from sheep.",
+    "icon": "🐑",
+    "category": "manual_labor",
+    "durationSeconds": 10,
+    "unlock": { "type": "stat", "key": "job_gather_fiber_completed", "amount": 5 },
+    "rewards": [
+      {
+        "resourceId": "wool",
+        "min": 0.2,
+        "max": 0.6
+      },
+      {
+        "resourceId": "leather",
+        "min": 0,
+        "max": 0.05
+      }
+    ]
+  },
+  {
+    "id": "salt_gathering",
+    "name": "Salt Gathering",
+    "description": "Collect mineral salt from dry flats and rock formations.",
+    "icon": "🧂",
+    "category": "manual_labor",
+    "durationSeconds": 8,
+    "unlock": { "type": "stat", "key": "job_mining_completed", "amount": 15 },
+    "rewards": [
+      {
+        "resourceId": "salt",
+        "min": 0.2,
+        "max": 0.7
+      },
+      {
+        "resourceId": "stone",
+        "min": 0,
+        "max": 0.1
+      }
+    ]
+  },
+  {
+    "id": "gem_mining",
+    "name": "Gem Mining",
+    "description": "Delve deep to find precious gemstones.",
+    "icon": "🔮",
+    "category": "manual_labor",
+    "durationSeconds": 18,
+    "unlock": { "type": "stat", "key": "job_iron_prospecting_completed", "amount": 15 },
+    "rewards": [
+      {
+        "resourceId": "gems",
+        "min": 0.02,
+        "max": 0.1
+      },
+      {
+        "resourceId": "iron_ore",
+        "min": 0.1,
+        "max": 0.3
+      }
+    ]
+  },
+  {
+    "id": "contract_work",
+    "name": "Contract Work",
+    "description": "Take a labor contract from the guild for steady pay.",
+    "icon": "📋",
+    "category": "manual_labor",
+    "durationSeconds": 15,
+    "unlock": { "type": "stat", "key": "job_trade_at_market_completed", "amount": 10 },
+    "costs": [
+      {
+        "resourceId": "copper_coins",
+        "amount": 150
+      }
+    ],
+    "rewards": [
+      {
+        "resourceId": "bronze_coins",
+        "min": 0.5,
+        "max": 2
+      },
+      {
+        "resourceId": "copper_coins",
+        "min": 250,
+        "max": 600
       }
     ]
   }

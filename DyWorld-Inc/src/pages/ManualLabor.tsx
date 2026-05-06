@@ -54,11 +54,8 @@ export default function ManualLabor() {
               const durMult = getJobDurationMult(job.id, purchasedSkills)
               const effectiveDuration = job.durationSeconds * durMult
 
-              const rewardResource = job.rewards[0]
               const minMult = getJobRewardMinMult(job.id, purchasedUpgrades, purchasedSkills)
               const maxMult = getJobRewardMaxMult(job.id, purchasedUpgrades, purchasedSkills)
-              const displayMin = rewardResource.min * minMult
-              const displayMax = rewardResource.max * maxMult
 
               // Use actual stored endTime as basis so skills purchased mid-job don't desync the bar
               const actualDurationMs = activeJob && isThisJobActive
@@ -72,9 +69,6 @@ export default function ManualLabor() {
                 ? Math.max(0, Math.ceil((activeJob.endTime - now) / 1000))
                 : effectiveDuration
               const isFinishing = isThisJobActive && remaining === 0
-
-              const rewardRes = resourceMap[rewardResource.resourceId]
-              const rewardLabel = rewardRes ? rewardRes.name : rewardResource.resourceId.replace(/_/g, ' ')
 
               const isQueued = jobQueue.includes(job.id)
 
@@ -91,9 +85,15 @@ export default function ManualLabor() {
 
                       <div className="mb-3" style={{ fontSize: '0.875rem' }}>
                         <span className="badge bg-secondary me-2">⏱ {formatDuration(effectiveDuration)}</span>
-                        <span className="badge bg-success me-1">
-                          +{formatNumber(displayMin)} – {formatNumber(displayMax)} {rewardRes?.icon} {rewardLabel}
-                        </span>
+                        {job.rewards.map((reward) => {
+                          const rewardRes = resourceMap[reward.resourceId]
+                          const rewardLabel = rewardRes ? rewardRes.name : reward.resourceId.replace(/_/g, ' ')
+                          return (
+                            <span key={reward.resourceId} className="badge bg-success me-1">
+                              +{formatNumber(reward.min * minMult)} – {formatNumber(reward.max * maxMult)} {rewardRes?.icon} {rewardLabel}
+                            </span>
+                          )
+                        })}
                         {job.costs?.map((c) => {
                           const costRes = resourceMap[c.resourceId]
                           return (
@@ -141,15 +141,24 @@ export default function ManualLabor() {
                     </div>
 
                     <div className="card-footer text-body-secondary" style={{ fontSize: '0.8rem' }}>
-                      {rewardRes?.icon} {rewardLabel}: {formatNumber(balances[rewardResource.resourceId] ?? 0)}
-                      {job.costs?.filter((c) => c.resourceId !== rewardResource.resourceId).map((c) => {
-                        const costRes = resourceMap[c.resourceId]
+                      {job.rewards.map((reward, idx) => {
+                        const rewardRes = resourceMap[reward.resourceId]
                         return (
-                          <span key={c.resourceId} className="ms-2">
-                            | {costRes?.icon} {costRes?.name ?? c.resourceId.replace(/_/g, ' ')}: {formatNumber(balances[c.resourceId] ?? 0)}
+                          <span key={reward.resourceId} className={idx > 0 ? 'ms-2' : undefined}>
+                            {idx > 0 && '| '}{rewardRes?.icon} {rewardRes?.name ?? reward.resourceId.replace(/_/g, ' ')}: {formatNumber(balances[reward.resourceId] ?? 0)}
                           </span>
                         )
                       })}
+                      {job.costs
+                        ?.filter((c) => !job.rewards.some((r) => r.resourceId === c.resourceId))
+                        .map((c) => {
+                          const costRes = resourceMap[c.resourceId]
+                          return (
+                            <span key={c.resourceId} className="ms-2">
+                              | {costRes?.icon} {costRes?.name ?? c.resourceId.replace(/_/g, ' ')}: {formatNumber(balances[c.resourceId] ?? 0)}
+                            </span>
+                          )
+                        })}
                     </div>
                   </div>
                 </div>
