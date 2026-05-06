@@ -17,20 +17,34 @@ function randomBetween(min: number, max: number): number {
 export default function App() {
   useTheme()
   const tickPassiveIncome = useGameStore((s) => s.tickPassiveIncome)
-  const lastPassiveTick   = useGameStore((s) => s.lastPassiveTick)
   const tickMarket        = useGameStore((s) => s.tickMarket)
 
   // Offline passive income catch-up on mount
   useEffect(() => {
-    const delta = Date.now() - lastPassiveTick
+    const delta = Date.now() - useGameStore.getState().lastPassiveTick
     if (delta > 1000) tickPassiveIncome(delta)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // 1-second passive income tick
+  // 1-second passive income tick — uses actual elapsed time so throttled background tabs don't lose income
   useEffect(() => {
-    const id = setInterval(() => tickPassiveIncome(1000), 1000)
+    const id = setInterval(() => {
+      const delta = Date.now() - useGameStore.getState().lastPassiveTick
+      if (delta > 0) tickPassiveIncome(delta)
+    }, 1000)
     return () => clearInterval(id)
+  }, [tickPassiveIncome])
+
+  // Catch up passive income when tab becomes visible after being backgrounded
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        const delta = Date.now() - useGameStore.getState().lastPassiveTick
+        if (delta > 1000) tickPassiveIncome(delta)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
   }, [tickPassiveIncome])
 
   // Job completion — global so it works on every page, applies multipliers
