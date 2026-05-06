@@ -36,8 +36,8 @@ export default function Upgrades() {
   const visibleUpgrades = allUpgrades.filter((u) => isUnlocked(u.unlock, unlockState))
 
   const manualLaborUpgrades = visibleUpgrades.filter((u) => u.category === 'manual_labor')
-  const propertyUpgrades    = visibleUpgrades.filter((u) => u.category === 'property')
-  const craftingUpgrades    = visibleUpgrades.filter((u) => u.category === 'crafting')
+  const propertyUpgrades = visibleUpgrades.filter((u) => u.category === 'property')
+  const craftingUpgrades = visibleUpgrades.filter((u) => u.category === 'crafting')
 
   function renderSection(title: string, icon: string, list: UpgradeDef[]) {
     if (list.length === 0) return null
@@ -55,7 +55,8 @@ export default function Upgrades() {
 
             return (
               <div className="col-12 col-md-3" key={upg.id}>
-                <div className={`card h-100 ${canAfford ? 'border-primary' : ''}`}>
+                <div className={`card h-100 ${isMaxed ? 'border-success' : canAfford ? '' : 'border-danger'}`}>
+                {/* <div className={`card h-100 ${isMaxed ? 'border-success' : canAfford ? 'border-primary' : 'border-danger'}`}> */}
                   <div className="card-body">
                     <div className="d-flex align-items-start justify-content-between mb-1">
                       <h6 className="card-title mb-0">{upg.name}</h6>

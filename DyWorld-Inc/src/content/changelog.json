@@ -8,7 +8,9 @@
       "Exchanger Mk I — a new building (unlocks after earning 10 000 copper coins) that passively produces Bronze Coins by consuming Copper Coins. Produces 0.1 bronze/sec per building but consumes 1 000 copper/sec per building. Shuts down silently when starved of copper",
       "Statistics: Crafted Resources tab — shows balance, earned, and spent stats for all craftable goods (Planks, Cut Stone, Bricks, Furniture)",
       "Statistics: Crafting tab — shows per-recipe completion counts and total output produced, across This Run, Previous Run, and All Time",
-      "Crafting upgrades now visible — Workshop Tools and Quality Materials appear on the Upgrades page once you have completed at least one craft"
+      "Crafting upgrades now visible — Workshop Tools and Quality Materials appear on the Upgrades page once you have completed at least one craft",
+      "Added new buildings and upgrades for them: Farm",
+      "Added more resources: Wheat, Bread"
     ],
     "changed": [
       "Crafting queue now pre-consumes resources when adding to the queue (not when the craft starts). Removing an item from the queue refunds its inputs. This prevents resource over-spending when filling all worker slots",

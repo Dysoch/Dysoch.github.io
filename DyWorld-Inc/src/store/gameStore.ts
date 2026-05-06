@@ -102,6 +102,7 @@ interface GameStore {
 
   // Building actions
   buyBuilding: (id: string) => boolean
+  buyBuildingN: (id: string, count: number) => number
   tickPassiveIncome: (deltaMs: number) => void
 
   // Market actions
@@ -298,6 +299,39 @@ export const useGameStore = create<GameStore>()(
           lifetimeStats,
         })
         return true
+      },
+
+      buyBuildingN: (id, count) => {
+        const state = get()
+        const def = (buildingsData as Building[]).find((b) => b.id === id)
+        if (!def || count <= 0) return 0
+        const owned = state.buildings[id] ?? 0
+        const costMult = getBuildingCostMult(id, state.purchasedSkills)
+        const updatedResources = { ...state.resources }
+        const costDelta: Record<string, number> = {}
+        let bought = 0
+        for (let i = 0; i < count; i++) {
+          const costs = def.baseCost.map((c) => ({
+            resourceId: c.resourceId,
+            amount: Math.floor(c.amount * Math.pow(def.costMultiplier, owned + i) * costMult),
+          }))
+          if (!costs.every((c) => (updatedResources[c.resourceId] ?? 0) >= c.amount)) break
+          for (const cost of costs) {
+            updatedResources[cost.resourceId] = (updatedResources[cost.resourceId] ?? 0) - cost.amount
+            costDelta[`${cost.resourceId}_spent`] = (costDelta[`${cost.resourceId}_spent`] ?? 0) + cost.amount
+          }
+          bought++
+        }
+        if (bought === 0) return 0
+        costDelta[`building_${id}_count`] = bought
+        const { stats, lifetimeStats } = addStats(state.stats, state.lifetimeStats, costDelta)
+        set({
+          resources: updatedResources,
+          buildings: { ...state.buildings, [id]: owned + bought },
+          stats,
+          lifetimeStats,
+        })
+        return bought
       },
 
       tickPassiveIncome: (deltaMs) => {
