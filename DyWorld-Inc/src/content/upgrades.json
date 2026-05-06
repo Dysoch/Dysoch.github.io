@@ -91,8 +91,8 @@
       [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "stone", "amount": 10 }],
       [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "stone", "amount": 25 }],
       [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }],
-      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }],
-      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }]
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "cut_stone", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "cut_stone", "amount": 500 }]
     ]
   },
   {
@@ -103,12 +103,14 @@
     "target": "quarry",
     "effect": "building_output_mult",
     "magnitude": 1.25,
-    "maxLevel": 3,
+    "maxLevel": 5,
     "unlock": { "type": "stat", "key": "building_quarry_count", "amount": 1 },
     "costsPerLevel": [
       [{ "resourceId": "copper_coins", "amount": 200 }, { "resourceId": "stone", "amount": 10 }],
       [{ "resourceId": "copper_coins", "amount": 500 }, { "resourceId": "stone", "amount": 25 }],
-      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }]
+      [{ "resourceId": "copper_coins", "amount": 1000 }, { "resourceId": "stone", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 1 }, { "resourceId": "cut_stone", "amount": 50 }],
+      [{ "resourceId": "bronze_coins", "amount": 5 }, { "resourceId": "cut_stone", "amount": 500 }]
     ]
   },
   {

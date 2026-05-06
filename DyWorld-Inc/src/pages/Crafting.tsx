@@ -275,25 +275,46 @@ export default function Crafting() {
                     <div className="card-footer p-2">
                       <div className="btn-group w-100">
                         <button
-                          className="btn btn-sm btn-success"
+                          className="btn btn-sm btn-outline-success"
                           disabled={!canCraft}
                           onClick={() => addN(recipe.id, 1)}
                         >
-                          Craft
+                          x1
                         </button>
                         <button
                           className="btn btn-sm btn-outline-success"
                           disabled={!canCraft}
                           onClick={() => addN(recipe.id, Math.min(5, max))}
                         >
-                          ×5
+                          x{Math.min(5, max)}
                         </button>
                         <button
                           className="btn btn-sm btn-outline-success"
                           disabled={!canCraft}
                           onClick={() => addN(recipe.id, Math.min(10, max))}
                         >
-                          ×10
+                          x{Math.min(10, max)}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-success"
+                          disabled={!canCraft}
+                          onClick={() => addN(recipe.id, Math.min(25, max))}
+                        >
+                          x{Math.min(25, max)}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-success"
+                          disabled={!canCraft}
+                          onClick={() => addN(recipe.id, Math.min(50, max))}
+                        >
+                          x{Math.min(50, max)}
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-success"
+                          disabled={!canCraft}
+                          onClick={() => addN(recipe.id, Math.min(100, max))}
+                        >
+                          x{Math.min(100, max)}
                         </button>
                         <button
                           className="btn btn-sm btn-outline-success"
