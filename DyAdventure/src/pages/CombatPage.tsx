@@ -8,7 +8,7 @@ import type { CombatEvent } from '../types'
 function describeEvent(event: CombatEvent): string {
   switch (event.kind) {
     case 'damage':
-      if (event.source === 'monster') return `The monster hit you for ${formatNumber(event.amount)} damage`
+      if (event.source === 'monster') return `The monster hit you for ${formatNumber(event.amount)} damage${event.crit ? ' (critical!)' : ''}`
       return `You hit for ${formatNumber(event.amount)} damage`
     case 'kill':
       return `Defeated ${event.monsterName} at depth ${event.depth}`

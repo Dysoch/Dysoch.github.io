@@ -25,6 +25,7 @@ import type {
   GearCatalogItemDef,
   GearItem,
   GearSlot,
+  GearStatDef,
   MaterialDef,
   PerkDef,
   PerkEffect,
@@ -181,9 +182,38 @@ export function computeAbilityRankCost(abilityId: string, currentRank: number): 
   return Math.floor(def.baseRankCost * Math.pow(def.rankCostMultiplier, currentRank))
 }
 
-export function effectiveGearValue(item: GearItem): number {
+/** Every stat an owned item gives, scaled by its level (+1% per level). */
+export function effectiveGearStats(item: GearItem): GearStatDef[] {
   const catalogDef = getGearCatalogItem(item.catalogId)
-  return catalogDef.baseValue * (1 + 0.01 * (item.level - 1))
+  const levelScale = 1 + 0.01 * (item.level - 1)
+  return catalogDef.stats.map((s) => ({ statId: s.statId, value: s.value * levelScale }))
+}
+
+/** Per-stat difference between two items (item minus other); stats only one of them has count as 0 on the other. */
+export function compareGear(item: GearItem, other: GearItem | null): GearStatDef[] {
+  const mine = effectiveGearStats(item)
+  const theirs = other ? effectiveGearStats(other) : []
+  const ids = [...new Set([...mine, ...theirs].map((s) => s.statId))]
+  const valueOf = (list: GearStatDef[], id: PrimaryStat) => list.find((s) => s.statId === id)?.value ?? 0
+  return ids.map((id) => ({ statId: id, value: valueOf(mine, id) - valueOf(theirs, id) })).filter((d) => Math.abs(d.value) > 0.005)
+}
+
+const CAP_LABELS: Record<string, string> = {
+  staminaCap: 'Stamina Cap',
+  manaCap: 'Mana Cap',
+  hpCap: 'HP Cap',
+  critChance: 'Crit Chance',
+  critDamage: 'Crit Damage',
+  regen: 'Regeneration',
+  resistance: 'Resistance',
+  lifeSteal: 'Life Steal',
+  focusGain: 'Focus Gain',
+  materialFind: 'Material Find',
+}
+
+export function getStatLabel(statId: PrimaryStat): string {
+  if (statId in CAP_LABELS) return CAP_LABELS[statId]
+  return STATS.find((s) => s.id === statId)?.name ?? statId
 }
 
 export function gearBonusForStat(state: SimState, statId: PrimaryStat): number {
@@ -191,18 +221,19 @@ export function gearBonusForStat(state: SimState, statId: PrimaryStat): number {
   let augmentMultiplier = 1
   for (const item of Object.values(state.gear)) {
     if (!item) continue
-    const catalogDef = getGearCatalogItem(item.catalogId)
-    if (catalogDef.primaryStat === statId) base += effectiveGearValue(item)
+    for (const stat of effectiveGearStats(item)) {
+      if (stat.statId === statId) base += stat.value
+    }
     for (const augId of item.augmentIds) {
       const aug = getAugmentDef(augId)
-      if (aug.statId === statId) augmentMultiplier += aug.magnitude
+      if (aug.statId === statId && statId !== 'focusGain') augmentMultiplier += aug.magnitude
     }
   }
   return base * augmentMultiplier
 }
 
 export function focusGainMultiplier(state: SimState): number {
-  let multiplier = 1 + perkBonus(state, 'focusGain')
+  let multiplier = 1 + perkBonus(state, 'focusGain') + bonusFor(state, 'focusGain') * 0.01
   for (const item of Object.values(state.gear)) {
     if (!item) continue
     for (const augId of item.augmentIds) {
@@ -234,6 +265,41 @@ export function computeSetBonusForStat(state: SimState, statId: PrimaryStat): nu
     }
   }
   return bonus
+}
+
+/** Gear plus set bonuses for one stat. */
+export function bonusFor(state: SimState, statId: PrimaryStat): number {
+  return gearBonusForStat(state, statId) + computeSetBonusForStat(state, statId)
+}
+
+/** Chance (0-0.75) that an ability hit is a critical hit: +0.5% per point. */
+export function computeCritChance(state: SimState): number {
+  return Math.min(0.75, bonusFor(state, 'critChance') * 0.005)
+}
+
+/** Damage multiplier on a crit: 1.5x base, +2% per point of Crit Damage. */
+export function computeCritMultiplier(state: SimState): number {
+  return 1.5 + bonusFor(state, 'critDamage') * 0.02
+}
+
+/** Damage reduction (0-0.6): 0.5% per point of Resistance. */
+export function computeResistance(state: SimState): number {
+  return Math.min(0.6, bonusFor(state, 'resistance') * 0.005)
+}
+
+/** Regeneration speed multiplier for HP, Stamina and Mana: +1% per point. */
+export function computeRegenMultiplier(state: SimState): number {
+  return 1 + bonusFor(state, 'regen') * 0.01
+}
+
+/** Fraction of max HP healed per ability hit: 0.1% per point of Life Steal. */
+export function computeLifeStealPct(state: SimState): number {
+  return bonusFor(state, 'lifeSteal') * 0.001
+}
+
+/** Multiplier on material drop chance: +1% per point of Material Find. */
+export function computeMaterialFindMultiplier(state: SimState): number {
+  return 1 + bonusFor(state, 'materialFind') * 0.01
 }
 
 export function computeEffectiveStat(state: SimState, statId: StatId): number {
@@ -272,7 +338,7 @@ export function computeFortune(state: SimState): number {
 
 export function computeEffectiveCooldownMs(state: SimState, abilityId: string): number {
   const def = getAbilityDef(abilityId)
-  const speed = computeEffectiveStat(state, 'speed')
+  const speed = computeEffectiveStat(state, 'speed') + gearBonusForStat(state, 'speed')
   return def.cooldownMs / (1 + speed * SPEED_COOLDOWN_FACTOR)
 }
 
@@ -298,7 +364,7 @@ export function computeMonsterDamage(zone: ZoneDef, depth: number, isBoss: boole
 
 export function computeIncomingDamage(state: SimState, rawDamage: number): number {
   const totalGrit = computeEffectiveStat(state, 'grit') + gearBonusForStat(state, 'grit')
-  return rawDamage / (1 + totalGrit * GRIT_DEFENSE_FACTOR)
+  return (rawDamage / (1 + totalGrit * GRIT_DEFENSE_FACTOR)) * (1 - computeResistance(state))
 }
 
 export function computeMonsterAttackIntervalMs(zone: ZoneDef, isBoss: boolean): number {
@@ -367,7 +433,8 @@ function rollLootCatalogEntry(state: SimState, zone: ZoneDef, depth: number, isB
 export function computeSalvageValue(item: GearItem): number {
   const catalogDef = getGearCatalogItem(item.catalogId)
   const rarityWeight: Record<string, number> = { common: 1, uncommon: 2, rare: 4, epic: 8, legendary: 16 }
-  return Math.max(1, Math.round(catalogDef.baseValue * item.level * (rarityWeight[catalogDef.rarity] ?? 1)))
+  const totalValue = catalogDef.stats.reduce((sum, s) => sum + s.value, 0)
+  return Math.max(1, Math.round(totalValue * item.level * (rarityWeight[catalogDef.rarity] ?? 1)))
 }
 
 export function salvageItem(state: SimState, instanceId: string): { state: SimState; event: CombatEvent | null } {
@@ -388,7 +455,8 @@ export function salvageItem(state: SimState, instanceId: string): { state: SimSt
   return { state: tracked, event: { kind: 'salvage', catalogId: item.catalogId, focusGained, materialId, materialsGained, timestamp: Date.now() } }
 }
 
-function applyRegen(state: SimState, deltaSeconds: number): SimState {
+function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
+  const deltaSeconds = baseDeltaSeconds * computeRegenMultiplier(state)
   const staminaCap = computeStaminaCap(state)
   const manaCap = computeManaCap(state)
   const hpCap = computeHpCap(state)
@@ -450,7 +518,7 @@ function rollMaterialDrops(state: SimState, zone: ZoneDef, depth: number, isBoss
   const amount = (1 + Math.floor(depth / materialsData.killDropDepthStep)) * (isBoss ? materialsData.bossDropMultiplier : 1)
   let next = state
   for (const drop of zone.materialDrops) {
-    if (Math.random() < drop.chance) {
+    if (Math.random() < Math.min(1, drop.chance * computeMaterialFindMultiplier(state))) {
       next = { ...next, materials: { ...next.materials, [drop.materialId]: (next.materials[drop.materialId] ?? 0) + amount } }
       next = addStat(next, `material_${drop.materialId}_gathered`, amount)
     }
@@ -540,8 +608,9 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
     return state
   }
 
-  const damage = computeAbilityDamage(state, abilityId)
-  events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, timestamp: now })
+  const crit = Math.random() < computeCritChance(state)
+  const damage = computeAbilityDamage(state, abilityId) * (crit ? computeCritMultiplier(state) : 1)
+  events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, crit, timestamp: now })
 
   const spentPool = { ...pool, current: pool.current - def.resourceCost }
   const cooldownMs = computeEffectiveCooldownMs(state, abilityId)
@@ -553,6 +622,13 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
 
   next = addStat(maxStat(next, 'highestHit', damage), 'damageDealt', damage)
   next = addStat(addStat(next, 'abilityUses', 1), `ability_${abilityId}_uses`, 1)
+
+  if (crit) next = addStat(next, 'crits', 1)
+  const lifeSteal = computeLifeStealPct(next)
+  if (lifeSteal > 0) {
+    const hpMax = computeHpCap(next)
+    next = { ...next, playerHp: { max: hpMax, current: Math.min(hpMax, next.playerHp.current + hpMax * lifeSteal) } }
+  }
 
   const remainingHp = next.currentMonster!.hp - damage
   if (remainingHp <= 0) {

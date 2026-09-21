@@ -3,6 +3,7 @@ import {
   canAffordCraft,
   computeCraftCost,
   getRarityDef,
+  getStatLabel,
   getSetDef,
   listCraftableItems,
   listMaterials,
@@ -67,6 +68,9 @@ export default function CraftingPage() {
                     <span style={{ fontSize: '10px', color: rarity.color, border: `1px solid ${rarity.color}`, borderRadius: '4px', padding: '0 5px' }}>
                       {rarity.name}
                     </span>
+                  </div>
+                  <div className="small text-body-secondary">
+                    {item.stats.map((st) => `+${formatNumber(st.value)} ${getStatLabel(st.statId)}`).join(', ')}
                   </div>
                   <div className="small">
                     {cost.materials.map((m) => {

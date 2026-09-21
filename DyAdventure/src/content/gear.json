@@ -245,8 +245,12 @@
       "icon": "sword",
       "slot": "weapon",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 2.5,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 2.5
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 1
@@ -257,8 +261,12 @@
       "icon": "armor",
       "slot": "armor",
       "track": "physical",
-      "primaryStat": "grit",
-      "baseValue": 2.5,
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 2.5
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 1
@@ -269,8 +277,12 @@
       "icon": "boots",
       "slot": "boots",
       "track": "physical",
-      "primaryStat": "staminaCap",
-      "baseValue": 6,
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 6
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 1
@@ -281,8 +293,12 @@
       "icon": "gloves",
       "slot": "gloves",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 1.8,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 1.8
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 1
@@ -293,8 +309,12 @@
       "icon": "wand",
       "slot": "focusItem",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 2.5,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 2.5
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 1
@@ -305,8 +325,12 @@
       "icon": "robe",
       "slot": "robe",
       "track": "arcane",
-      "primaryStat": "willpower",
-      "baseValue": 2.5,
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 2.5
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 1
@@ -317,8 +341,12 @@
       "icon": "amulet",
       "slot": "amulet",
       "track": "arcane",
-      "primaryStat": "manaCap",
-      "baseValue": 6,
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 6
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 1
@@ -329,8 +357,12 @@
       "icon": "ring",
       "slot": "ring",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 1.8,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 1.8
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 1
@@ -341,8 +373,12 @@
       "icon": "amulet",
       "slot": "amulet",
       "track": "physical",
-      "primaryStat": "hpCap",
-      "baseValue": 6,
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 6
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 10
@@ -353,8 +389,12 @@
       "icon": "ring",
       "slot": "ring",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 1.8,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 1.8
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 10
@@ -365,8 +405,12 @@
       "icon": "shield",
       "slot": "trinket1",
       "track": "physical",
-      "primaryStat": "grit",
-      "baseValue": 1.8,
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 1.8
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 20
@@ -377,8 +421,12 @@
       "icon": "flame",
       "slot": "trinket2",
       "track": "physical",
-      "primaryStat": "staminaCap",
-      "baseValue": 6,
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 6
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_vanguard",
       "minDepth": 20
@@ -389,8 +437,12 @@
       "icon": "boots",
       "slot": "boots",
       "track": "arcane",
-      "primaryStat": "manaCap",
-      "baseValue": 6,
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 6
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 10
@@ -401,8 +453,12 @@
       "icon": "gloves",
       "slot": "gloves",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 1.8,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 1.8
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 10
@@ -413,8 +469,12 @@
       "icon": "sparkles",
       "slot": "trinket1",
       "track": "arcane",
-      "primaryStat": "willpower",
-      "baseValue": 1.8,
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 1.8
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 20
@@ -425,8 +485,12 @@
       "icon": "burst",
       "slot": "trinket2",
       "track": "arcane",
-      "primaryStat": "manaCap",
-      "baseValue": 6,
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 6
+        }
+      ],
       "rarity": "common",
       "setId": "woodland_adept",
       "minDepth": 20
@@ -437,8 +501,12 @@
       "icon": "clover",
       "slot": "trinket1",
       "track": "universal",
-      "primaryStat": "fortune",
-      "baseValue": 1.5,
+      "stats": [
+        {
+          "statId": "fortune",
+          "value": 1.5
+        }
+      ],
       "rarity": "common",
       "setId": null,
       "minDepth": 1
@@ -449,8 +517,12 @@
       "icon": "backpack",
       "slot": "trinket2",
       "track": "universal",
-      "primaryStat": "fortune",
-      "baseValue": 1.5,
+      "stats": [
+        {
+          "statId": "fortune",
+          "value": 1.5
+        }
+      ],
       "rarity": "common",
       "setId": null,
       "minDepth": 1
@@ -461,8 +533,16 @@
       "icon": "sword",
       "slot": "weapon",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 8,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 8
+        },
+        {
+          "statId": "grit",
+          "value": 3.6
+        }
+      ],
       "rarity": "rare",
       "setId": null,
       "minDepth": 50,
@@ -474,8 +554,16 @@
       "icon": "robe",
       "slot": "robe",
       "track": "arcane",
-      "primaryStat": "willpower",
-      "baseValue": 8,
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 8
+        },
+        {
+          "statId": "regen",
+          "value": 3.6
+        }
+      ],
       "rarity": "rare",
       "setId": null,
       "minDepth": 100,
@@ -487,8 +575,16 @@
       "icon": "axe",
       "slot": "weapon",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 6.0,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 6.0
+        },
+        {
+          "statId": "resistance",
+          "value": 2.7
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 1
@@ -499,8 +595,16 @@
       "icon": "armor",
       "slot": "armor",
       "track": "physical",
-      "primaryStat": "grit",
-      "baseValue": 6.0,
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 6.0
+        },
+        {
+          "statId": "staminaCap",
+          "value": 6.5
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 1
@@ -511,8 +615,16 @@
       "icon": "boots",
       "slot": "boots",
       "track": "physical",
-      "primaryStat": "staminaCap",
-      "baseValue": 14.4,
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 14.4
+        },
+        {
+          "statId": "speed",
+          "value": 2.7
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 1
@@ -523,8 +635,16 @@
       "icon": "gloves",
       "slot": "gloves",
       "track": "physical",
-      "primaryStat": "grit",
-      "baseValue": 4.3,
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 4.3
+        },
+        {
+          "statId": "regen",
+          "value": 1.9
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 1
@@ -535,8 +655,16 @@
       "icon": "amulet",
       "slot": "amulet",
       "track": "physical",
-      "primaryStat": "hpCap",
-      "baseValue": 14.4,
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 14.4
+        },
+        {
+          "statId": "grit",
+          "value": 2.7
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 10
@@ -547,8 +675,16 @@
       "icon": "ring",
       "slot": "ring",
       "track": "physical",
-      "primaryStat": "grit",
-      "baseValue": 4.3,
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 4.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 4.6
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 10
@@ -559,8 +695,16 @@
       "icon": "flame",
       "slot": "trinket1",
       "track": "universal",
-      "primaryStat": "hpCap",
-      "baseValue": 14.4,
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 14.4
+        },
+        {
+          "statId": "speed",
+          "value": 2.7
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 20
@@ -571,8 +715,16 @@
       "icon": "shield",
       "slot": "trinket2",
       "track": "universal",
-      "primaryStat": "grit",
-      "baseValue": 4.3,
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 4.3
+        },
+        {
+          "statId": "materialFind",
+          "value": 1.9
+        }
+      ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
       "minDepth": 20
@@ -583,8 +735,16 @@
       "icon": "sword",
       "slot": "weapon",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 14.0,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 14.0
+        },
+        {
+          "statId": "critDamage",
+          "value": 6.3
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 1
@@ -595,8 +755,16 @@
       "icon": "wand",
       "slot": "focusItem",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 14.0,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 14.0
+        },
+        {
+          "statId": "critDamage",
+          "value": 6.3
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 1
@@ -607,8 +775,16 @@
       "icon": "armor",
       "slot": "armor",
       "track": "physical",
-      "primaryStat": "hpCap",
-      "baseValue": 33.6,
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 33.6
+        },
+        {
+          "statId": "resistance",
+          "value": 6.3
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 1
@@ -619,8 +795,16 @@
       "icon": "robe",
       "slot": "robe",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 10.1,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 10.1
+        },
+        {
+          "statId": "critChance",
+          "value": 4.5
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 1
@@ -631,8 +815,16 @@
       "icon": "amulet",
       "slot": "amulet",
       "track": "arcane",
-      "primaryStat": "manaCap",
-      "baseValue": 33.6,
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 6.3
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 10
@@ -643,8 +835,16 @@
       "icon": "ring",
       "slot": "ring",
       "track": "physical",
-      "primaryStat": "might",
-      "baseValue": 10.1,
+      "stats": [
+        {
+          "statId": "might",
+          "value": 10.1
+        },
+        {
+          "statId": "staminaCap",
+          "value": 10.9
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 10
@@ -655,8 +855,16 @@
       "icon": "flame",
       "slot": "trinket1",
       "track": "universal",
-      "primaryStat": "fortune",
-      "baseValue": 10.1,
+      "stats": [
+        {
+          "statId": "fortune",
+          "value": 10.1
+        },
+        {
+          "statId": "speed",
+          "value": 4.5
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 20
@@ -667,8 +875,16 @@
       "icon": "sparkles",
       "slot": "trinket2",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 10.1,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 10.1
+        },
+        {
+          "statId": "willpower",
+          "value": 4.5
+        }
+      ],
       "rarity": "rare",
       "setId": "ember_zealot",
       "minDepth": 20
@@ -679,8 +895,20 @@
       "icon": "wand",
       "slot": "focusItem",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 32.0,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 32.0
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 1
@@ -691,8 +919,20 @@
       "icon": "robe",
       "slot": "robe",
       "track": "arcane",
-      "primaryStat": "willpower",
-      "baseValue": 32.0,
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 32.0
+        },
+        {
+          "statId": "speed",
+          "value": 14.4
+        },
+        {
+          "statId": "regen",
+          "value": 9.6
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 1
@@ -703,8 +943,20 @@
       "icon": "boots",
       "slot": "boots",
       "track": "universal",
-      "primaryStat": "staminaCap",
-      "baseValue": 76.8,
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 76.8
+        },
+        {
+          "statId": "speed",
+          "value": 14.4
+        },
+        {
+          "statId": "regen",
+          "value": 9.6
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 1
@@ -715,8 +967,20 @@
       "icon": "gloves",
       "slot": "gloves",
       "track": "arcane",
-      "primaryStat": "willpower",
-      "baseValue": 23.0,
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 23.0
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.3
+        },
+        {
+          "statId": "manaCap",
+          "value": 16.6
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 1
@@ -727,8 +991,20 @@
       "icon": "amulet",
       "slot": "amulet",
       "track": "arcane",
-      "primaryStat": "manaCap",
-      "baseValue": 76.8,
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.8
+        },
+        {
+          "statId": "regen",
+          "value": 14.4
+        },
+        {
+          "statId": "speed",
+          "value": 9.6
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 10
@@ -739,8 +1015,20 @@
       "icon": "ring",
       "slot": "ring",
       "track": "arcane",
-      "primaryStat": "arcana",
-      "baseValue": 23.0,
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 23.0
+        },
+        {
+          "statId": "speed",
+          "value": 10.3
+        },
+        {
+          "statId": "critChance",
+          "value": 6.9
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 10
@@ -751,8 +1039,20 @@
       "icon": "sparkles",
       "slot": "trinket1",
       "track": "universal",
-      "primaryStat": "willpower",
-      "baseValue": 23.0,
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 23.0
+        },
+        {
+          "statId": "materialFind",
+          "value": 10.3
+        },
+        {
+          "statId": "fortune",
+          "value": 6.9
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 20
@@ -763,8 +1063,20 @@
       "icon": "burst",
       "slot": "trinket2",
       "track": "universal",
-      "primaryStat": "staminaCap",
-      "baseValue": 76.8,
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 76.8
+        },
+        {
+          "statId": "regen",
+          "value": 14.4
+        },
+        {
+          "statId": "resistance",
+          "value": 9.6
+        }
+      ],
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 20

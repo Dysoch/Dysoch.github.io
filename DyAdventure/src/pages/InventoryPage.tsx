@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import statsData from '../content/stats.json'
 import augmentsData from '../content/augments.json'
 import { useGameStore } from '../store/gameStore'
 import {
   computeEquippedSetCounts,
   computeSetBonusForStat,
-  effectiveGearValue,
+  compareGear,
+  effectiveGearStats,
+  getStatLabel,
   gearBonusForStat,
   getGearCatalogItem,
   getRarityDef,
@@ -14,17 +15,11 @@ import {
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
-import type { AugmentDef, GearItem, GearSlot, PrimaryStat, StatDef } from '../types'
+import type { AugmentDef, GearItem, GearSlot, PrimaryStat } from '../types'
 
-const STATS = statsData as StatDef[]
 const AUGMENTS = augmentsData as AugmentDef[]
 
-const CAP_LABELS: Record<string, string> = { staminaCap: 'Stamina Cap', manaCap: 'Mana Cap', hpCap: 'HP Cap' }
-
-function statLabel(statId: PrimaryStat): string {
-  if (statId in CAP_LABELS) return CAP_LABELS[statId]
-  return STATS.find((s) => s.id === statId)?.name ?? statId
-}
+const statLabel = getStatLabel
 
 const SLOT_LABELS: Record<GearSlot, string> = {
   weapon: 'Weapon',
@@ -39,7 +34,7 @@ const SLOT_LABELS: Record<GearSlot, string> = {
   trinket2: 'Trinket',
 }
 
-const OVERVIEW_STATS: PrimaryStat[] = ['might', 'grit', 'arcana', 'willpower', 'fortune', 'staminaCap', 'manaCap', 'hpCap']
+const OVERVIEW_STATS: PrimaryStat[] = ['might', 'grit', 'arcana', 'willpower', 'fortune', 'speed', 'staminaCap', 'manaCap', 'hpCap', 'critChance', 'critDamage', 'regen', 'resistance', 'lifeSteal', 'focusGain', 'materialFind']
 
 function ItemLine({ item }: { item: GearItem }) {
   const catalogDef = getGearCatalogItem(item.catalogId)
@@ -47,7 +42,7 @@ function ItemLine({ item }: { item: GearItem }) {
   return (
     <span>
       <span style={{ color: rarityDef.color }}>{catalogDef.name}</span>{' '}
-      <span style={{ color: 'var(--text-dim)' }}>Lv.{item.level} · +{formatNumber(effectiveGearValue(item))} {statLabel(catalogDef.primaryStat)}</span>
+      <span style={{ color: 'var(--text-dim)' }}>Lv.{item.level} · {effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(', ')}</span>
     </span>
   )
 }
@@ -146,7 +141,7 @@ export default function InventoryPage() {
           const catalogDef = getGearCatalogItem(item.catalogId)
           const rarityDef = getRarityDef(catalogDef.rarity)
           const equippedInSlot = state.gear[catalogDef.slot]
-          const delta = equippedInSlot ? effectiveGearValue(item) - effectiveGearValue(equippedInSlot) : null
+          const deltas = equippedInSlot ? compareGear(item, equippedInSlot) : null
           const socketedAugments = item.augmentIds.map((id) => AUGMENTS.find((a) => a.id === id)!).filter(Boolean)
           const openSlots = item.augmentIds.length < rarityDef.augmentSlots
           const setLabel = catalogDef.setId ? getSetDef(catalogDef.setId).name : null
@@ -163,9 +158,14 @@ export default function InventoryPage() {
                     </span>
                   </div>
                   {setLabel && <div className="text-body-secondary small">{setLabel} set · {SLOT_LABELS[catalogDef.slot]}</div>}
-                  {delta !== null && (
-                    <div className="small" style={{ color: delta >= 0 ? 'var(--hp)' : 'var(--physical)' }}>
-                      {delta >= 0 ? '▲' : '▼'} {delta >= 0 ? '+' : ''}{formatNumber(delta)} {statLabel(catalogDef.primaryStat)} vs. equipped
+                  {deltas && deltas.length > 0 && (
+                    <div className="small">
+                      {deltas.map((d) => (
+                        <span key={d.statId} style={{ marginRight: '8px', color: d.value >= 0 ? 'var(--hp)' : 'var(--physical)' }}>
+                          {d.value >= 0 ? '▲ +' : '▼ '}{formatNumber(d.value)} {statLabel(d.statId)}
+                        </span>
+                      ))}
+                      <span className="text-body-secondary">vs. equipped</span>
                     </div>
                   )}
                   {!equippedInSlot && <div className="text-body-secondary small">Nothing equipped in this slot yet</div>}

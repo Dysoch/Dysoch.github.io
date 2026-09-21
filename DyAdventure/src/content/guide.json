@@ -61,6 +61,12 @@
       "Finding a duplicate automatically fuses it into your existing copy, raising its level by 1 (each level adds 1% to its stat). Salvaging an item gives Focus instead.",
       "Sets: wearing several pieces of the same set grants bonuses at 2, 4, 6 and 8 pieces. Sets appear in Set Progress once you have found at least one piece. You cannot complete two sets at once — pick one and build around it.",
       "Higher rarity items have augment slots. Augments are learned from boss kills and socketed into gear to permanently boost a stat or Focus gain."
+    ],
+    "bullets": [
+      "Gear can boost several stats — more on higher rarities (1 on common, 2 on uncommon and rare, 3 on epic and above).",
+      "Crit Chance: chance for an ability hit to crit (+0.5% per point, max 75%). Crit Damage: crits deal 1.5× plus 2% per point.",
+      "Resistance: reduces damage taken (0.5% per point, max 60%). Regeneration: +1% HP, Stamina and Mana regen per point.",
+      "Life Steal: heals 0.1% of your max HP per hit, per point. Focus Gain: +1% Focus from kills per point. Material Find: +1% material drop chance per point."
     ]
   },
   {

@@ -3,7 +3,13 @@ import abilitiesData from '../content/abilities.json'
 import zonesData from '../content/zones.json'
 import { useGameStore } from '../store/gameStore'
 import {
+  computeCritChance,
+  computeCritMultiplier,
   computeFortune,
+  computeLifeStealPct,
+  computeMaterialFindMultiplier,
+  computeRegenMultiplier,
+  computeResistance,
   computeHpCap,
   computeManaCap,
   computePhysicalPower,
@@ -97,6 +103,12 @@ export default function StatisticsPage() {
     { label: 'Max Mana', total: formatNumber(computeManaCap(state)) },
     { label: 'Fortune', total: formatNumber(computeFortune(state)) },
     { label: 'Focus gain', total: `×${focusGainMultiplier(state).toFixed(2)}` },
+    { label: 'Crit chance', total: `${(computeCritChance(state) * 100).toFixed(1)}%` },
+    { label: 'Crit damage', total: `×${computeCritMultiplier(state).toFixed(2)}` },
+    { label: 'Damage resistance', total: `${(computeResistance(state) * 100).toFixed(1)}%` },
+    { label: 'Regeneration', total: `×${computeRegenMultiplier(state).toFixed(2)}` },
+    { label: 'Life steal (max HP per hit)', total: `${(computeLifeStealPct(state) * 100).toFixed(2)}%` },
+    { label: 'Material find', total: `×${computeMaterialFindMultiplier(state).toFixed(2)}` },
     { label: 'Stat gain per train', total: `×${computeStatGainPerTrain(state).toFixed(2)}` },
   ]
 

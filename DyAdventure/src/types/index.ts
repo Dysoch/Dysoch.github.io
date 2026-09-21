@@ -21,7 +21,8 @@ export type AbilityType = 'physical' | 'spell'
 
 export type TabId = 'combat' | 'training' | 'abilities' | 'inventory' | 'zones' | 'crafting' | 'statistics' | 'prestige' | 'guide' | 'settings'
 
-export type PrimaryStat = StatId | 'staminaCap' | 'manaCap' | 'hpCap'
+export type ExtraStat = 'critChance' | 'critDamage' | 'regen' | 'resistance' | 'lifeSteal' | 'focusGain' | 'materialFind'
+export type PrimaryStat = StatId | 'staminaCap' | 'manaCap' | 'hpCap' | ExtraStat
 
 export interface StatDef {
   id: StatId
@@ -58,14 +59,19 @@ export interface RarityDef {
   augmentSlots: number
 }
 
+export interface GearStatDef {
+  statId: PrimaryStat
+  value: number
+}
+
 export interface GearCatalogItemDef {
   id: string
   name: string
   icon: string
   slot: GearSlot
   track: GearTrack | 'universal'
-  primaryStat: PrimaryStat
-  baseValue: number
+  /** Every stat this item boosts (more stats on higher rarities) */
+  stats: GearStatDef[]
   rarity: Rarity
   setId: string | null
   minDepth: number
@@ -168,7 +174,7 @@ export interface CurrentMonster {
 }
 
 export type CombatEvent =
-  | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; timestamp: number }
+  | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; crit?: boolean; timestamp: number }
   | { kind: 'loot'; item: GearItem; timestamp: number }
   | { kind: 'fuse'; catalogId: string; newLevel: number; timestamp: number }
   | { kind: 'salvage'; catalogId: string; focusGained: number; materialId: string; materialsGained: number; timestamp: number }

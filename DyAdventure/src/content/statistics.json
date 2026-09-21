@@ -39,6 +39,10 @@
       {
         "key": "abilityUses",
         "label": "Abilities used"
+      },
+      {
+        "key": "crits",
+        "label": "Critical hits"
       }
     ]
   },
