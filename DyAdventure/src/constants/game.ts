@@ -12,8 +12,11 @@ export const GEAR_SLOTS_UNIVERSAL = ['trinket1', 'trinket2'] as const
 
 export const BASE_HP_CAP = 100
 export const HP_REGEN_PCT_PER_SEC = 0.02
+export const DEPTH_CLEARS_MIN = 10
+export const DEPTH_CLEARS_MAX = 25
+export const DESCEND_COOLDOWN_MS = 1500
+export const DESCEND_REGEN_MULTIPLIER = 5
 export const FAINT_RECOVERY_THRESHOLD_PCT = 0.3
 
 export const SPEED_COOLDOWN_FACTOR = 0.01
-export const MANUAL_TRIGGER_DAMAGE_MULTIPLIER = 1.5
 export const GRIT_DEFENSE_FACTOR = 0.01

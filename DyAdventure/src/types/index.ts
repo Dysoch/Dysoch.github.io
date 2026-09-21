@@ -1,4 +1,3 @@
-export type CombatMode = 'active' | 'idle'
 
 export type StatId = 'might' | 'grit' | 'arcana' | 'willpower' | 'fortune' | 'speed'
 
@@ -20,7 +19,7 @@ export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
 
 export type AbilityType = 'physical' | 'spell'
 
-export type TabId = 'combat' | 'training' | 'abilities' | 'inventory' | 'zones' | 'prestige' | 'settings'
+export type TabId = 'combat' | 'training' | 'abilities' | 'inventory' | 'zones' | 'crafting' | 'statistics' | 'prestige' | 'guide' | 'settings'
 
 export type PrimaryStat = StatId | 'staminaCap' | 'manaCap' | 'hpCap'
 
@@ -122,8 +121,15 @@ export interface ZoneDef {
   gearItemIds: string[]
   /** Multiplier applied to Echoes earned when Recalling from this zone */
   echoMultiplier: number
+  materialDrops: { materialId: string; chance: number }[]
   /** Zone unlocked by defeating this zone's Gate Boss (the boss at maxDepth) */
   unlocksZoneId?: string
+}
+
+export interface MaterialDef {
+  id: string
+  name: string
+  description: string
 }
 
 export type PerkEffect = 'trainGain' | 'focusGain' | 'hpCap' | 'dropChance' | 'echoGain' | 'damage'
@@ -162,17 +168,17 @@ export interface CurrentMonster {
 }
 
 export type CombatEvent =
-  | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; manual?: boolean; timestamp: number }
+  | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; timestamp: number }
   | { kind: 'loot'; item: GearItem; timestamp: number }
   | { kind: 'fuse'; catalogId: string; newLevel: number; timestamp: number }
-  | { kind: 'salvage'; catalogId: string; focusGained: number; timestamp: number }
+  | { kind: 'salvage'; catalogId: string; focusGained: number; materialId: string; materialsGained: number; timestamp: number }
+  | { kind: 'crafted'; catalogId: string; timestamp: number }
   | { kind: 'kill'; monsterName: string; depth: number; timestamp: number }
   | { kind: 'levelUp'; statId: StatId; newLevel: number; timestamp: number }
   | { kind: 'bossDefeated'; depth: number; timestamp: number }
   | { kind: 'faint'; checkpointDepth: number; timestamp: number }
   | { kind: 'zoneUnlocked'; zoneId: string; timestamp: number }
   | { kind: 'recovered'; timestamp: number }
-  | { kind: 'notEnoughResource'; abilityId: string; timestamp: number }
 
 export interface SimState {
   saveVersion: number
@@ -184,7 +190,6 @@ export interface SimState {
   stats: Record<StatId, number>
   abilities: Record<string, AbilityProgress>
   abilityCooldowns: Record<string, number>
-  combatMode: CombatMode
   currentZoneId: string
   unlockedZoneIds: string[]
   depthMode: DepthMode
@@ -192,12 +197,22 @@ export interface SimState {
   maxDepthByZone: Record<string, number>
   currentMonster: CurrentMonster | null
   monsterActionTimerMs: number
+  depthClears: number
+  depthClearsRequired: number
+  descendCooldownMs: number
   gear: Record<GearSlot, GearItem | null>
   inventory: GearItem[]
   learnedAugmentIds: string[]
   discoveredItemIds: string[]
   recallCount: number
   ascendCount: number
+  materials: Record<string, number>
+  /** Lifetime counters for the Statistics page (never reset by Recall or Ascend) */
+  lifetime: Record<string, number>
+  /** Same counters, for the current run (since the last Recall) */
+  runStats: Record<string, number>
+  /** Counters of the run that ended with the last Recall or Ascend */
+  lastRunStats: Record<string, number>
   echoes: number
   echoesEarned: number
   sigils: number
@@ -207,8 +222,6 @@ export interface SimState {
 
 export type MainToWorkerMessage =
   | { type: 'INIT'; state: SimState }
-  | { type: 'SET_MODE'; mode: CombatMode }
-  | { type: 'TRIGGER_ABILITY'; abilityId: string }
   | { type: 'SET_DEPTH_MODE'; depthMode: DepthMode }
   | { type: 'SELECT_ZONE'; zoneId: string }
   | { type: 'TRAIN_STAT'; statId: StatId }
@@ -220,6 +233,7 @@ export type MainToWorkerMessage =
   | { type: 'RECALL' }
   | { type: 'ASCEND' }
   | { type: 'BUY_PERK'; perkId: string }
+  | { type: 'CRAFT_ITEM'; catalogId: string }
   | { type: 'IMPORT_SAVE'; state: SimState }
 
 export type WorkerToMainMessage =

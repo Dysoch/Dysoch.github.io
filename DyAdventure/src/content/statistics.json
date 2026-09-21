@@ -1,0 +1,101 @@
+[
+  {
+    "title": "General",
+    "rows": [
+      {
+        "key": "timeMs",
+        "label": "Time adventuring (incl. offline)",
+        "format": "time"
+      },
+      {
+        "key": "kills",
+        "label": "Monsters defeated"
+      },
+      {
+        "key": "bossKills",
+        "label": "Bosses defeated"
+      },
+      {
+        "key": "faints",
+        "label": "Times fainted"
+      }
+    ]
+  },
+  {
+    "title": "Combat",
+    "rows": [
+      {
+        "key": "damageDealt",
+        "label": "Damage dealt"
+      },
+      {
+        "key": "damageTaken",
+        "label": "Damage taken"
+      },
+      {
+        "key": "highestHit",
+        "label": "Highest single hit"
+      },
+      {
+        "key": "abilityUses",
+        "label": "Abilities used"
+      }
+    ]
+  },
+  {
+    "title": "Focus",
+    "rows": [
+      {
+        "key": "focusEarned",
+        "label": "Focus earned"
+      },
+      {
+        "key": "focusSpent",
+        "label": "Focus spent"
+      }
+    ]
+  },
+  {
+    "title": "Gear",
+    "rows": [
+      {
+        "key": "itemsFound",
+        "label": "Items found"
+      },
+      {
+        "key": "itemsFused",
+        "label": "Duplicates fused"
+      },
+      {
+        "key": "itemsCrafted",
+        "label": "Items crafted"
+      },
+      {
+        "key": "itemsSalvaged",
+        "label": "Items salvaged"
+      }
+    ]
+  },
+  {
+    "title": "Prestige",
+    "rows": [
+      {
+        "key": "recalls",
+        "label": "Total Recalls"
+      },
+      {
+        "key": "echoesEarnedTotal",
+        "label": "Total Echoes earned"
+      },
+      {
+        "key": "ascends",
+        "label": "Total Ascensions"
+      },
+      {
+        "key": "sigilsEarnedTotal",
+        "label": "Total Sigils earned"
+      }
+    ],
+    "totalOnly": true
+  }
+]

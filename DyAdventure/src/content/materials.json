@@ -1,0 +1,91 @@
+{
+  "materials": [
+    {
+      "id": "wood",
+      "name": "Wood",
+      "description": "Sturdy timber for hafts, staves and frames."
+    },
+    {
+      "id": "stone",
+      "name": "Stone",
+      "description": "Heavy stone and ore for weapons and plating."
+    },
+    {
+      "id": "crystals",
+      "name": "Crystals",
+      "description": "Shimmering crystals used for jewelry and enchanting."
+    },
+    {
+      "id": "leather",
+      "name": "Leather",
+      "description": "Tough hides for armor, boots and gloves."
+    }
+  ],
+  "slotMaterials": {
+    "weapon": [
+      "stone",
+      "wood"
+    ],
+    "armor": [
+      "leather",
+      "stone"
+    ],
+    "boots": [
+      "leather",
+      "wood"
+    ],
+    "gloves": [
+      "leather",
+      "crystals"
+    ],
+    "focusItem": [
+      "wood",
+      "crystals"
+    ],
+    "robe": [
+      "leather",
+      "crystals"
+    ],
+    "amulet": [
+      "crystals",
+      "stone"
+    ],
+    "ring": [
+      "crystals",
+      "stone"
+    ],
+    "trinket1": [
+      "crystals",
+      "leather"
+    ],
+    "trinket2": [
+      "wood",
+      "leather"
+    ]
+  },
+  "craftCostByRarity": {
+    "common": {
+      "materials": 15,
+      "focus": 50
+    },
+    "uncommon": {
+      "materials": 40,
+      "focus": 300
+    },
+    "rare": {
+      "materials": 100,
+      "focus": 1500
+    },
+    "epic": {
+      "materials": 250,
+      "focus": 8000
+    },
+    "legendary": {
+      "materials": 600,
+      "focus": 40000
+    }
+  },
+  "salvageMaterialDivisor": 2,
+  "killDropDepthStep": 25,
+  "bossDropMultiplier": 3
+}

@@ -4,7 +4,6 @@ import { SAVE_DEBOUNCE_MS, SAVE_VERSION, STORAGE_KEY } from '../constants'
 import { createInitialState } from '../worker/simLogic'
 import type {
   CombatEvent,
-  CombatMode,
   DepthMode,
   GearSlot,
   SimState,
@@ -22,8 +21,6 @@ interface GameStore extends PersistedSlice {
   activeTab: TabId
   combatLog: CombatEvent[]
   setActiveTab: (id: TabId) => void
-  setMode: (mode: CombatMode) => void
-  triggerAbility: (abilityId: string) => void
   setDepthMode: (depthMode: DepthMode) => void
   selectZone: (zoneId: string) => void
   trainStat: (statId: StatId) => void
@@ -35,6 +32,7 @@ interface GameStore extends PersistedSlice {
   recall: () => void
   ascend: () => void
   buyPerk: (perkId: string) => void
+  craftItem: (catalogId: string) => void
   exportSave: () => string
   importSave: (data: string) => boolean
   resetGame: () => void
@@ -97,8 +95,6 @@ export const useGameStore = create<GameStore>()(
 
       setActiveTab: (id) => set({ activeTab: id }),
 
-      setMode: (mode) => post({ type: 'SET_MODE', mode }),
-      triggerAbility: (abilityId) => post({ type: 'TRIGGER_ABILITY', abilityId }),
       setDepthMode: (depthMode) => post({ type: 'SET_DEPTH_MODE', depthMode }),
       selectZone: (zoneId) => post({ type: 'SELECT_ZONE', zoneId }),
       trainStat: (statId) => post({ type: 'TRAIN_STAT', statId }),
@@ -110,6 +106,7 @@ export const useGameStore = create<GameStore>()(
       recall: () => post({ type: 'RECALL' }),
       ascend: () => post({ type: 'ASCEND' }),
       buyPerk: (perkId) => post({ type: 'BUY_PERK', perkId }),
+      craftItem: (catalogId) => post({ type: 'CRAFT_ITEM', catalogId }),
 
       exportSave: () => btoa(JSON.stringify(omitUiFields(get()))),
 

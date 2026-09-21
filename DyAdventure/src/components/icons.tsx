@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 
 const PATHS: Record<string, string> = {
+  book: '<path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h10"/>',
   sword: '<path d="M5 19L18 6"/><path d="M15 3l3 3-2 2-3-3z"/>',
   slash: '<path d="M4 6l14 14M18 6L4 20"/>',
   axe: '<path d="M6 4l4 4-6 6 2 2 6-6 4 4 4-10z"/>',

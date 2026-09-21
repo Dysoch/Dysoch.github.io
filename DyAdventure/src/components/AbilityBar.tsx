@@ -8,29 +8,22 @@ const ABILITIES = abilitiesData as AbilityDef[]
 
 export default function AbilityBar() {
   const state = useGameStore((s) => s)
-  const triggerAbility = useGameStore((s) => s.triggerAbility)
-  const isActive = state.combatMode === 'active'
 
   return (
     <div className="ability-bar">
       {ABILITIES.map((ability) => {
         const progress = state.abilities[ability.id]
         const rank = progress ? progress.rank : 0
-        const pool = ability.type === 'physical' ? state.stamina : state.mana
         const cooldownRemaining = state.abilityCooldowns[ability.id] ?? 0
         const totalCooldown = computeEffectiveCooldownMs(state, ability.id)
         const readyPct = totalCooldown > 0 ? Math.max(0, Math.min(100, (1 - cooldownRemaining / totalCooldown) * 100)) : 100
         const ready = cooldownRemaining <= 0
-        const affordable = rank > 0 && pool.current >= ability.resourceCost
-        const clickable = isActive && ready && affordable && !state.fainted
 
         return (
-          <button
+          <div
             key={ability.id}
-            type="button"
             className={`ability-tile ${ability.type}`}
-            disabled={!clickable}
-            onClick={() => triggerAbility(ability.id)}
+            style={{ opacity: rank === 0 ? 0.55 : 1 }}
             title={rank === 0 ? `${ability.name} — not trained yet` : ability.description}
           >
             <Icon name={ability.icon} size={18} />
@@ -47,7 +40,7 @@ export default function AbilityBar() {
                 }}
               />
             </div>
-          </button>
+          </div>
         )
       })}
     </div>

@@ -8,7 +8,10 @@ const TABS: { id: TabId; icon: string; label: string }[] = [
   { id: 'abilities', icon: 'sparkles', label: 'Abilities' },
   { id: 'inventory', icon: 'backpack', label: 'Inventory' },
   { id: 'zones', icon: 'map', label: 'Zones' },
+  { id: 'crafting', icon: 'cog', label: 'Crafting' },
+  { id: 'statistics', icon: 'crown', label: 'Statistics' },
   { id: 'prestige', icon: 'crown', label: 'Prestige' },
+  { id: 'guide', icon: 'book', label: 'Guide' },
   { id: 'settings', icon: 'cog', label: 'Settings' },
 ]
 

@@ -233,12 +233,6 @@ a {
   background: var(--panel);
   border: 1px solid var(--border);
   color: var(--text);
-  cursor: pointer;
-}
-
-.ability-tile:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 .ability-tile.physical {
@@ -315,4 +309,22 @@ a {
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.stat-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  text-align: right;
+}
+
+.stat-row > :first-child {
+  text-align: left;
 }

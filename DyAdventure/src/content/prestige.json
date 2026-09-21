@@ -1,7 +1,7 @@
 {
   "recall": {
-    "minDepth": 100,
-    "baseEchoes": 5,
+    "minDepth": 51,
+    "baseEchoes": 1,
     "depthExponent": 1.5
   },
   "ascend": {

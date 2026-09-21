@@ -1,0 +1,100 @@
+[
+  {
+    "id": "basics",
+    "title": "The Basics",
+    "paragraphs": [
+      "DyAdventure is an idle dungeon crawler. Your adventurer fights monsters automatically, descends deeper, and grows stronger between fights. You can leave the game running or close it — progress continues while you are away (up to 48 hours).",
+      "The loop: fight monsters → earn Focus and loot → spend Focus on stats and abilities → equip better gear → push deeper → Recall for permanent power."
+    ]
+  },
+  {
+    "id": "combat",
+    "title": "Combat & Depth",
+    "paragraphs": [
+      "Your abilities fire on their own whenever they are off cooldown and you can afford their cost. Monsters attack on a timer shown under their health bar.",
+      "Each depth needs a random {clearsMin}–{clearsMax} clears before you descend. Boss floors (every few dozen floors) are a single, much tougher fight. After clearing a floor there is a short {cooldown}-second cooldown with boosted regeneration before the next floor starts.",
+      "Auto-descend moves you down automatically. Turn it off to pin a depth you have already reached and farm it — useful if the next floor is too hard. You can never pin deeper than your deepest reached depth."
+    ],
+    "bullets": [
+      "Physical abilities cost Stamina; spells cost Mana. Both regenerate over time, and regenerate faster during the descend cooldown.",
+      "Health regenerates slowly. If it reaches zero you faint."
+    ]
+  },
+  {
+    "id": "fainting",
+    "title": "Fainting & Checkpoints",
+    "paragraphs": [
+      "When you faint you are sent back to your last checkpoint and cannot fight until you recover part of your health.",
+      "A checkpoint is the first floor after the last boss you defeated (for example floor 51 once the floor-50 boss is beaten). Beat bosses to move your checkpoint forward.",
+      "The combat page shows both your deepest depth and your current checkpoint."
+    ]
+  },
+  {
+    "id": "training",
+    "title": "Training & Focus",
+    "paragraphs": [
+      "Focus is your main currency. You earn it from kills (more on deeper floors) and by salvaging gear. Spend it on the Training page to raise stats permanently for the current run.",
+      "Each stat costs more than the last, so spread your training out sensibly."
+    ],
+    "bullets": [
+      "Might: +8% physical damage per point.",
+      "Grit: +1.5 max HP per point and reduces damage taken.",
+      "Arcana: +8% spell damage per point.",
+      "Willpower: +1.5 max Mana per point.",
+      "Fortune: better loot chance and Focus rewards.",
+      "Speed: abilities come off cooldown faster."
+    ]
+  },
+  {
+    "id": "abilities",
+    "title": "Abilities",
+    "paragraphs": [
+      "Spend Focus to rank up abilities. Higher ranks mean more damage per hit. An ability at rank 0 is locked and does nothing — you begin with Strike and Bolt.",
+      "Stronger abilities cost more resource and have longer cooldowns, so a mix of fast and heavy hitters usually works best."
+    ]
+  },
+  {
+    "id": "gear",
+    "title": "Gear, Sets & Augments",
+    "paragraphs": [
+      "Monsters drop gear from the current zone's loot pool. Some items only drop from bosses or below a certain depth. There are 10 equipment slots.",
+      "Finding a duplicate automatically fuses it into your existing copy, raising its level by 1 (each level adds 1% to its stat). Salvaging an item gives Focus instead.",
+      "Sets: wearing several pieces of the same set grants bonuses at 2, 4, 6 and 8 pieces. Sets appear in Set Progress once you have found at least one piece. You cannot complete two sets at once — pick one and build around it.",
+      "Higher rarity items have augment slots. Augments are learned from boss kills and socketed into gear to permanently boost a stat or Focus gain."
+    ]
+  },
+  {
+    "id": "zones",
+    "title": "Zones",
+    "paragraphs": [
+      "Each zone has its own monsters, loot and difficulty. You start in the Whispering Woods.",
+      "Defeating a zone's Gate Boss (the boss at depth {gateDepth}) unlocks the next zone. Later zones are much harder but give more Echoes when you Recall."
+    ]
+  },
+  {
+    "id": "crafting",
+    "title": "Materials & Crafting",
+    "paragraphs": [
+      "Monsters drop four materials — Wood, Stone, Crystals and Leather — and each zone favors different ones. Bosses and deeper floors drop more. Salvaging gear also yields materials, matching the type of item (for example armor gives Leather).",
+      "On the Crafting page you can craft any gear piece you have already discovered. Each piece costs Focus plus two materials, and the price rises with rarity. Crafting a piece you already own fuses it into a level, exactly like a duplicate drop.",
+      "Crafting is how you finish a set when luck runs out — but you still have to find a piece once to unlock its recipe. Boss-only uniques cannot be crafted."
+    ]
+  },
+  {
+    "id": "prestige",
+    "title": "Prestige: Recall & Ascend",
+    "paragraphs": [
+      "Recall resets your stats, ability ranks, Focus and depth, but keeps your gear, discoveries and zone unlocks. It is available once you reach depth {recallDepth} in any zone, and rewards Echoes — the deeper you went, the more you earn (and deeper zones multiply it).",
+      "Echoes buy Echo perks: faster training, more Focus, extra HP and better drop chance. Each Recall also permanently gives a small stat-gain bonus for the current Ascension.",
+      "Ascend is the next layer. After earning {ascendEchoes} Echoes in total, you can Ascend to earn Sigils — the more Echoes you earned since your last Ascend, the more Sigils you get. Ascending resets your Echoes and Echo perks.",
+      "Sigils buy permanent perks that survive every Ascend, such as bigger Echo rewards and a global damage bonus. Each Ascension also boosts your stat gain."
+    ]
+  },
+  {
+    "id": "saving",
+    "title": "Saving",
+    "paragraphs": [
+      "The game saves automatically every few seconds and whenever you leave the page. Use the Settings page to export your save as text (a backup or to move it to another device), import one, or reset everything."
+    ]
+  }
+]

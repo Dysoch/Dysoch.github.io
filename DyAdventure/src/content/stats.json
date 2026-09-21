@@ -5,7 +5,7 @@
     "icon": "sword",
     "description": "+8% physical damage per point.",
     "baseTrainCost": 10,
-    "trainCostMultiplier": 1.12
+    "trainCostMultiplier": 1.09
   },
   {
     "id": "grit",
@@ -13,7 +13,7 @@
     "icon": "shield",
     "description": "+1.5 max HP and reduces monster damage taken.",
     "baseTrainCost": 10,
-    "trainCostMultiplier": 1.12
+    "trainCostMultiplier": 1.08
   },
   {
     "id": "arcana",
@@ -21,7 +21,7 @@
     "icon": "wand",
     "description": "+8% spell damage per point.",
     "baseTrainCost": 10,
-    "trainCostMultiplier": 1.12
+    "trainCostMultiplier": 1.11
   },
   {
     "id": "willpower",
@@ -29,7 +29,7 @@
     "icon": "sparkles",
     "description": "+1.5 max Mana and future magic defense.",
     "baseTrainCost": 10,
-    "trainCostMultiplier": 1.12
+    "trainCostMultiplier": 1.09
   },
   {
     "id": "fortune",
@@ -37,7 +37,7 @@
     "icon": "clover",
     "description": "Increases loot quantity and loot rarity.",
     "baseTrainCost": 15,
-    "trainCostMultiplier": 1.15
+    "trainCostMultiplier": 1.17
   },
   {
     "id": "speed",

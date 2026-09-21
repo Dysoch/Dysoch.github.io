@@ -7,7 +7,10 @@ import TrainingPage from './pages/TrainingPage'
 import AbilitiesPage from './pages/AbilitiesPage'
 import InventoryPage from './pages/InventoryPage'
 import ZonesPage from './pages/ZonesPage'
+import CraftingPage from './pages/CraftingPage'
+import StatisticsPage from './pages/StatisticsPage'
 import PrestigePage from './pages/PrestigePage'
+import GuidePage from './pages/GuidePage'
 import SettingsPage from './pages/SettingsPage'
 
 function App() {
@@ -23,7 +26,10 @@ function App() {
         {activeTab === 'abilities' && <AbilitiesPage />}
         {activeTab === 'inventory' && <InventoryPage />}
         {activeTab === 'zones' && <ZonesPage />}
+        {activeTab === 'crafting' && <CraftingPage />}
+        {activeTab === 'statistics' && <StatisticsPage />}
         {activeTab === 'prestige' && <PrestigePage />}
+        {activeTab === 'guide' && <GuidePage />}
         {activeTab === 'settings' && <SettingsPage />}
       </div>
     </div>

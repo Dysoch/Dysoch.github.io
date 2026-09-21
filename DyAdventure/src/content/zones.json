@@ -8,7 +8,7 @@
     "bossEvery": 50,
     "baseMonsterPower": 5,
     "perDepthGrowthPct": 4,
-    "bossPowerMultiplier": 6,
+    "bossPowerMultiplier": 4,
     "baseMonsterDamage": 3,
     "baseMonsterAttackIntervalMs": 2500,
     "bossAttackIntervalMultiplier": 0.6,
@@ -47,15 +47,29 @@
       "spider_silk_cloak"
     ],
     "echoMultiplier": 1,
-    "unlocksZoneId": "sunken_crypt"
+    "unlocksZoneId": "sunken_crypt",
+    "materialDrops": [
+      {
+        "materialId": "wood",
+        "chance": 0.5
+      },
+      {
+        "materialId": "leather",
+        "chance": 0.3
+      },
+      {
+        "materialId": "stone",
+        "chance": 0.15
+      }
+    ]
   },
   {
     "id": "sunken_crypt",
     "name": "Sunken Crypt",
     "description": "A flooded burial complex where the dead refuse to rest.",
     "minDepth": 1,
-    "maxDepth": 1000,
-    "bossEvery": 50,
+    "maxDepth": 750,
+    "bossEvery": 75,
     "baseMonsterPower": 250,
     "perDepthGrowthPct": 3.5,
     "bossPowerMultiplier": 6,
@@ -87,15 +101,29 @@
       "tattered_pouch"
     ],
     "echoMultiplier": 2,
-    "unlocksZoneId": "ember_caverns"
+    "unlocksZoneId": "ember_caverns",
+    "materialDrops": [
+      {
+        "materialId": "stone",
+        "chance": 0.5
+      },
+      {
+        "materialId": "leather",
+        "chance": 0.25
+      },
+      {
+        "materialId": "crystals",
+        "chance": 0.15
+      }
+    ]
   },
   {
     "id": "ember_caverns",
     "name": "Ember Caverns",
     "description": "Volcanic tunnels crawling with fast, fire-touched horrors.",
     "minDepth": 1,
-    "maxDepth": 1000,
-    "bossEvery": 50,
+    "maxDepth": 500,
+    "bossEvery": 100,
     "baseMonsterPower": 1200,
     "perDepthGrowthPct": 3.5,
     "bossPowerMultiplier": 6,
@@ -127,15 +155,29 @@
       "tattered_pouch"
     ],
     "echoMultiplier": 3.5,
-    "unlocksZoneId": "frostbound_peaks"
+    "unlocksZoneId": "frostbound_peaks",
+    "materialDrops": [
+      {
+        "materialId": "stone",
+        "chance": 0.4
+      },
+      {
+        "materialId": "crystals",
+        "chance": 0.35
+      },
+      {
+        "materialId": "leather",
+        "chance": 0.2
+      }
+    ]
   },
   {
     "id": "frostbound_peaks",
     "name": "Frostbound Peaks",
     "description": "A frozen summit where slow, crushing giants stalk the blizzard.",
     "minDepth": 1,
-    "maxDepth": 1000,
-    "bossEvery": 50,
+    "maxDepth": 250,
+    "bossEvery": 10,
     "baseMonsterPower": 5000,
     "perDepthGrowthPct": 3.5,
     "bossPowerMultiplier": 6,
@@ -166,6 +208,20 @@
       "lucky_charm",
       "tattered_pouch"
     ],
-    "echoMultiplier": 5
+    "echoMultiplier": 5,
+    "materialDrops": [
+      {
+        "materialId": "crystals",
+        "chance": 0.5
+      },
+      {
+        "materialId": "leather",
+        "chance": 0.3
+      },
+      {
+        "materialId": "wood",
+        "chance": 0.25
+      }
+    ]
   }
 ]

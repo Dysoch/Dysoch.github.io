@@ -1,9 +1,10 @@
 import { TICK_MS, STATE_SYNC_MS, MAX_OFFLINE_SIMULATED_MS } from '../constants'
-import type { CombatEvent, MainToWorkerMessage, SimState, WorkerToMainMessage } from '../types'
+import type { MainToWorkerMessage, SimState, WorkerToMainMessage } from '../types'
 import {
   advanceTick,
   ascend,
   buyPerk,
+  craftItem,
   createInitialState,
   equipItem,
   recall,
@@ -13,7 +14,6 @@ import {
   simulateOfflineElapsed,
   socketAugment,
   trainStat,
-  triggerManualAbility,
   unequipItem,
   upgradeAbility,
 } from './simLogic'
@@ -69,15 +69,6 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       syncState()
       break
     }
-    case 'SET_MODE':
-      state = { ...state, combatMode: msg.mode }
-      break
-    case 'TRIGGER_ABILITY': {
-      const events: CombatEvent[] = []
-      state = triggerManualAbility(state, msg.abilityId, now, events)
-      for (const event of events) post({ type: 'EVENT', event })
-      break
-    }
     case 'SET_DEPTH_MODE':
       state = setDepthMode(state, msg.depthMode)
       break
@@ -111,6 +102,12 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
     case 'ASCEND':
       state = ascend(state)
       break
+    case 'CRAFT_ITEM': {
+      const result = craftItem(state, msg.catalogId, now)
+      state = result.state
+      for (const event of result.events) post({ type: 'EVENT', event })
+      break
+    }
     case 'BUY_PERK':
       state = buyPerk(state, msg.perkId)
       break

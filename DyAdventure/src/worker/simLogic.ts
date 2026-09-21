@@ -4,12 +4,16 @@ import gearData from '../content/gear.json'
 import augmentsData from '../content/augments.json'
 import zonesData from '../content/zones.json'
 import prestigeData from '../content/prestige.json'
+import materialsData from '../content/materials.json'
 import {
   BASE_HP_CAP,
+  DEPTH_CLEARS_MAX,
+  DEPTH_CLEARS_MIN,
+  DESCEND_COOLDOWN_MS,
+  DESCEND_REGEN_MULTIPLIER,
   FAINT_RECOVERY_THRESHOLD_PCT,
   GRIT_DEFENSE_FACTOR,
   HP_REGEN_PCT_PER_SEC,
-  MANUAL_TRIGGER_DAMAGE_MULTIPLIER,
   SPEED_COOLDOWN_FACTOR,
 } from '../constants'
 import type {
@@ -21,6 +25,7 @@ import type {
   GearCatalogItemDef,
   GearItem,
   GearSlot,
+  MaterialDef,
   PerkDef,
   PerkEffect,
   PrimaryStat,
@@ -40,12 +45,32 @@ const SETS = gearData.sets as SetDef[]
 const AUGMENTS = augmentsData as AugmentDef[]
 const ZONES = zonesData as ZoneDef[]
 const PERKS = prestigeData.perks as PerkDef[]
+const MATERIALS = materialsData.materials as MaterialDef[]
+const SLOT_MATERIALS = materialsData.slotMaterials as Record<GearSlot, [string, string]>
+const CRAFT_COSTS = materialsData.craftCostByRarity as Record<string, { materials: number; focus: number }>
 const RECALL_CONFIG = prestigeData.recall
 const ASCEND_CONFIG = prestigeData.ascend
 
 const BASE_STAMINA_CAP = 100
 const BASE_MANA_CAP = 100
 const REGEN_PCT_PER_SEC = 0.05
+
+/** Adds to a statistics counter, both lifetime and for the current run (see the Statistics page). */
+export function addStat(state: SimState, key: string, amount: number): SimState {
+  return {
+    ...state,
+    lifetime: { ...state.lifetime, [key]: (state.lifetime[key] ?? 0) + amount },
+    runStats: { ...state.runStats, [key]: (state.runStats[key] ?? 0) + amount },
+  }
+}
+
+/** Raises a "best" counter (lifetime and current run) if the value is higher. */
+function maxStat(state: SimState, key: string, value: number): SimState {
+  const lifetime = (state.lifetime[key] ?? 0) >= value ? state.lifetime : { ...state.lifetime, [key]: value }
+  const runStats = (state.runStats[key] ?? 0) >= value ? state.runStats : { ...state.runStats, [key]: value }
+  if (lifetime === state.lifetime && runStats === state.runStats) return state
+  return { ...state, lifetime, runStats }
+}
 
 export function getStatDef(id: StatId): StatDef {
   const def = STATS.find((s) => s.id === id)
@@ -63,6 +88,38 @@ export function getZoneDef(id: string): ZoneDef {
   const def = ZONES.find((z) => z.id === id)
   if (!def) throw new Error(`Unknown zone: ${id}`)
   return def
+}
+
+export function listMaterials(): MaterialDef[] {
+  return MATERIALS
+}
+
+export interface CraftCost {
+  focus: number
+  materials: { materialId: string; amount: number }[]
+}
+
+export function computeCraftCost(catalogId: string): CraftCost {
+  const def = getGearCatalogItem(catalogId)
+  const cost = CRAFT_COSTS[def.rarity] ?? CRAFT_COSTS.common
+  const [primary, secondary] = SLOT_MATERIALS[def.slot]
+  return {
+    focus: cost.focus,
+    materials: [
+      { materialId: primary, amount: cost.materials },
+      { materialId: secondary, amount: Math.ceil(cost.materials / 2) },
+    ],
+  }
+}
+
+/** Items the player can craft: discovered, and not a boss-only unique. */
+export function listCraftableItems(state: SimState): GearCatalogItemDef[] {
+  return GEAR_ITEMS.filter((i) => !i.bossOnly && state.discoveredItemIds.includes(i.id))
+}
+
+export function canAffordCraft(state: SimState, catalogId: string): boolean {
+  const cost = computeCraftCost(catalogId)
+  return state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
 }
 
 export function listPerks(): PerkDef[] {
@@ -271,8 +328,23 @@ export function spawnMonster(zone: ZoneDef, depth: number): CurrentMonster {
   return { name, isBoss: boss, hp: maxHp, maxHp, depth }
 }
 
-function resetMonsterEncounter(zone: ZoneDef, depth: number): Pick<SimState, 'currentMonster' | 'monsterActionTimerMs'> {
-  return { currentMonster: spawnMonster(zone, depth), monsterActionTimerMs: 0 }
+/** Boss floors are a single fight; every other floor needs a random number of clears before descending. */
+function rollClearsRequired(zone: ZoneDef, depth: number): number {
+  if (isBossDepth(zone, depth)) return 1
+  return DEPTH_CLEARS_MIN + Math.floor(Math.random() * (DEPTH_CLEARS_MAX - DEPTH_CLEARS_MIN + 1))
+}
+
+type EncounterFields = Pick<SimState, 'currentMonster' | 'monsterActionTimerMs' | 'depthClears' | 'depthClearsRequired' | 'descendCooldownMs'>
+
+/** Fresh encounter on a (new) depth: resets the clear counter and any descend cooldown. */
+function resetMonsterEncounter(zone: ZoneDef, depth: number): EncounterFields {
+  return {
+    currentMonster: spawnMonster(zone, depth),
+    monsterActionTimerMs: 0,
+    depthClears: 0,
+    depthClearsRequired: rollClearsRequired(zone, depth),
+    descendCooldownMs: 0,
+  }
 }
 
 export function computeFocusReward(state: SimState, depth: number): number {
@@ -304,8 +376,16 @@ export function salvageItem(state: SimState, instanceId: string): { state: SimSt
   const item = state.inventory[index]
   const focusGained = computeSalvageValue(item)
   const inventory = state.inventory.filter((i) => i.instanceId !== instanceId)
-  const next = { ...state, inventory, focus: state.focus + focusGained }
-  return { state: next, event: { kind: 'salvage', catalogId: item.catalogId, focusGained, timestamp: Date.now() } }
+  const materialId = SLOT_MATERIALS[getGearCatalogItem(item.catalogId).slot][0]
+  const materialsGained = Math.max(1, Math.round(focusGained / materialsData.salvageMaterialDivisor))
+  const next = {
+    ...state,
+    inventory,
+    focus: state.focus + focusGained,
+    materials: { ...state.materials, [materialId]: (state.materials[materialId] ?? 0) + materialsGained },
+  }
+  const tracked = addStat(addStat(addStat(next, 'itemsSalvaged', 1), 'focusEarned', focusGained), `material_${materialId}_gathered`, materialsGained)
+  return { state: tracked, event: { kind: 'salvage', catalogId: item.catalogId, focusGained, materialId, materialsGained, timestamp: Date.now() } }
 }
 
 function applyRegen(state: SimState, deltaSeconds: number): SimState {
@@ -329,6 +409,69 @@ function applyRegen(state: SimState, deltaSeconds: number): SimState {
   }
 }
 
+/** Adds a catalog item to the player: fuses into an owned copy (level +1) or creates a new inventory item. */
+function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: number, events: CombatEvent[]): SimState {
+  let next = state
+  if (!next.discoveredItemIds.includes(catalogEntry.id)) {
+    next = { ...next, discoveredItemIds: [...next.discoveredItemIds, catalogEntry.id] }
+  }
+  const equippedSlot = (Object.keys(next.gear) as GearSlot[]).find((slot) => next.gear[slot]?.catalogId === catalogEntry.id)
+  const inventoryIndex = next.inventory.findIndex((i) => i.catalogId === catalogEntry.id)
+
+  if (equippedSlot) {
+    const existing = next.gear[equippedSlot]!
+    const leveled = { ...existing, level: existing.level + 1 }
+    next = { ...next, gear: { ...next.gear, [equippedSlot]: leveled } }
+    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, timestamp: now })
+    next = addStat(next, 'itemsFused', 1)
+  } else if (inventoryIndex >= 0) {
+    const existing = next.inventory[inventoryIndex]
+    const leveled = { ...existing, level: existing.level + 1 }
+    const inventory = [...next.inventory]
+    inventory[inventoryIndex] = leveled
+    next = { ...next, inventory }
+    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, timestamp: now })
+    next = addStat(next, 'itemsFused', 1)
+  } else {
+    const newItem: GearItem = {
+      instanceId: `${catalogEntry.id}_${now}_${Math.floor(Math.random() * 1e6)}`,
+      catalogId: catalogEntry.id,
+      level: 1,
+      augmentIds: [],
+    }
+    next = { ...next, inventory: [...next.inventory, newItem] }
+    events.push({ kind: 'loot', item: newItem, timestamp: now })
+    next = addStat(next, 'itemsFound', 1)
+  }
+  return next
+}
+
+function rollMaterialDrops(state: SimState, zone: ZoneDef, depth: number, isBoss: boolean): SimState {
+  const amount = (1 + Math.floor(depth / materialsData.killDropDepthStep)) * (isBoss ? materialsData.bossDropMultiplier : 1)
+  let next = state
+  for (const drop of zone.materialDrops) {
+    if (Math.random() < drop.chance) {
+      next = { ...next, materials: { ...next.materials, [drop.materialId]: (next.materials[drop.materialId] ?? 0) + amount } }
+      next = addStat(next, `material_${drop.materialId}_gathered`, amount)
+    }
+  }
+  return next
+}
+
+export function craftItem(state: SimState, catalogId: string, now: number): { state: SimState; events: CombatEvent[] } {
+  const events: CombatEvent[] = []
+  const def = GEAR_ITEMS.find((i) => i.id === catalogId)
+  if (!def || def.bossOnly || !state.discoveredItemIds.includes(catalogId) || !canAffordCraft(state, catalogId)) {
+    return { state, events }
+  }
+  const cost = computeCraftCost(catalogId)
+  const materials = { ...state.materials }
+  for (const m of cost.materials) materials[m.materialId] = (materials[m.materialId] ?? 0) - m.amount
+  const paid = addStat(addStat({ ...state, focus: state.focus - cost.focus, materials }, 'itemsCrafted', 1), 'focusSpent', cost.focus)
+  events.push({ kind: 'crafted', catalogId, timestamp: now })
+  return { state: grantGearItem(paid, def, now, events), events }
+}
+
 function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[]): SimState {
   const monster = state.currentMonster
   if (!monster) return state
@@ -336,9 +479,10 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
   const focusGained = computeFocusReward(state, monster.depth)
   events.push({ kind: 'kill', monsterName: monster.name, depth: monster.depth, timestamp: now })
 
-  let next = { ...state, focus: state.focus + focusGained }
+  let next: SimState = addStat(addStat(addStat({ ...state, focus: state.focus + focusGained }, 'kills', 1), `kills_${zone.id}`, 1), 'focusEarned', focusGained)
   if (monster.isBoss) {
     events.push({ kind: 'bossDefeated', depth: monster.depth, timestamp: now })
+    next = addStat(next, 'bossKills', 1)
     if (zone.unlocksZoneId && monster.depth >= zone.maxDepth && !next.unlockedZoneIds.includes(zone.unlocksZoneId)) {
       next = { ...next, unlockedZoneIds: [...next.unlockedZoneIds, zone.unlocksZoneId] }
       events.push({ kind: 'zoneUnlocked', zoneId: zone.unlocksZoneId, timestamp: now })
@@ -352,44 +496,39 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
 
   const catalogEntry = rollLootCatalogEntry(next, zone, monster.depth, monster.isBoss)
   if (catalogEntry) {
-    if (!next.discoveredItemIds.includes(catalogEntry.id)) {
-      next = { ...next, discoveredItemIds: [...next.discoveredItemIds, catalogEntry.id] }
-    }
-    const equippedSlot = (Object.keys(next.gear) as GearSlot[]).find((slot) => next.gear[slot]?.catalogId === catalogEntry.id)
-    const inventoryIndex = next.inventory.findIndex((i) => i.catalogId === catalogEntry.id)
-
-    if (equippedSlot) {
-      const existing = next.gear[equippedSlot]!
-      const leveled = { ...existing, level: existing.level + 1 }
-      next = { ...next, gear: { ...next.gear, [equippedSlot]: leveled } }
-      events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, timestamp: now })
-    } else if (inventoryIndex >= 0) {
-      const existing = next.inventory[inventoryIndex]
-      const leveled = { ...existing, level: existing.level + 1 }
-      const inventory = [...next.inventory]
-      inventory[inventoryIndex] = leveled
-      next = { ...next, inventory }
-      events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, timestamp: now })
-    } else {
-      const newItem: GearItem = {
-        instanceId: `${catalogEntry.id}_${now}_${Math.floor(Math.random() * 1e6)}`,
-        catalogId: catalogEntry.id,
-        level: 1,
-        augmentIds: [],
-      }
-      next = { ...next, inventory: [...next.inventory, newItem] }
-      events.push({ kind: 'loot', item: newItem, timestamp: now })
-    }
+    next = grantGearItem(next, catalogEntry, now, events)
   }
+
+  next = rollMaterialDrops(next, zone, monster.depth, monster.isBoss)
 
   const nextDepth = next.depthMode.auto
     ? Math.min(zone.maxDepth, next.currentDepth + 1)
     : next.depthMode.pinnedDepth
+
+  const clears = next.depthClears + 1
+  // Still clearing this floor
+  if (clears < next.depthClearsRequired) {
+    return { ...next, depthClears: clears, currentMonster: spawnMonster(zone, next.currentDepth), monsterActionTimerMs: 0 }
+  }
+  // Pinned depth (or bottom floor): keep farming it
+  if (nextDepth === next.currentDepth) {
+    return { ...next, ...resetMonsterEncounter(zone, nextDepth) }
+  }
+  // Descend: brief cooldown with no monster, so HP and resources can recover
   const maxDepthByZone = { ...next.maxDepthByZone, [zone.id]: Math.max(getMaxDepthReached(next, zone), nextDepth) }
-  return { ...next, currentDepth: nextDepth, maxDepthByZone, ...resetMonsterEncounter(zone, nextDepth) }
+  return maxStat({
+    ...next,
+    currentDepth: nextDepth,
+    maxDepthByZone,
+    currentMonster: null,
+    monsterActionTimerMs: 0,
+    depthClears: 0,
+    depthClearsRequired: rollClearsRequired(zone, nextDepth),
+    descendCooldownMs: DESCEND_COOLDOWN_MS,
+  }, `deepest_${zone.id}`, nextDepth)
 }
 
-function fireAbility(state: SimState, abilityId: string, now: number, events: CombatEvent[], manual: boolean): SimState {
+function fireAbility(state: SimState, abilityId: string, now: number, events: CombatEvent[]): SimState {
   if (state.fainted || !state.currentMonster) return state
   const def = getAbilityDef(abilityId)
   const progress = state.abilities[abilityId]
@@ -398,13 +537,11 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
 
   const pool = def.type === 'physical' ? state.stamina : state.mana
   if (pool.current < def.resourceCost) {
-    if (manual) events.push({ kind: 'notEnoughResource', abilityId, timestamp: now })
     return state
   }
 
-  const baseDamage = computeAbilityDamage(state, abilityId)
-  const damage = manual ? baseDamage * MANUAL_TRIGGER_DAMAGE_MULTIPLIER : baseDamage
-  events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, manual, timestamp: now })
+  const damage = computeAbilityDamage(state, abilityId)
+  events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, timestamp: now })
 
   const spentPool = { ...pool, current: pool.current - def.resourceCost }
   const cooldownMs = computeEffectiveCooldownMs(state, abilityId)
@@ -413,6 +550,9 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
     def.type === 'physical'
       ? { ...state, stamina: spentPool, abilityCooldowns }
       : { ...state, mana: spentPool, abilityCooldowns }
+
+  next = addStat(maxStat(next, 'highestHit', damage), 'damageDealt', damage)
+  next = addStat(addStat(next, 'abilityUses', 1), `ability_${abilityId}_uses`, 1)
 
   const remainingHp = next.currentMonster!.hp - damage
   if (remainingHp <= 0) {
@@ -423,11 +563,6 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
   return next
 }
 
-export function triggerManualAbility(state: SimState, abilityId: string, now: number, events: CombatEvent[]): SimState {
-  if (state.combatMode !== 'active') return state
-  return fireAbility(state, abilityId, now, events, true)
-}
-
 export interface TickResult {
   state: SimState
   events: CombatEvent[]
@@ -435,7 +570,19 @@ export interface TickResult {
 
 export function advanceTick(state: SimState, deltaMs: number, now: number): TickResult {
   const events: CombatEvent[] = []
-  let next = applyRegen(state, deltaMs / 1000)
+  let next = addStat(applyRegen(state, deltaMs / 1000), 'timeMs', deltaMs)
+
+  if (next.descendCooldownMs > 0) {
+    // Cooldown between floors: extra regen, no monster, nothing attacks
+    const remaining = Math.max(0, next.descendCooldownMs - deltaMs)
+    next = applyRegen(next, (deltaMs / 1000) * (DESCEND_REGEN_MULTIPLIER - 1))
+    next = { ...next, descendCooldownMs: remaining }
+    if (remaining === 0) {
+      const zone = getZoneDef(next.currentZoneId)
+      next = { ...next, currentMonster: spawnMonster(zone, next.currentDepth), monsterActionTimerMs: 0 }
+    }
+    return { state: { ...next, lastTickTimestamp: now }, events }
+  }
 
   if (!next.currentMonster) {
     const zone = getZoneDef(next.currentZoneId)
@@ -461,7 +608,7 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
     const dmg = computeIncomingDamage(next, raw)
     const newHp = Math.max(0, next.playerHp.current - dmg)
     events.push({ kind: 'damage', source: 'monster', amount: dmg, timestamp: now })
-    next = { ...next, playerHp: { ...next.playerHp, current: newHp } }
+    next = addStat({ ...next, playerHp: { ...next.playerHp, current: newHp } }, 'damageTaken', dmg)
     if (newHp <= 0) {
       const checkpointDepth = getCheckpointDepth(zone, monster.depth)
       next = {
@@ -472,6 +619,7 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
         ...resetMonsterEncounter(zone, checkpointDepth),
       }
       events.push({ kind: 'faint', checkpointDepth, timestamp: now })
+      next = addStat(next, 'faints', 1)
     }
   }
   next = { ...next, monsterActionTimerMs: monsterTimer }
@@ -493,7 +641,7 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
     if (!progress || progress.rank <= 0) continue
     if ((next.abilityCooldowns[abilityId] ?? 0) > 0) continue
     if (!next.currentMonster) break
-    next = fireAbility(next, abilityId, now, events, false)
+    next = fireAbility(next, abilityId, now, events)
   }
 
   return { state: { ...next, lastTickTimestamp: now }, events }
@@ -530,7 +678,6 @@ export function createInitialState(): SimState {
     stats,
     abilities,
     abilityCooldowns: {},
-    combatMode: 'idle',
     currentZoneId: zoneId,
     unlockedZoneIds: [zoneId],
     depthMode: { auto: true },
@@ -542,6 +689,10 @@ export function createInitialState(): SimState {
     discoveredItemIds: [],
     recallCount: 0,
     ascendCount: 0,
+    materials: {},
+    lifetime: {},
+    runStats: {},
+    lastRunStats: {},
     echoes: 0,
     echoesEarned: 0,
     sigils: 0,
@@ -569,6 +720,8 @@ function resetRun(state: SimState): SimState {
     fainted: false,
     currentDepth: zone.minDepth,
     maxDepthByZone: {},
+    lastRunStats: state.runStats,
+    runStats: {},
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
@@ -610,8 +763,9 @@ export function ascendRequiredEchoes(): number {
 export function recall(state: SimState): SimState {
   const echoes = computeRecallEchoes(state)
   if (echoes <= 0) return state
+  const counted = addStat(addStat(state, 'recalls', 1), 'echoesEarnedTotal', echoes)
   return {
-    ...resetRun(state),
+    ...resetRun(counted),
     recallCount: state.recallCount + 1,
     echoes: state.echoes + echoes,
     echoesEarned: state.echoesEarned + echoes,
@@ -625,8 +779,9 @@ export function ascend(state: SimState): SimState {
   const keptPerks = Object.fromEntries(
     Object.entries(state.perkLevels).filter(([id]) => PERKS.find((p) => p.id === id)?.currency === 'sigils'),
   )
+  const counted = addStat(addStat(state, 'ascends', 1), 'sigilsEarnedTotal', sigils)
   return {
-    ...resetRun(state),
+    ...resetRun(counted),
     recallCount: 0,
     echoes: 0,
     echoesEarned: 0,
@@ -656,11 +811,11 @@ export function trainStat(state: SimState, statId: StatId): SimState {
   const cost = computeTrainCost(statId, state.stats[statId])
   if (state.focus < cost) return state
   const gain = computeStatGainPerTrain(state)
-  return {
+  return addStat({
     ...state,
     focus: state.focus - cost,
     stats: { ...state.stats, [statId]: state.stats[statId] + gain },
-  }
+  }, 'focusSpent', cost)
 }
 
 export function upgradeAbility(state: SimState, abilityId: string): SimState {
@@ -669,11 +824,11 @@ export function upgradeAbility(state: SimState, abilityId: string): SimState {
   if (progress.rank >= def.maxRank) return state
   const cost = computeAbilityRankCost(abilityId, progress.rank)
   if (state.focus < cost) return state
-  return {
+  return addStat({
     ...state,
     focus: state.focus - cost,
     abilities: { ...state.abilities, [abilityId]: { rank: progress.rank + 1 } },
-  }
+  }, 'focusSpent', cost)
 }
 
 export function equipItem(state: SimState, instanceId: string): SimState {

@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { computeMonsterAttackIntervalMs, getCheckpointDepth, getGearCatalogItem, getMaxDepthReached, getZoneDef } from '../worker/simLogic'
+import { computeMonsterAttackIntervalMs, listMaterials, getCheckpointDepth, getGearCatalogItem, getMaxDepthReached, getZoneDef } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import AbilityBar from '../components/AbilityBar'
 import { Icon } from '../components/icons'
@@ -9,7 +9,7 @@ function describeEvent(event: CombatEvent): string {
   switch (event.kind) {
     case 'damage':
       if (event.source === 'monster') return `The monster hit you for ${formatNumber(event.amount)} damage`
-      return `You hit for ${formatNumber(event.amount)} damage${event.manual ? ' (manual!)' : ''}`
+      return `You hit for ${formatNumber(event.amount)} damage`
     case 'kill':
       return `Defeated ${event.monsterName} at depth ${event.depth}`
     case 'bossDefeated':
@@ -19,7 +19,9 @@ function describeEvent(event: CombatEvent): string {
     case 'fuse':
       return `Fused a duplicate — item is now level ${event.newLevel}`
     case 'salvage':
-      return `Salvaged an item for ${formatNumber(event.focusGained)} Focus`
+      return `Salvaged an item for ${formatNumber(event.focusGained)} Focus and ${formatNumber(event.materialsGained)} ${materialName(event.materialId)}`
+    case 'crafted':
+      return `Crafted ${getGearCatalogItem(event.catalogId).name}`
     case 'levelUp':
       return `${event.statId} increased to ${event.newLevel}`
     case 'faint':
@@ -28,14 +30,15 @@ function describeEvent(event: CombatEvent): string {
       return `Gate Boss defeated — new zone unlocked: ${getZoneDef(event.zoneId).name}!`
     case 'recovered':
       return `You've recovered and rejoined the fight`
-    case 'notEnoughResource':
-      return `Not enough resource for ${event.abilityId}`
   }
+}
+
+function materialName(id: string): string {
+  return listMaterials().find((m) => m.id === id)?.name ?? id
 }
 
 export default function CombatPage() {
   const state = useGameStore((s) => s)
-  const setMode = useGameStore((s) => s.setMode)
   const setDepthMode = useGameStore((s) => s.setDepthMode)
   const combatLog = useGameStore((s) => s.combatLog)
   const zone = getZoneDef(state.currentZoneId)
@@ -54,23 +57,13 @@ export default function CombatPage() {
               <h2 style={{ margin: 0, fontSize: '20px' }}>{zone.name}</h2>
               <div style={{ fontSize: '12.5px', color: 'var(--text-dim)' }}>Depth {state.currentDepth} of {zone.maxDepth}</div>
             </div>
-            <div className="btn-group" role="group">
-              <button
-                type="button"
-                className={`btn btn-sm ${state.combatMode === 'idle' ? 'btn-secondary' : 'btn-outline-secondary'}`}
-                onClick={() => setMode('idle')}
-              >
-                Idle
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm ${state.combatMode === 'active' ? 'btn-secondary' : 'btn-outline-secondary'}`}
-                onClick={() => setMode('active')}
-              >
-                Active
-              </button>
-            </div>
           </div>
+
+          {!monster && state.descendCooldownMs > 0 && (
+            <div className="panel text-body-secondary" style={{ padding: '18px' }}>
+              Descending to depth {state.currentDepth}… recovering
+            </div>
+          )}
 
           {monster && (
             <div className="panel" style={{ padding: '18px' }}>
@@ -86,6 +79,7 @@ export default function CombatPage() {
                 </div>
                 <div style={{ fontSize: '12.5px', color: 'var(--text-dim)', whiteSpace: 'nowrap' }}>
                   {formatNumber(monster.hp)} / {formatNumber(monster.maxHp)}
+                  <div>Clears {state.depthClears}/{state.depthClearsRequired}</div>
                 </div>
               </div>
 

@@ -31,7 +31,11 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 2 http://localhost:5183/DyAdventure/)",
       "Bash(head -c 1500 content/gear.json)",
       "Bash(grep -n \"sets\" content/gear.json)",
-      "Bash(python -)"
+      "Bash(python -)",
+      "Bash(sed -n 300,325p worker/simLogic.ts)",
+      "Bash(grep -n \"function applyRegen\" -A 25 worker/simLogic.ts)",
+      "Bash(cat constants/game.ts)",
+      "Bash(grep -n \"currentMonster\\\\|monster\" pages/CombatPage.tsx)"
     ],
     "deny": [
       "Read(idle-game)"
