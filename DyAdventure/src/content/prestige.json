@@ -1,0 +1,19 @@
+{
+  "recall": {
+    "minDepth": 100,
+    "baseEchoes": 5,
+    "depthExponent": 1.5
+  },
+  "ascend": {
+    "minEchoesEarned": 100,
+    "echoesPerSigilSquared": 25
+  },
+  "perks": [
+    { "id": "swift_learner", "name": "Swift Learner", "description": "+10% stat gain per training, per level.", "currency": "echoes", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.5, "effect": "trainGain", "perLevel": 0.1 },
+    { "id": "focused_mind", "name": "Focused Mind", "description": "+10% Focus from kills, per level.", "currency": "echoes", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.5, "effect": "focusGain", "perLevel": 0.1 },
+    { "id": "hardy", "name": "Hardy", "description": "+10 max HP per level.", "currency": "echoes", "maxLevel": 10, "baseCost": 4, "costMultiplier": 1.5, "effect": "hpCap", "perLevel": 10 },
+    { "id": "lucky_find", "name": "Lucky Find", "description": "+1% gear drop chance per level.", "currency": "echoes", "maxLevel": 10, "baseCost": 5, "costMultiplier": 1.6, "effect": "dropChance", "perLevel": 0.01 },
+    { "id": "echo_amplifier", "name": "Echo Amplifier", "description": "+25% Echoes from Recall per level. Survives Ascend.", "currency": "sigils", "maxLevel": 5, "baseCost": 1, "costMultiplier": 2, "effect": "echoGain", "perLevel": 0.25 },
+    { "id": "ascended_power", "name": "Ascended Power", "description": "+10% damage per level. Survives Ascend.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "damage", "perLevel": 0.1 }
+  ]
+}

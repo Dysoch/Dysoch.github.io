@@ -1,0 +1,773 @@
+{
+  "rarities": [
+    {
+      "id": "common",
+      "name": "Common",
+      "color": "#adb5bd",
+      "augmentSlots": 0
+    },
+    {
+      "id": "uncommon",
+      "name": "Uncommon",
+      "color": "#40c057",
+      "augmentSlots": 1
+    },
+    {
+      "id": "rare",
+      "name": "Rare",
+      "color": "#339af0",
+      "augmentSlots": 1
+    },
+    {
+      "id": "epic",
+      "name": "Epic",
+      "color": "#9775fa",
+      "augmentSlots": 2
+    },
+    {
+      "id": "legendary",
+      "name": "Legendary",
+      "color": "#f59f00",
+      "augmentSlots": 3
+    }
+  ],
+  "sets": [
+    {
+      "id": "woodland_vanguard",
+      "name": "Woodland Vanguard",
+      "description": "Worn gear favored by the forest's melee scouts.",
+      "itemIds": [
+        "vanguard_sword",
+        "vanguard_armor",
+        "vanguard_boots",
+        "vanguard_gloves",
+        "vanguard_amulet",
+        "vanguard_ring",
+        "vanguard_charm",
+        "vanguard_banner"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 3,
+          "description": "+3 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 5,
+          "description": "+5 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 20,
+          "description": "+20 HP Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 10,
+          "description": "+10 Might"
+        }
+      ]
+    },
+    {
+      "id": "woodland_adept",
+      "name": "Woodland Adept",
+      "description": "Enchanted trinkets favored by the forest's hedge mages.",
+      "itemIds": [
+        "adept_wand",
+        "adept_robe",
+        "adept_amulet",
+        "adept_ring",
+        "adept_boots",
+        "adept_gloves",
+        "adept_tome",
+        "adept_orb"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 3,
+          "description": "+3 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 5,
+          "description": "+5 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 20,
+          "description": "+20 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 10,
+          "description": "+10 Arcana"
+        }
+      ]
+    },
+    {
+      "id": "crypt_warden",
+      "name": "Crypt Warden",
+      "description": "Grave-forged armor of the crypt's undying wardens.",
+      "itemIds": [
+        "wardens_mace",
+        "wardens_plate",
+        "wardens_greaves",
+        "wardens_gauntlets",
+        "wardens_sigil",
+        "wardens_band",
+        "wardens_lantern",
+        "wardens_ward"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "grit",
+          "magnitude": 8,
+          "description": "+8 Grit"
+        },
+        {
+          "pieces": 4,
+          "statId": "hpCap",
+          "magnitude": 40,
+          "description": "+40 HP Cap"
+        },
+        {
+          "pieces": 6,
+          "statId": "grit",
+          "magnitude": 15,
+          "description": "+15 Grit"
+        },
+        {
+          "pieces": 8,
+          "statId": "hpCap",
+          "magnitude": 100,
+          "description": "+100 HP Cap"
+        }
+      ]
+    },
+    {
+      "id": "ember_zealot",
+      "name": "Ember Zealot",
+      "description": "Blazing regalia of the cavern fire-cults.",
+      "itemIds": [
+        "zealot_blade",
+        "zealot_staff",
+        "zealot_cuirass",
+        "zealot_vestments",
+        "zealot_brand",
+        "zealot_ring",
+        "zealot_ember",
+        "zealot_censer"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 8,
+          "description": "+8 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "arcana",
+          "magnitude": 8,
+          "description": "+8 Arcana"
+        },
+        {
+          "pieces": 6,
+          "statId": "fortune",
+          "magnitude": 10,
+          "description": "+10 Fortune"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 20,
+          "description": "+20 Might"
+        }
+      ]
+    },
+    {
+      "id": "frost_sentinel",
+      "name": "Frost Sentinel",
+      "description": "Rime-covered vestments of the peaks' silent guardians.",
+      "itemIds": [
+        "sentinel_icicle",
+        "sentinel_mantle",
+        "sentinel_treads",
+        "sentinel_grips",
+        "sentinel_frostgem",
+        "sentinel_signet",
+        "sentinel_rime",
+        "sentinel_shard"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "staminaCap",
+          "magnitude": 30,
+          "description": "+30 Stamina Cap"
+        },
+        {
+          "pieces": 4,
+          "statId": "manaCap",
+          "magnitude": 30,
+          "description": "+30 Mana Cap"
+        },
+        {
+          "pieces": 6,
+          "statId": "willpower",
+          "magnitude": 15,
+          "description": "+15 Willpower"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 20,
+          "description": "+20 Arcana"
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "vanguard_sword",
+      "name": "Vanguard Sword",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 2.5,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 1
+    },
+    {
+      "id": "vanguard_armor",
+      "name": "Vanguard Armor",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "primaryStat": "grit",
+      "baseValue": 2.5,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 1
+    },
+    {
+      "id": "vanguard_boots",
+      "name": "Vanguard Boots",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "primaryStat": "staminaCap",
+      "baseValue": 6,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 1
+    },
+    {
+      "id": "vanguard_gloves",
+      "name": "Vanguard Gloves",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 1.8,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 1
+    },
+    {
+      "id": "adept_wand",
+      "name": "Adept Wand",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 2.5,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 1
+    },
+    {
+      "id": "adept_robe",
+      "name": "Adept Robe",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "primaryStat": "willpower",
+      "baseValue": 2.5,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 1
+    },
+    {
+      "id": "adept_amulet",
+      "name": "Adept Amulet",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "primaryStat": "manaCap",
+      "baseValue": 6,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 1
+    },
+    {
+      "id": "adept_ring",
+      "name": "Adept Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 1.8,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 1
+    },
+    {
+      "id": "vanguard_amulet",
+      "name": "Vanguard Pendant",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "primaryStat": "hpCap",
+      "baseValue": 6,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 10
+    },
+    {
+      "id": "vanguard_ring",
+      "name": "Vanguard Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 1.8,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 10
+    },
+    {
+      "id": "vanguard_charm",
+      "name": "Vanguard Charm",
+      "icon": "shield",
+      "slot": "trinket1",
+      "track": "physical",
+      "primaryStat": "grit",
+      "baseValue": 1.8,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 20
+    },
+    {
+      "id": "vanguard_banner",
+      "name": "Vanguard Banner",
+      "icon": "flame",
+      "slot": "trinket2",
+      "track": "physical",
+      "primaryStat": "staminaCap",
+      "baseValue": 6,
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 20
+    },
+    {
+      "id": "adept_boots",
+      "name": "Adept Sandals",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "arcane",
+      "primaryStat": "manaCap",
+      "baseValue": 6,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 10
+    },
+    {
+      "id": "adept_gloves",
+      "name": "Adept Mitts",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 1.8,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 10
+    },
+    {
+      "id": "adept_tome",
+      "name": "Adept Tome",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "arcane",
+      "primaryStat": "willpower",
+      "baseValue": 1.8,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 20
+    },
+    {
+      "id": "adept_orb",
+      "name": "Adept Orb",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "arcane",
+      "primaryStat": "manaCap",
+      "baseValue": 6,
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 20
+    },
+    {
+      "id": "lucky_charm",
+      "name": "Lucky Charm",
+      "icon": "clover",
+      "slot": "trinket1",
+      "track": "universal",
+      "primaryStat": "fortune",
+      "baseValue": 1.5,
+      "rarity": "common",
+      "setId": null,
+      "minDepth": 1
+    },
+    {
+      "id": "tattered_pouch",
+      "name": "Tattered Pouch",
+      "icon": "backpack",
+      "slot": "trinket2",
+      "track": "universal",
+      "primaryStat": "fortune",
+      "baseValue": 1.5,
+      "rarity": "common",
+      "setId": null,
+      "minDepth": 1
+    },
+    {
+      "id": "woods_warden_fang",
+      "name": "Woods Warden's Fang",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 8,
+      "rarity": "rare",
+      "setId": null,
+      "minDepth": 50,
+      "bossOnly": true
+    },
+    {
+      "id": "spider_silk_cloak",
+      "name": "Spider Silk Cloak",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "primaryStat": "willpower",
+      "baseValue": 8,
+      "rarity": "rare",
+      "setId": null,
+      "minDepth": 100,
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_mace",
+      "name": "Warden's Mace",
+      "icon": "axe",
+      "slot": "weapon",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 6.0,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 1
+    },
+    {
+      "id": "wardens_plate",
+      "name": "Warden's Plate",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "primaryStat": "grit",
+      "baseValue": 6.0,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 1
+    },
+    {
+      "id": "wardens_greaves",
+      "name": "Warden's Greaves",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "primaryStat": "staminaCap",
+      "baseValue": 14.4,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 1
+    },
+    {
+      "id": "wardens_gauntlets",
+      "name": "Warden's Gauntlets",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "primaryStat": "grit",
+      "baseValue": 4.3,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 1
+    },
+    {
+      "id": "wardens_sigil",
+      "name": "Warden's Sigil",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "primaryStat": "hpCap",
+      "baseValue": 14.4,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 10
+    },
+    {
+      "id": "wardens_band",
+      "name": "Warden's Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "primaryStat": "grit",
+      "baseValue": 4.3,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 10
+    },
+    {
+      "id": "wardens_lantern",
+      "name": "Warden's Lantern",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "primaryStat": "hpCap",
+      "baseValue": 14.4,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 20
+    },
+    {
+      "id": "wardens_ward",
+      "name": "Warden's Ward",
+      "icon": "shield",
+      "slot": "trinket2",
+      "track": "universal",
+      "primaryStat": "grit",
+      "baseValue": 4.3,
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 20
+    },
+    {
+      "id": "zealot_blade",
+      "name": "Zealot Blade",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 14.0,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 1
+    },
+    {
+      "id": "zealot_staff",
+      "name": "Zealot Staff",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 14.0,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 1
+    },
+    {
+      "id": "zealot_cuirass",
+      "name": "Zealot Cuirass",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "primaryStat": "hpCap",
+      "baseValue": 33.6,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 1
+    },
+    {
+      "id": "zealot_vestments",
+      "name": "Zealot Vestments",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 10.1,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 1
+    },
+    {
+      "id": "zealot_brand",
+      "name": "Zealot Brand",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "primaryStat": "manaCap",
+      "baseValue": 33.6,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 10
+    },
+    {
+      "id": "zealot_ring",
+      "name": "Zealot Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "primaryStat": "might",
+      "baseValue": 10.1,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 10
+    },
+    {
+      "id": "zealot_ember",
+      "name": "Zealot Ember",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "primaryStat": "fortune",
+      "baseValue": 10.1,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 20
+    },
+    {
+      "id": "zealot_censer",
+      "name": "Zealot Censer",
+      "icon": "sparkles",
+      "slot": "trinket2",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 10.1,
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 20
+    },
+    {
+      "id": "sentinel_icicle",
+      "name": "Sentinel Icicle",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 32.0,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 1
+    },
+    {
+      "id": "sentinel_mantle",
+      "name": "Sentinel Mantle",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "primaryStat": "willpower",
+      "baseValue": 32.0,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 1
+    },
+    {
+      "id": "sentinel_treads",
+      "name": "Sentinel Treads",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "universal",
+      "primaryStat": "staminaCap",
+      "baseValue": 76.8,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 1
+    },
+    {
+      "id": "sentinel_grips",
+      "name": "Sentinel Grips",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "primaryStat": "willpower",
+      "baseValue": 23.0,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 1
+    },
+    {
+      "id": "sentinel_frostgem",
+      "name": "Sentinel Frostgem",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "primaryStat": "manaCap",
+      "baseValue": 76.8,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 10
+    },
+    {
+      "id": "sentinel_signet",
+      "name": "Sentinel Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "primaryStat": "arcana",
+      "baseValue": 23.0,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 10
+    },
+    {
+      "id": "sentinel_rime",
+      "name": "Sentinel Rime",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "universal",
+      "primaryStat": "willpower",
+      "baseValue": 23.0,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 20
+    },
+    {
+      "id": "sentinel_shard",
+      "name": "Sentinel Shard",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "universal",
+      "primaryStat": "staminaCap",
+      "baseValue": 76.8,
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 20
+    }
+  ]
+}

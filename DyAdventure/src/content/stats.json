@@ -1,0 +1,50 @@
+[
+  {
+    "id": "might",
+    "name": "Might",
+    "icon": "sword",
+    "description": "+8% physical damage per point.",
+    "baseTrainCost": 10,
+    "trainCostMultiplier": 1.12
+  },
+  {
+    "id": "grit",
+    "name": "Grit",
+    "icon": "shield",
+    "description": "+1.5 max HP and reduces monster damage taken.",
+    "baseTrainCost": 10,
+    "trainCostMultiplier": 1.12
+  },
+  {
+    "id": "arcana",
+    "name": "Arcana",
+    "icon": "wand",
+    "description": "+8% spell damage per point.",
+    "baseTrainCost": 10,
+    "trainCostMultiplier": 1.12
+  },
+  {
+    "id": "willpower",
+    "name": "Willpower",
+    "icon": "sparkles",
+    "description": "+1.5 max Mana and future magic defense.",
+    "baseTrainCost": 10,
+    "trainCostMultiplier": 1.12
+  },
+  {
+    "id": "fortune",
+    "name": "Fortune",
+    "icon": "clover",
+    "description": "Increases loot quantity and loot rarity.",
+    "baseTrainCost": 15,
+    "trainCostMultiplier": 1.15
+  },
+  {
+    "id": "speed",
+    "name": "Speed",
+    "icon": "lightning",
+    "description": "Fills your ability cooldowns faster — more attacks per minute.",
+    "baseTrainCost": 15,
+    "trainCostMultiplier": 1.15
+  }
+]

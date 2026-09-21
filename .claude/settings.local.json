@@ -23,7 +23,15 @@
       "PowerShell(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\\\\\" -Recurse -Force | Select-Object -Property FullName | ForEach-Object { $_.FullName } | Sort-Object)",
       "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\\\\\\\\src\" -type f)",
       "Bash(find \"c:\\\\\\\\Service-Tool\\\\\\\\GitHub\\\\\\\\Dysoch.github.io\\\\\\\\DyWorld-Inc\" -name \"package.json\" -o -name \"README.md\")",
-      "PowerShell(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\" -Recurse | Where-Object { $_.PSIsContainer } | Select-Object -First 25 | ForEach-Object { $_.FullName })"
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Service-Tool\\\\GitHub\\\\Dysoch.github.io\\\\DyWorld-Inc\" -Recurse | Where-Object { $_.PSIsContainer } | Select-Object -First 25 | ForEach-Object { $_.FullName })",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5183/DyAdventure/)",
+      "Bash(kill %1)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(chromium-cli --help)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 2 http://localhost:5183/DyAdventure/)",
+      "Bash(head -c 1500 content/gear.json)",
+      "Bash(grep -n \"sets\" content/gear.json)",
+      "Bash(python -)"
     ],
     "deny": [
       "Read(idle-game)"

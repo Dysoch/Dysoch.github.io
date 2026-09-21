@@ -1,0 +1,20 @@
+[
+  {
+    "version": "0.1.1",
+    "date": "2026-09-20",
+    "changes": [
+      "Added the Speed stat, player HP, and monster counter-attacks on their own real-time timer.",
+      "Replaced the ability priority list with independent per-ability cooldowns; Active mode manual clicks now deal bonus damage.",
+      "Replaced random gear rolls with a curated item catalog, gear sets with set bonuses, and duplicate items now auto-fuse into levels instead of cluttering your inventory.",
+      "Added gear comparison, augment descriptions, a gear stats overview, and item salvage to the Inventory page.",
+      "Reworked the UI into full-page tabs with a new HUD header and dark fantasy theme."
+    ]
+  },
+  {
+    "version": "0.1.0",
+    "date": "2026-09-20",
+    "changes": [
+      "Initial release: Stamina/Mana/Focus resources, Whispering Woods zone, basic combat, gear, augments, and Recall/Ascend prestige."
+    ]
+  }
+]

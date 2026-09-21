@@ -295,8 +295,8 @@
     "description": "Take a labor contract from the guild for steady pay.",
     "icon": "📋",
     "category": "manual_labor",
-    "durationSeconds": 15,
-    "unlock": { "type": "stat", "key": "job_trade_at_market_completed", "amount": 10 },
+    "durationSeconds": 90,
+    "unlock": { "type": "stat", "key": "job_trade_at_market_completed", "amount": 25 },
     "costs": [
       {
         "resourceId": "copper_coins",
@@ -306,8 +306,8 @@
     "rewards": [
       {
         "resourceId": "bronze_coins",
-        "min": 0.5,
-        "max": 2
+        "min": 0.05,
+        "max": 0.1
       },
       {
         "resourceId": "copper_coins",

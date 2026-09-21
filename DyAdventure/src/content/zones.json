@@ -1,0 +1,171 @@
+[
+  {
+    "id": "whispering_woods",
+    "name": "Whispering Woods",
+    "description": "A quiet forest at the edge of town, overrun with low-level creatures.",
+    "minDepth": 1,
+    "maxDepth": 1000,
+    "bossEvery": 50,
+    "baseMonsterPower": 5,
+    "perDepthGrowthPct": 4,
+    "bossPowerMultiplier": 6,
+    "baseMonsterDamage": 3,
+    "baseMonsterAttackIntervalMs": 2500,
+    "bossAttackIntervalMultiplier": 0.6,
+    "monsterNames": [
+      "Forest Rat",
+      "Wild Boar",
+      "Bandit Scout",
+      "Giant Spider",
+      "Feral Wolf"
+    ],
+    "bossNames": [
+      "Woods Warden",
+      "Ancient Treant",
+      "Spider Matriarch"
+    ],
+    "gearItemIds": [
+      "vanguard_sword",
+      "vanguard_armor",
+      "vanguard_boots",
+      "vanguard_gloves",
+      "adept_wand",
+      "adept_robe",
+      "adept_amulet",
+      "adept_ring",
+      "vanguard_amulet",
+      "vanguard_ring",
+      "vanguard_charm",
+      "vanguard_banner",
+      "adept_boots",
+      "adept_gloves",
+      "adept_tome",
+      "adept_orb",
+      "lucky_charm",
+      "tattered_pouch",
+      "woods_warden_fang",
+      "spider_silk_cloak"
+    ],
+    "echoMultiplier": 1,
+    "unlocksZoneId": "sunken_crypt"
+  },
+  {
+    "id": "sunken_crypt",
+    "name": "Sunken Crypt",
+    "description": "A flooded burial complex where the dead refuse to rest.",
+    "minDepth": 1,
+    "maxDepth": 1000,
+    "bossEvery": 50,
+    "baseMonsterPower": 250,
+    "perDepthGrowthPct": 3.5,
+    "bossPowerMultiplier": 6,
+    "baseMonsterDamage": 20,
+    "baseMonsterAttackIntervalMs": 3000,
+    "bossAttackIntervalMultiplier": 0.6,
+    "monsterNames": [
+      "Drowned Skeleton",
+      "Crypt Ghoul",
+      "Bone Rat",
+      "Restless Wraith",
+      "Grave Leech"
+    ],
+    "bossNames": [
+      "Crypt Lord",
+      "The Drowned King",
+      "Ossuary Colossus"
+    ],
+    "gearItemIds": [
+      "wardens_mace",
+      "wardens_plate",
+      "wardens_greaves",
+      "wardens_gauntlets",
+      "wardens_sigil",
+      "wardens_band",
+      "wardens_lantern",
+      "wardens_ward",
+      "lucky_charm",
+      "tattered_pouch"
+    ],
+    "echoMultiplier": 2,
+    "unlocksZoneId": "ember_caverns"
+  },
+  {
+    "id": "ember_caverns",
+    "name": "Ember Caverns",
+    "description": "Volcanic tunnels crawling with fast, fire-touched horrors.",
+    "minDepth": 1,
+    "maxDepth": 1000,
+    "bossEvery": 50,
+    "baseMonsterPower": 1200,
+    "perDepthGrowthPct": 3.5,
+    "bossPowerMultiplier": 6,
+    "baseMonsterDamage": 90,
+    "baseMonsterAttackIntervalMs": 1800,
+    "bossAttackIntervalMultiplier": 0.6,
+    "monsterNames": [
+      "Cinder Imp",
+      "Magma Crawler",
+      "Ash Wolf",
+      "Ember Cultist",
+      "Lava Serpent"
+    ],
+    "bossNames": [
+      "Magma Tyrant",
+      "The Ember Prophet",
+      "Infernal Drake"
+    ],
+    "gearItemIds": [
+      "zealot_blade",
+      "zealot_staff",
+      "zealot_cuirass",
+      "zealot_vestments",
+      "zealot_brand",
+      "zealot_ring",
+      "zealot_ember",
+      "zealot_censer",
+      "lucky_charm",
+      "tattered_pouch"
+    ],
+    "echoMultiplier": 3.5,
+    "unlocksZoneId": "frostbound_peaks"
+  },
+  {
+    "id": "frostbound_peaks",
+    "name": "Frostbound Peaks",
+    "description": "A frozen summit where slow, crushing giants stalk the blizzard.",
+    "minDepth": 1,
+    "maxDepth": 1000,
+    "bossEvery": 50,
+    "baseMonsterPower": 5000,
+    "perDepthGrowthPct": 3.5,
+    "bossPowerMultiplier": 6,
+    "baseMonsterDamage": 300,
+    "baseMonsterAttackIntervalMs": 4000,
+    "bossAttackIntervalMultiplier": 0.6,
+    "monsterNames": [
+      "Frost Wolf",
+      "Ice Golem",
+      "Snow Wraith",
+      "Glacial Troll",
+      "Rime Harpy"
+    ],
+    "bossNames": [
+      "Avalanche Titan",
+      "The Winter Queen",
+      "Ancient Frost Wyrm"
+    ],
+    "gearItemIds": [
+      "sentinel_icicle",
+      "sentinel_mantle",
+      "sentinel_treads",
+      "sentinel_grips",
+      "sentinel_frostgem",
+      "sentinel_signet",
+      "sentinel_rime",
+      "sentinel_shard",
+      "lucky_charm",
+      "tattered_pouch"
+    ],
+    "echoMultiplier": 5
+  }
+]
