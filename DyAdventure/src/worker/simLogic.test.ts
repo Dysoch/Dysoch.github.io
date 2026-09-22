@@ -33,6 +33,9 @@ import {
   ascend,
   ascendRequiredEchoes,
   canAscend,
+  computeBossPowerMultiplier,
+  zoneGateDepth,
+  getZoneDef,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
@@ -364,5 +367,106 @@ describe('Ascend economy (regression: bonus scaled with ascend count, so spam-mi
     state = ascend({ ...state, echoesEarned: minEchoes * 10 })
     expect(state.bestAscendEchoes).toBe(minEchoes * 10)
     expect(computeStatGainPerTrain(state)).toBeGreaterThan(gainAfter1)
+  })
+})
+
+describe('Boss Power (a permanent, never-reset damage bonus driven by the toughest boss ever defeated, so deep depth stays reachable without spam-Ascend-style farming)', () => {
+  function withBoss(depth: number, hp: number): SimState {
+    const base = createInitialState()
+    return {
+      ...base,
+      abilities: { ...zeroedAbilities(base), strike: { rank: 1 } },
+      currentDepth: depth,
+      currentMonster: { ...base.currentMonster!, isBoss: true, depth, hp, maxHp: hp },
+    }
+  }
+
+  test('defeating a boss raises bestBossPowerDefeated and the damage multiplier', () => {
+    const state = withBoss(50, 0.01)
+    const before = computeBossPowerMultiplier(state)
+    const result = advanceTick(state, 100, Date.now())
+    expect(result.state.bestBossPowerDefeated).toBeGreaterThan(0)
+    expect(computeBossPowerMultiplier(result.state)).toBeGreaterThan(before)
+  })
+
+  test('defeating an equally-deep boss again does not raise bestBossPowerDefeated further', () => {
+    const first = advanceTick(withBoss(50, 0.01), 100, Date.now()).state
+    const after1 = first.bestBossPowerDefeated
+    expect(after1).toBeGreaterThan(0)
+    const second = advanceTick({ ...withBoss(50, 0.01), bestBossPowerDefeated: after1 }, 100, Date.now()).state
+    expect(second.bestBossPowerDefeated).toBe(after1)
+  })
+
+  test('defeating a deeper boss raises bestBossPowerDefeated further', () => {
+    const shallow = advanceTick(withBoss(50, 0.01), 100, Date.now()).state
+    const deeper = advanceTick({ ...withBoss(150, 0.01), bestBossPowerDefeated: shallow.bestBossPowerDefeated }, 100, Date.now()).state
+    expect(deeper.bestBossPowerDefeated).toBeGreaterThan(shallow.bestBossPowerDefeated)
+  })
+
+  test('bestBossPowerDefeated survives Recall and Ascend (unlike bestRecallDepth/bestAscendEchoes)', () => {
+    const afterBoss = advanceTick(withBoss(50, 0.01), 100, Date.now()).state
+    expect(afterBoss.bestBossPowerDefeated).toBeGreaterThan(0)
+    const afterRecall = recall({ ...afterBoss, currentDepth: 60, maxDepthByZone: { [afterBoss.currentZoneId]: 60 } })
+    expect(afterRecall.bestBossPowerDefeated).toBe(afterBoss.bestBossPowerDefeated)
+    const afterAscendState = ascend({ ...afterRecall, echoesEarned: ascendRequiredEchoes() })
+    expect(afterAscendState.bestBossPowerDefeated).toBe(afterBoss.bestBossPowerDefeated)
+  })
+})
+
+describe('Zone gate (regression: a zone unlocked the next only at a full maxDepth clear, which was unreachable — now a configurable partial boss-count gate)', () => {
+  test('zoneGateDepth is a partial clear, well short of the zone\'s full maxDepth', () => {
+    const zone = getZoneDef(getInitialZoneId())
+    expect(zone.bossesRequiredToUnlockNext).toBeDefined()
+    expect(zoneGateDepth(zone)).toBeLessThan(zone.maxDepth)
+  })
+
+  test('defeating the gate boss unlocks the next zone without clearing the full zone', () => {
+    const base = createInitialState()
+    const zone = getZoneDef(base.currentZoneId)
+    const gateDepth = zoneGateDepth(zone)
+    const state: SimState = {
+      ...base,
+      abilities: { ...zeroedAbilities(base), strike: { rank: 1 } },
+      currentDepth: gateDepth,
+      currentMonster: { ...base.currentMonster!, isBoss: true, depth: gateDepth, hp: 0.01, maxHp: 0.01 },
+    }
+    const result = advanceTick(state, 100, Date.now())
+    expect(result.state.unlockedZoneIds).toContain(zone.unlocksZoneId)
+  })
+
+  test('defeating an earlier boss (short of the gate) does not unlock the next zone yet', () => {
+    const base = createInitialState()
+    const zone = getZoneDef(base.currentZoneId)
+    const earlierBossDepth = zoneGateDepth(zone) - zone.bossEvery
+    const state: SimState = {
+      ...base,
+      abilities: { ...zeroedAbilities(base), strike: { rank: 1 } },
+      currentDepth: earlierBossDepth,
+      currentMonster: { ...base.currentMonster!, isBoss: true, depth: earlierBossDepth, hp: 0.01, maxHp: 0.01 },
+    }
+    const result = advanceTick(state, 100, Date.now())
+    expect(result.state.unlockedZoneIds).not.toContain(zone.unlocksZoneId)
+  })
+
+  function getInitialZoneId(): string {
+    return createInitialState().currentZoneId
+  }
+})
+
+describe('Overkill chain cap (regression: a chain could recurse once per kill with no bound, stack-overflowing when damage vastly exceeds a shallow monster\'s HP, e.g. right after a Recall reset with a high permanent damage multiplier)', () => {
+  test('a single massively-overkilling hit stays bounded, not unbounded', () => {
+    const base = createInitialState()
+    const state: SimState = {
+      ...base,
+      abilities: { ...zeroedAbilities(base), cleave: { rank: 50 } },
+      depthClears: 0,
+      depthClearsRequired: 100000, // never advance depth mid-chain, so the cap is what stops it
+      currentMonster: { ...base.currentMonster!, hp: 0.0001, maxHp: 0.0001 },
+    }
+    const before = state.lifetime.kills ?? 0
+    const result = advanceTick(state, 100, Date.now())
+    const killsThisHit = (result.state.lifetime.kills ?? 0) - before
+    expect(killsThisHit).toBeGreaterThan(0)
+    expect(killsThisHit).toBeLessThan(1000)
   })
 })

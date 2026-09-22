@@ -1,12 +1,13 @@
 import zonesData from '../content/zones.json'
 import { useGameStore } from '../store/gameStore'
+import { zoneGateDepth } from '../worker/simLogic'
 import type { ZoneDef } from '../types'
 
 const ZONES = zonesData as ZoneDef[]
 
 function lockHint(zoneId: string): string {
   const prev = ZONES.find((z) => z.unlocksZoneId === zoneId)
-  return prev ? `Defeat the Gate Boss at depth ${prev.maxDepth} in ${prev.name} to unlock.` : ''
+  return prev ? `Defeat the Gate Boss at depth ${zoneGateDepth(prev)} in ${prev.name} to unlock.` : ''
 }
 
 export default function ZonesPage() {

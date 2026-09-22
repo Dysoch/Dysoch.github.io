@@ -48,6 +48,7 @@
     ],
     "echoMultiplier": 1,
     "unlocksZoneId": "sunken_crypt",
+    "bossesRequiredToUnlockNext": 7,
     "materialDrops": [
       {
         "materialId": "wood",
@@ -102,6 +103,7 @@
     ],
     "echoMultiplier": 2,
     "unlocksZoneId": "ember_caverns",
+    "bossesRequiredToUnlockNext": 5,
     "materialDrops": [
       {
         "materialId": "stone",
@@ -156,6 +158,7 @@
     ],
     "echoMultiplier": 3.5,
     "unlocksZoneId": "frostbound_peaks",
+    "bossesRequiredToUnlockNext": 5,
     "materialDrops": [
       {
         "materialId": "stone",

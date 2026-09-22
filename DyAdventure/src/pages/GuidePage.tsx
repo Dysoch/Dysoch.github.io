@@ -1,7 +1,7 @@
 import guideData from '../content/guide.json'
 import prestigeData from '../content/prestige.json'
 import { DEPTH_CLEARS_MAX, DEPTH_CLEARS_MIN, DESCEND_COOLDOWN_MS } from '../constants'
-import { getZoneDef, getDefaultZoneId } from '../worker/simLogic'
+import { getZoneDef, getDefaultZoneId, zoneGateDepth } from '../worker/simLogic'
 
 interface GuideSection {
   id: string
@@ -17,7 +17,7 @@ const TOKENS: Record<string, string | number> = {
   clearsMin: DEPTH_CLEARS_MIN,
   clearsMax: DEPTH_CLEARS_MAX,
   cooldown: DESCEND_COOLDOWN_MS / 1000,
-  gateDepth: getZoneDef(getDefaultZoneId()).maxDepth,
+  gateDepth: zoneGateDepth(getZoneDef(getDefaultZoneId())),
   recallDepth: prestigeData.recall.minDepth,
   ascendEchoes: prestigeData.ascend.minEchoesEarned,
 }

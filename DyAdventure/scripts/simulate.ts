@@ -13,7 +13,18 @@
  *   npm run sim -- --ascend threshold        # also Ascend, hoarding Echoes first (see --ascend never/asap)
  *   npm run sim -- --hours 14 --recall threshold > before.log   # keep a report to diff against
  *   npm run sim -- --hours 500 --auto-zone     # push through zone gate bosses, switching zones as they unlock
+ *
+ * Checkpoints — testing a single zone transition (e.g. zone 5→6) means replaying every zone
+ * before it, which gets very expensive as the chain grows. --checkpoint-dir writes the state to
+ * <dir>/<zoneId>.json the moment each zone unlocks; --load-state resumes from one of those files
+ * instead of a fresh character, so later transitions can be tuned in isolation:
+ *   npm run sim -- --hours 250 --auto-zone --checkpoint-dir ./checkpoints   # one full run, saves every unlock
+ *   npm run sim -- --hours 50 --auto-zone --load-state ./checkpoints/ember_caverns.json
+ *                                             # resumes right after ember_caverns unlocked, to
+ *                                             # tune just the ember_caverns -> frostbound_peaks gap
  */
+import fs from 'node:fs'
+import path from 'node:path'
 import {
   createInitialState,
   advanceTick,
@@ -40,26 +51,38 @@ import {
 import statsData from '../src/content/stats.json' with { type: 'json' }
 import abilitiesData from '../src/content/abilities.json' with { type: 'json' }
 import zonesData from '../src/content/zones.json' with { type: 'json' }
-import type { AbilityDef, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
+import type { AbilityDef, SimState, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
 
 type RecallPolicy = 'never' | 'threshold' | 'asap'
 type AscendPolicy = 'never' | 'threshold' | 'asap'
 
-function parseArgs(): { hours: number; recall: RecallPolicy; ascend: AscendPolicy; recallThreshold: number; autoZone: boolean } {
+function parseArgs(): {
+  hours: number
+  recall: RecallPolicy
+  ascend: AscendPolicy
+  recallThreshold: number
+  autoZone: boolean
+  checkpointDir: string | null
+  loadState: string | null
+} {
   const args = process.argv.slice(2)
   let hours = 6
   let recallPolicy: RecallPolicy = 'threshold'
   let ascendPolicy: AscendPolicy = 'never'
   let recallThreshold = 50
   let autoZone = false
+  let checkpointDir: string | null = null
+  let loadState: string | null = null
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
     if (args[i] === '--ascend') ascendPolicy = args[++i] as AscendPolicy
     if (args[i] === '--recall-threshold') recallThreshold = Number(args[++i])
     if (args[i] === '--auto-zone') autoZone = true
+    if (args[i] === '--checkpoint-dir') checkpointDir = args[++i]
+    if (args[i] === '--load-state') loadState = args[++i]
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState }
 }
 
 const {
@@ -68,7 +91,10 @@ const {
   ascend: ASCEND_POLICY,
   recallThreshold: RECALL_DEPTH_THRESHOLD,
   autoZone: AUTO_ZONE,
+  checkpointDir: CHECKPOINT_DIR,
+  loadState: LOAD_STATE_PATH,
 } = parseArgs()
+if (CHECKPOINT_DIR) fs.mkdirSync(CHECKPOINT_DIR, { recursive: true })
 const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
 const ZONES = zonesData as ZoneDef[]
@@ -84,7 +110,7 @@ const ASCEND_ECHOES_MULTIPLIER = 5
 // Cap the printed depth table at ~200 rows regardless of run length, so long horizons stay readable.
 const SNAPSHOT_INTERVAL_MIN = Math.max(5, Math.ceil((SIM_HOURS * 60) / 200))
 
-let state = createInitialState()
+let state: SimState = LOAD_STATE_PATH ? JSON.parse(fs.readFileSync(LOAD_STATE_PATH, 'utf8')) : createInitialState()
 let now = Date.now()
 let msSinceDecision = 0
 let firstDepth51At: number | null = null
@@ -215,11 +241,17 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
     }
     if (event.kind === 'zoneUnlocked') {
       zoneUnlockLog.push({ minute: Math.round(t / 60000), zoneId: event.zoneId })
+      process.stderr.write(`[live] t=${(t / 60000).toFixed(1)}min zone unlocked: ${event.zoneId}\n`)
       if (AUTO_ZONE) {
         state = selectZone(state, event.zoneId)
         // This zone's own deepest-reached counter starts at 0 — without resetting, the recall
         // growth check (deepestNow - depthAtLastRecall) would stay deeply negative for a long time.
         depthAtLastRecall = 0
+      }
+      if (CHECKPOINT_DIR) {
+        const checkpointPath = path.join(CHECKPOINT_DIR, `${event.zoneId}.json`)
+        fs.writeFileSync(checkpointPath, JSON.stringify(state))
+        process.stderr.write(`[checkpoint] saved ${checkpointPath}\n`)
       }
     }
   }

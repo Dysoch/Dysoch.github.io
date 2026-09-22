@@ -141,8 +141,10 @@ export interface ZoneDef {
   /** Multiplier applied to Echoes earned when Recalling from this zone */
   echoMultiplier: number
   materialDrops: { materialId: string; chance: number }[]
-  /** Zone unlocked by defeating this zone's Gate Boss (the boss at maxDepth) */
+  /** Zone unlocked by defeating this zone's Gate Boss (the boss at depth bossesRequiredToUnlockNext * bossEvery) */
   unlocksZoneId?: string
+  /** Number of this zone's bosses (not a full maxDepth clear) that must fall before unlocksZoneId opens */
+  bossesRequiredToUnlockNext?: number
 }
 
 export interface MaterialDef {
@@ -265,6 +267,8 @@ export interface SimState {
   bestRecallDepth: number
   /** Most Echoes ever spent on a single Ascend (never reset by Ascend). Drives Ascend's permanent trainGain bonus. */
   bestAscendEchoes: number
+  /** Highest boss HP ever defeated (never reset by Recall or Ascend). Drives a permanent, compounding damage bonus that keeps pace with monster scaling at extreme depth. */
+  bestBossPowerDefeated: number
 }
 
 export type MainToWorkerMessage =

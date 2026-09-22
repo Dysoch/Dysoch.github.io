@@ -51,6 +51,27 @@ const SLOT_MATERIALS = materialsData.slotMaterials as Record<GearSlot, [string, 
 const CRAFT_COSTS = materialsData.craftCostByRarity as Record<string, { materials: number; focus: number }>
 const RECALL_CONFIG = prestigeData.recall
 const ASCEND_CONFIG = prestigeData.ascend
+// Boss Power: a permanent (never reset by Recall or Ascend) damage multiplier driven by the
+// toughest boss ever defeated. Monster HP grows exponentially with depth (perDepthGrowthPct
+// compounding), while trained stat power only grows linearly per level against an exponentially
+// rising training cost — left alone, the gap between monster HP and player damage diverges
+// forever. Since bestBossPowerDefeated inherits that same exponential curve from the boss it was
+// set by, raising it to BOSS_POWER_EXPONENT < 1 gives the player a damage bonus that also compounds
+// exponentially with depth, just at a slower rate — deep zones keep getting harder (by design),
+// but the gap no longer runs away to "impossible" the way it did before this existed.
+const BOSS_POWER_REFERENCE = 1000
+const BOSS_POWER_EXPONENT = 0.6
+const BOSS_POWER_FACTOR = 0.5
+
+export function computeBossPowerMultiplier(state: SimState): number {
+  if (state.bestBossPowerDefeated <= 0) return 1
+  return 1 + Math.pow(state.bestBossPowerDefeated / BOSS_POWER_REFERENCE, BOSS_POWER_EXPONENT) * BOSS_POWER_FACTOR
+}
+
+/** Depth of the boss that unlocks this zone's unlocksZoneId (a partial clear, not the full maxDepth). */
+export function zoneGateDepth(zone: ZoneDef): number {
+  return (zone.bossesRequiredToUnlockNext ?? Math.floor(zone.maxDepth / zone.bossEvery)) * zone.bossEvery
+}
 
 const BASE_STAMINA_CAP = 200
 const BASE_MANA_CAP = 200
@@ -447,7 +468,7 @@ export function computeAbilityDamage(state: SimState, abilityId: string): number
   if (rank <= 0) return 0
   const power = def.type === 'physical' ? computePhysicalPower(state) : computeMagicPower(state)
   const effect = def.baseEffect + def.effectPerRank * (rank - 1)
-  return effect * power * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004)
+  return effect * power * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004) * computeBossPowerMultiplier(state)
 }
 
 export function computeMonsterMaxHp(zone: ZoneDef, depth: number, isBoss: boolean): number {
@@ -660,7 +681,11 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
   if (monster.isBoss) {
     events.push({ kind: 'bossDefeated', depth: monster.depth, timestamp: now })
     next = addStat(next, 'bossKills', 1)
-    if (zone.unlocksZoneId && monster.depth >= zone.maxDepth && !next.unlockedZoneIds.includes(zone.unlocksZoneId)) {
+    next = {
+      ...next,
+      bestBossPowerDefeated: Math.max(next.bestBossPowerDefeated, computeMonsterMaxHp(zone, monster.depth, true)),
+    }
+    if (zone.unlocksZoneId && monster.depth >= zoneGateDepth(zone) && !next.unlockedZoneIds.includes(zone.unlocksZoneId)) {
       next = { ...next, unlockedZoneIds: [...next.unlockedZoneIds, zone.unlocksZoneId] }
       events.push({ kind: 'zoneUnlocked', zoneId: zone.unlocksZoneId, timestamp: now })
     }
@@ -705,11 +730,20 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
   }, `deepest_${zone.id}`, nextDepth)
 }
 
+// Safety cap on one hit's Overkill chain. It should already be bounded by depthClearsRequired
+// (never spills across a depth change), but a hit large enough to chain through hundreds of
+// monsters is already visually indistinguishable from "clears the floor" — and a hard cap means
+// one damage application can never take pathologically long (or loop forever) no matter how large
+// damage or how the depth-clear bookkeeping evolves.
+const MAX_OVERKILL_CHAIN_KILLS = 10
+
 /**
  * Applies damage to the current monster. On a kill, any bleed on that target ends, and if
  * `overkill` is set and the kill left leftover damage and a new monster spawned on the same
- * depth (not a depth transition), the leftover chains into it — recursively, so one big hit can
- * clear several monsters, but it never spills across a depth change.
+ * depth (not a depth transition), the leftover chains into it — so one big hit can clear several
+ * monsters, but it never spills across a depth change. Iterative (not recursive): damage can
+ * exceed a shallow monster's HP by orders of magnitude (e.g. after a Recall reset with a high
+ * permanent damage multiplier), which can chain through many kills in one hit.
  */
 function applyDamageToMonster(
   state: SimState,
@@ -719,17 +753,22 @@ function applyDamageToMonster(
   depthAtStart: number,
   overkill: boolean,
 ): SimState {
-  if (!state.currentMonster) return state
-  const remainingHp = state.currentMonster.hp - damage
-  if (remainingHp > 0) {
-    return { ...state, currentMonster: { ...state.currentMonster, hp: remainingHp } }
+  let current = state
+  let remainingDamage = damage
+  for (let chained = 0; chained < MAX_OVERKILL_CHAIN_KILLS && current.currentMonster; chained++) {
+    const remainingHp = current.currentMonster.hp - remainingDamage
+    if (remainingHp > 0) {
+      return { ...current, currentMonster: { ...current.currentMonster, hp: remainingHp } }
+    }
+    const next = handleMonsterDeath({ ...current, monsterDot: null }, now, events)
+    const spillover = overkill ? -remainingHp * (1 + perkBonus(current, 'overkillPower')) : -remainingHp
+    if (!(overkill && spillover > 0 && next.currentMonster && next.currentDepth === depthAtStart)) {
+      return next
+    }
+    current = addStat(next, 'overkillKills', 1)
+    remainingDamage = spillover
   }
-  let next = handleMonsterDeath({ ...state, monsterDot: null }, now, events)
-  const spillover = overkill ? -remainingHp * (1 + perkBonus(state, 'overkillPower')) : -remainingHp
-  if (overkill && spillover > 0 && next.currentMonster && next.currentDepth === depthAtStart) {
-    next = applyDamageToMonster(addStat(next, 'overkillKills', 1), spillover, now, events, depthAtStart, overkill)
-  }
-  return next
+  return current
 }
 
 /** kind: 'dot' — sets/refreshes the bleed on the current monster (no stacking). */
@@ -992,6 +1031,7 @@ export function createInitialState(): SimState {
     tickCount: 0,
     bestRecallDepth: 0,
     bestAscendEchoes: 0,
+    bestBossPowerDefeated: 0,
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
