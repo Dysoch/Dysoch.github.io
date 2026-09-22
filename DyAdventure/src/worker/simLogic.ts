@@ -447,7 +447,7 @@ export function computeAbilityDamage(state: SimState, abilityId: string): number
   if (rank <= 0) return 0
   const power = def.type === 'physical' ? computePhysicalPower(state) : computeMagicPower(state)
   const effect = def.baseEffect + def.effectPerRank * (rank - 1)
-  return effect * power * (1 + perkBonus(state, 'damage'))
+  return effect * power * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004)
 }
 
 export function computeMonsterMaxHp(zone: ZoneDef, depth: number, isBoss: boolean): number {
@@ -472,6 +472,13 @@ export function computeMonsterAttackIntervalMs(zone: ZoneDef, isBoss: boolean): 
 /** Deepest depth the player has reached in a zone (never below the zone's first floor). */
 export function getMaxDepthReached(state: SimState, zone: ZoneDef): number {
   return Math.max(zone.minDepth, state.maxDepthByZone[zone.id] ?? zone.minDepth, state.currentDepth)
+}
+
+/** The best (across zones) getMaxDepthReached right now — what a Recall's Echo payout is based on. */
+function bestZoneDepthReached(state: SimState): number {
+  let best = 0
+  for (const zone of ZONES) best = Math.max(best, getMaxDepthReached(state, zone))
+  return best
 }
 
 /** Checkpoint = the first floor after the last boss defeated (or the zone's first floor). */
@@ -926,7 +933,7 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
 }
 
 export function computeStatGainPerTrain(state: SimState): number {
-  return (1 + state.recallCount * 0.1) * (1 + state.ascendCount * 0.5) * (1 + perkBonus(state, 'trainGain'))
+  return (1 + state.bestRecallDepth * 0.01) * (1 + state.ascendCount * 0.5) * (1 + perkBonus(state, 'trainGain'))
 }
 
 export function createInitialState(): SimState {
@@ -979,6 +986,7 @@ export function createInitialState(): SimState {
     activeBuffs: [],
     monsterDot: null,
     tickCount: 0,
+    bestRecallDepth: 0,
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
@@ -1046,12 +1054,16 @@ export function ascendRequiredEchoes(): number {
 export function recall(state: SimState): SimState {
   const echoes = computeRecallEchoes(state)
   if (echoes <= 0) return state
+  const depthAtRecall = bestZoneDepthReached(state)
   const counted = addStat(addStat(state, 'recalls', 1), 'echoesEarnedTotal', echoes)
   return {
     ...resetRun(counted),
     recallCount: state.recallCount + 1,
     echoes: state.echoes + echoes,
     echoesEarned: state.echoesEarned + echoes,
+    // Recalling shallowly again doesn't raise this — only a deeper Recall does, so the permanent
+    // trainGain/damage bonus it drives can't be farmed by spam-recalling at the same depth.
+    bestRecallDepth: Math.max(state.bestRecallDepth, depthAtRecall),
   }
 }
 
@@ -1071,6 +1083,7 @@ export function ascend(state: SimState): SimState {
     perkLevels: keptPerks,
     sigils: state.sigils + sigils,
     ascendCount: state.ascendCount + 1,
+    bestRecallDepth: 0,
   }
 }
 
