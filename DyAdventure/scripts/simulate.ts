@@ -12,6 +12,7 @@
  *   npm run sim -- --recall-threshold 15     # 'threshold' recall policy, but eager (default 50)
  *   npm run sim -- --ascend threshold        # also Ascend, hoarding Echoes first (see --ascend never/asap)
  *   npm run sim -- --hours 14 --recall threshold > before.log   # keep a report to diff against
+ *   npm run sim -- --hours 500 --auto-zone     # push through zone gate bosses, switching zones as they unlock
  */
 import {
   createInitialState,
@@ -32,32 +33,45 @@ import {
   listPerks,
   computePerkCost,
   buyPerk,
+  selectZone,
+  getZoneDef,
+  isBossDepth,
 } from '../src/worker/simLogic.ts'
 import statsData from '../src/content/stats.json' with { type: 'json' }
 import abilitiesData from '../src/content/abilities.json' with { type: 'json' }
-import type { AbilityDef, StatDef, StatId } from '../src/types/index.ts'
+import zonesData from '../src/content/zones.json' with { type: 'json' }
+import type { AbilityDef, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
 
 type RecallPolicy = 'never' | 'threshold' | 'asap'
 type AscendPolicy = 'never' | 'threshold' | 'asap'
 
-function parseArgs(): { hours: number; recall: RecallPolicy; ascend: AscendPolicy; recallThreshold: number } {
+function parseArgs(): { hours: number; recall: RecallPolicy; ascend: AscendPolicy; recallThreshold: number; autoZone: boolean } {
   const args = process.argv.slice(2)
   let hours = 6
   let recallPolicy: RecallPolicy = 'threshold'
   let ascendPolicy: AscendPolicy = 'never'
   let recallThreshold = 50
+  let autoZone = false
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
     if (args[i] === '--ascend') ascendPolicy = args[++i] as AscendPolicy
     if (args[i] === '--recall-threshold') recallThreshold = Number(args[++i])
+    if (args[i] === '--auto-zone') autoZone = true
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone }
 }
 
-const { hours: SIM_HOURS, recall: RECALL_POLICY, ascend: ASCEND_POLICY, recallThreshold: RECALL_DEPTH_THRESHOLD } = parseArgs()
+const {
+  hours: SIM_HOURS,
+  recall: RECALL_POLICY,
+  ascend: ASCEND_POLICY,
+  recallThreshold: RECALL_DEPTH_THRESHOLD,
+  autoZone: AUTO_ZONE,
+} = parseArgs()
 const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
+const ZONES = zonesData as ZoneDef[]
 const PERKS = listPerks()
 
 const TICK_MS = 100
@@ -67,6 +81,8 @@ const TOTAL_MS = SIM_HOURS * 60 * 60 * 1000
 // instead of the instant it's eligible — tests whether hoarding a bigger Sigil payout (sigils
 // scale with sqrt(echoesEarned), so hoarding has diminishing returns) beats Ascending on cooldown.
 const ASCEND_ECHOES_MULTIPLIER = 5
+// Cap the printed depth table at ~200 rows regardless of run length, so long horizons stay readable.
+const SNAPSHOT_INTERVAL_MIN = Math.max(5, Math.ceil((SIM_HOURS * 60) / 200))
 
 let state = createInitialState()
 let now = Date.now()
@@ -80,6 +96,7 @@ const recallLog: { minute: number; depth: number; echoes: number }[] = []
 const ascendLog: { minute: number; echoesEarned: number; sigils: number; multiplierAfter: number }[] = []
 const depthSnapshots: {
   minute: number
+  zoneId: string
   depth: number
   maxDepth: number
   focus: number
@@ -88,6 +105,20 @@ const depthSnapshots: {
   avgLevel: number
   echoesIfRecalledNow: number
 }[] = []
+
+// Boss-gate tracking: when a boss depth is first reached (combat starts) vs. when it's cleared,
+// and how many faint-loops it took — surfaces a hard wall (a boss that's effectively undefeatable
+// at the stats/gear a diligent player would have by the time they reach it) as opposed to just slow going.
+const bossFirstReachedAt: Record<string, number> = {}
+const bossFaintCounts: Record<string, number> = {}
+const bossDefeatLog: { minute: number; zoneId: string; depth: number; minutesStuck: number; faints: number }[] = []
+const zoneUnlockLog: { minute: number; zoneId: string }[] = []
+function bossKey(zoneId: string, depth: number): string {
+  return `${zoneId}:${depth}`
+}
+function nextBossDepth(zone: ZoneDef, fromDepth: number): number {
+  return Math.ceil(fromDepth / zone.bossEvery) * zone.bossEvery
+}
 
 // Round-robin spend targets: unlock/rank up every ability, train every stat, evenly —
 // approximates a diligent player who doesn't neglect any part of the kit.
@@ -165,6 +196,40 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
       // Simple auto-equip: always equip a newly found item (good enough for a pacing check).
       state = equipItem(state, event.item.instanceId)
     }
+    if (event.kind === 'bossDefeated') {
+      const zoneId = state.currentZoneId
+      const key = bossKey(zoneId, event.depth)
+      const firstAt = bossFirstReachedAt[key] ?? Math.round(t / 60000)
+      bossDefeatLog.push({
+        minute: Math.round(t / 60000),
+        zoneId,
+        depth: event.depth,
+        minutesStuck: Math.round(t / 60000) - firstAt,
+        faints: bossFaintCounts[key] ?? 0,
+      })
+    }
+    if (event.kind === 'faint') {
+      const zone = getZoneDef(state.currentZoneId)
+      const key = bossKey(state.currentZoneId, nextBossDepth(zone, event.checkpointDepth))
+      bossFaintCounts[key] = (bossFaintCounts[key] ?? 0) + 1
+    }
+    if (event.kind === 'zoneUnlocked') {
+      zoneUnlockLog.push({ minute: Math.round(t / 60000), zoneId: event.zoneId })
+      if (AUTO_ZONE) {
+        state = selectZone(state, event.zoneId)
+        // This zone's own deepest-reached counter starts at 0 — without resetting, the recall
+        // growth check (deepestNow - depthAtLastRecall) would stay deeply negative for a long time.
+        depthAtLastRecall = 0
+      }
+    }
+  }
+
+  {
+    const zone = getZoneDef(state.currentZoneId)
+    if (isBossDepth(zone, state.currentDepth)) {
+      const key = bossKey(state.currentZoneId, state.currentDepth)
+      if (bossFirstReachedAt[key] === undefined) bossFirstReachedAt[key] = Math.round(t / 60000)
+    }
   }
 
   msSinceDecision += TICK_MS
@@ -212,11 +277,12 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
   }
 
   const minute = Math.floor(t / 60000)
-  if (minute !== lastMinuteLogged && minute % 5 === 0) {
+  if (minute !== lastMinuteLogged && minute % SNAPSHOT_INTERVAL_MIN === 0) {
     lastMinuteLogged = minute
     const avgLevel = Object.values(state.stats).reduce((a: number, b: number) => a + b, 0) / Object.keys(state.stats).length
     depthSnapshots.push({
       minute,
+      zoneId: state.currentZoneId,
       depth: state.currentDepth,
       maxDepth: reachedDepth,
       focus: Math.round(state.focus),
@@ -228,9 +294,9 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
   }
 }
 
-console.log('minute\tdepth\tmaxDepth\tfocus\tfaints\tkills\tavgStatLvl\techoesIfRecalledNow')
+console.log('minute\tzone\tdepth\tmaxDepth\tfocus\tfaints\tkills\tavgStatLvl\techoesIfRecalledNow')
 for (const s of depthSnapshots) {
-  console.log(`${s.minute}\t${s.depth}\t${s.maxDepth}\t${s.focus}\t${s.faints}\t${s.kills}\t${s.avgLevel}\t${s.echoesIfRecalledNow}`)
+  console.log(`${s.minute}\t${s.zoneId}\t${s.depth}\t${s.maxDepth}\t${s.focus}\t${s.faints}\t${s.kills}\t${s.avgLevel}\t${s.echoesIfRecalledNow}`)
 }
 
 if (recallLog.length > 0) {
@@ -250,6 +316,32 @@ if (recallLog.length > 0 || ascendLog.length > 0) {
   for (const p of PERKS) console.log(`  ${p.id} (${p.currency}): ${state.perkLevels[p.id] ?? 0}/${p.maxLevel}`)
 }
 
+if (zoneUnlockLog.length > 0) {
+  console.log('\n--- Zones unlocked ---')
+  console.log('minute\tzoneId')
+  for (const z of zoneUnlockLog) console.log(`${z.minute}\t${z.zoneId}`)
+}
+
+console.log('\n--- Boss gates ---')
+console.log('zone\tbossDepth\tstatus\tminutesToReach\tminutesStuck\tfaintsAtThisBoss')
+for (const zone of ZONES) {
+  if (!state.unlockedZoneIds.includes(zone.id)) continue
+  for (let depth = zone.bossEvery; depth <= zone.maxDepth; depth += zone.bossEvery) {
+    const key = bossKey(zone.id, depth)
+    const defeat = bossDefeatLog.find((b) => b.zoneId === zone.id && b.depth === depth)
+    const reachedAt = bossFirstReachedAt[key]
+    if (defeat) {
+      console.log(`${zone.id}\t${depth}\tdefeated\t${reachedAt ?? '?'}\t${defeat.minutesStuck}\t${defeat.faints}`)
+    } else if (reachedAt !== undefined) {
+      const stuckFor = Math.round(TOTAL_MS / 60000) - reachedAt
+      console.log(`${zone.id}\t${depth}\tSTUCK (not defeated by end of run)\t${reachedAt}\t${stuckFor}\t${bossFaintCounts[key] ?? 0}`)
+      break // deeper bosses in this zone were never reached
+    } else {
+      break // not reached yet, and neither are any deeper ones
+    }
+  }
+}
+
 console.log('\n--- Final ability ranks ---')
 for (const a of ABILITIES) console.log(`  ${a.id}: rank ${state.abilities[a.id]?.rank ?? 0}`)
 console.log('\n--- Final stat levels ---')
@@ -263,8 +355,11 @@ console.log(`Current sigils on hand: ${state.sigils}`)
 console.log(`Current trainGain multiplier (computeStatGainPerTrain): ${computeStatGainPerTrain(state).toFixed(3)}`)
 console.log(`Total faints: ${state.lifetime.faints ?? 0}`)
 console.log(`Total kills: ${state.lifetime.kills ?? 0}`)
-console.log(
-  `Deepest ever reached: ${state.lifetime['deepest_' + state.currentZoneId] ?? 0}`,
-)
+console.log(`Current zone: ${state.currentZoneId}`)
+console.log('Deepest ever reached, per unlocked zone:')
+for (const zone of ZONES) {
+  if (!state.unlockedZoneIds.includes(zone.id)) continue
+  console.log(`  ${zone.id}: ${state.lifetime['deepest_' + zone.id] ?? 0} / ${zone.maxDepth}`)
+}
 console.log(`Time to depth 51: ${firstDepth51At !== null ? (firstDepth51At / 60000).toFixed(1) + ' minutes' : 'NOT REACHED in ' + SIM_HOURS + 'h'}`)
 console.log(`Time to first Ascend: ${firstAscendAt !== null ? (firstAscendAt / 60000).toFixed(1) + ' minutes' : 'NOT REACHED in ' + SIM_HOURS + 'h'}`)
