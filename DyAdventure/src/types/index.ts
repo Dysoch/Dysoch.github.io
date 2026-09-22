@@ -259,6 +259,8 @@ export interface SimState {
   lastTickTimestamp: number
   activeBuffs: { statId: PrimaryStat; magnitude: number; remainingMs: number; sourceAbilityId: string }[]
   monsterDot: { damagePerTick: number; ticksRemaining: number; tickIntervalMs: number; msUntilNextTick: number } | null
+  /** Advances by 1 every tick; used to rotate ability firing priority so one ability can't permanently starve the rest. */
+  tickCount: number
 }
 
 export type MainToWorkerMessage =

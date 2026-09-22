@@ -52,8 +52,8 @@ const CRAFT_COSTS = materialsData.craftCostByRarity as Record<string, { material
 const RECALL_CONFIG = prestigeData.recall
 const ASCEND_CONFIG = prestigeData.ascend
 
-const BASE_STAMINA_CAP = 100
-const BASE_MANA_CAP = 100
+const BASE_STAMINA_CAP = 200
+const BASE_MANA_CAP = 200
 const REGEN_PCT_PER_SEC = 0.05
 
 /** Adds to a statistics counter, both lifetime and for the current run (see the Statistics page). */
@@ -907,7 +907,14 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
   }
   next = { ...next, abilityCooldowns: cooldowns }
 
-  for (const abilityId of Object.keys(next.abilities)) {
+  // Rotate who gets first claim on Stamina/Mana each tick, so a cheap fast ability listed
+  // first (e.g. Strike) can't permanently starve out everything behind it in the list.
+  const abilityIds = Object.keys(next.abilities)
+  const rotation = abilityIds.length > 0 ? next.tickCount % abilityIds.length : 0
+  const orderedAbilityIds = [...abilityIds.slice(rotation), ...abilityIds.slice(0, rotation)]
+  next = { ...next, tickCount: next.tickCount + 1 }
+
+  for (const abilityId of orderedAbilityIds) {
     const progress = next.abilities[abilityId]
     if (!progress || progress.rank <= 0) continue
     if ((next.abilityCooldowns[abilityId] ?? 0) > 0) continue
@@ -971,6 +978,7 @@ export function createInitialState(): SimState {
     lastTickTimestamp: Date.now(),
     activeBuffs: [],
     monsterDot: null,
+    tickCount: 0,
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
