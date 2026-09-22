@@ -9,6 +9,8 @@
  *   npm run sim -- --hours 14                # longer run
  *   npm run sim -- --recall never            # never Recall, just push depth
  *   npm run sim -- --recall asap             # Recall the instant eligible (exploit check)
+ *   npm run sim -- --recall-threshold 15     # 'threshold' recall policy, but eager (default 50)
+ *   npm run sim -- --ascend threshold        # also Ascend, hoarding Echoes first (see --ascend never/asap)
  *   npm run sim -- --hours 14 --recall threshold > before.log   # keep a report to diff against
  */
 import {
@@ -38,20 +40,22 @@ import type { AbilityDef, StatDef, StatId } from '../src/types/index.ts'
 type RecallPolicy = 'never' | 'threshold' | 'asap'
 type AscendPolicy = 'never' | 'threshold' | 'asap'
 
-function parseArgs(): { hours: number; recall: RecallPolicy; ascend: AscendPolicy } {
+function parseArgs(): { hours: number; recall: RecallPolicy; ascend: AscendPolicy; recallThreshold: number } {
   const args = process.argv.slice(2)
   let hours = 6
   let recallPolicy: RecallPolicy = 'threshold'
   let ascendPolicy: AscendPolicy = 'never'
+  let recallThreshold = 50
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
     if (args[i] === '--ascend') ascendPolicy = args[++i] as AscendPolicy
+    if (args[i] === '--recall-threshold') recallThreshold = Number(args[++i])
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold }
 }
 
-const { hours: SIM_HOURS, recall: RECALL_POLICY, ascend: ASCEND_POLICY } = parseArgs()
+const { hours: SIM_HOURS, recall: RECALL_POLICY, ascend: ASCEND_POLICY, recallThreshold: RECALL_DEPTH_THRESHOLD } = parseArgs()
 const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
 const PERKS = listPerks()
@@ -59,9 +63,6 @@ const PERKS = listPerks()
 const TICK_MS = 100
 const DECISION_INTERVAL_MS = 5000
 const TOTAL_MS = SIM_HOURS * 60 * 60 * 1000
-// 'threshold' policy: how much further the deepest-ever depth must grow past the last Recall
-// before recalling again (pushing deeper first makes the Echo payout worth the full reset).
-const RECALL_DEPTH_THRESHOLD = 50
 // 'threshold' Ascend policy: earn this multiple of the minimum required Echoes before Ascending,
 // instead of the instant it's eligible — tests whether hoarding a bigger Sigil payout (sigils
 // scale with sqrt(echoesEarned), so hoarding has diminishing returns) beats Ascending on cooldown.
