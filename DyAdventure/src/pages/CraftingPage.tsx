@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import {
-  canAffordCraft,
-  computeCraftCost,
+  computeCraftCostN,
+  computeMaxCraftCount,
   getRarityDef,
   getStatLabel,
   getSetDef,
@@ -10,6 +11,7 @@ import {
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
+import { QtySelector, type BuyQty } from '../components/QtySelector'
 import type { GearCatalogItemDef } from '../types'
 
 const MATERIALS = listMaterials()
@@ -22,6 +24,7 @@ export default function CraftingPage() {
   const state = useGameStore((s) => s)
   const craftItem = useGameStore((s) => s.craftItem)
   const items = listCraftableItems(state)
+  const [qty, setQty] = useState<BuyQty>(1)
 
   // Group craftable items by set; items without a set go last
   const groups = new Map<string, GearCatalogItemDef[]>()
@@ -48,6 +51,8 @@ export default function CraftingPage() {
         </div>
       </div>
 
+      <QtySelector value={qty} onChange={setQty} />
+
       {items.length === 0 && (
         <div className="text-body-secondary small">You haven't discovered any gear yet — pieces you find can be crafted here later.</div>
       )}
@@ -58,8 +63,9 @@ export default function CraftingPage() {
           <div className="inventory-grid">
             {groups.get(key)!.map((item) => {
               const rarity = getRarityDef(item.rarity)
-              const cost = computeCraftCost(item.id)
-              const affordable = canAffordCraft(state, item.id)
+              const buyCount = qty === 'max' ? Math.max(1, computeMaxCraftCount(state, item.id)) : qty
+              const cost = computeCraftCostN(item.id, buyCount)
+              const affordable = state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
               return (
                 <div key={item.id} className="inventory-card">
                   <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
@@ -87,9 +93,9 @@ export default function CraftingPage() {
                     type="button"
                     className="btn btn-sm btn-outline-primary mt-auto"
                     disabled={!affordable}
-                    onClick={() => craftItem(item.id)}
+                    onClick={() => craftItem(item.id, buyCount)}
                   >
-                    Craft
+                    {buyCount > 1 ? `Craft ×${buyCount}` : 'Craft'}
                   </button>
                 </div>
               )

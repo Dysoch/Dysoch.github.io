@@ -17,11 +17,15 @@ function describeEvent(event: CombatEvent): string {
     case 'loot':
       return `Loot: ${getGearCatalogItem(event.item.catalogId).name}`
     case 'fuse':
-      return `Fused a duplicate — item is now level ${event.newLevel}`
+      return event.count && event.count > 1
+        ? `Fused ${event.count} duplicates — item is now level ${event.newLevel}`
+        : `Fused a duplicate — item is now level ${event.newLevel}`
     case 'salvage':
       return `Salvaged an item for ${formatNumber(event.focusGained)} Focus and ${formatNumber(event.materialsGained)} ${materialName(event.materialId)}`
     case 'crafted':
-      return `Crafted ${getGearCatalogItem(event.catalogId).name}`
+      return event.count && event.count > 1
+        ? `Crafted ${event.count}× ${getGearCatalogItem(event.catalogId).name}`
+        : `Crafted ${getGearCatalogItem(event.catalogId).name}`
     case 'levelUp':
       return `${event.statId} increased to ${event.newLevel}`
     case 'faint':

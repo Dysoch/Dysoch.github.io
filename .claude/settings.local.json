@@ -38,7 +38,10 @@
       "Bash(grep -n \"currentMonster\\\\|monster\" pages/CombatPage.tsx)",
       "Bash(sed -i '213d' src/worker/simLogic.ts)",
       "Bash(sed -i '/^const STATS = statsData as StatDef\\\\[\\\\]$/d' src/pages/InventoryPage.tsx)",
-      "Bash(python \"C:/Users/FRITS~1.DEV/AppData/Local/Temp/claude/c--Service-Tool-GitHub-Dysoch-github-io/3cf647f0-3ee0-43c2-b5b4-19a80f84e9d2/scratchpad/newstats_edit.py\")"
+      "Bash(python \"C:/Users/FRITS~1.DEV/AppData/Local/Temp/claude/c--Service-Tool-GitHub-Dysoch-github-io/3cf647f0-3ee0-43c2-b5b4-19a80f84e9d2/scratchpad/newstats_edit.py\")",
+      "Read(//c/Program Files \\\\\\(x86\\\\\\)/Microsoft/Edge/Application/**)",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Bash(node check.js)"
     ],
     "deny": [
       "Read(idle-game)"

@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import abilitiesData from '../content/abilities.json'
 import { useGameStore } from '../store/gameStore'
-import { computeAbilityRankCost } from '../worker/simLogic'
+import { computeAbilityRankCostN, computeMaxAbilityCount } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
+import { QtySelector, type BuyQty } from '../components/QtySelector'
 import type { AbilityDef } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
@@ -11,6 +13,7 @@ export default function AbilitiesPage() {
   const abilities = useGameStore((s) => s.abilities)
   const focus = useGameStore((s) => s.focus)
   const upgradeAbility = useGameStore((s) => s.upgradeAbility)
+  const [qty, setQty] = useState<BuyQty>(1)
 
   return (
     <div style={{ padding: '24px' }}>
@@ -19,12 +22,17 @@ export default function AbilitiesPage() {
         physical abilities draw from Stamina, spells from Mana, and several can be active at once.
       </p>
 
+      <QtySelector value={qty} onChange={setQty} />
+
       <div className="ability-grid">
         {ABILITIES.map((ability) => {
           const progress = abilities[ability.id]
           const rank = progress ? progress.rank : 0
-          const cost = computeAbilityRankCost(ability.id, rank)
-          const affordable = focus >= cost && rank < ability.maxRank
+          const maxedOut = rank >= ability.maxRank
+          const remainingRanks = ability.maxRank - rank
+          const buyCount = qty === 'max' ? Math.max(1, computeMaxAbilityCount(ability.id, rank, focus)) : Math.min(qty, remainingRanks)
+          const cost = computeAbilityRankCostN(ability.id, rank, buyCount)
+          const affordable = !maxedOut && focus >= cost
 
           return (
             <div key={ability.id} className={`panel ${ability.type === 'physical' ? '' : ''}`} style={{ padding: '18px', borderColor: ability.type === 'physical' ? 'var(--physical)' : 'var(--arcane)' }}>
@@ -47,9 +55,9 @@ export default function AbilitiesPage() {
                 type="button"
                 className="btn btn-sm btn-outline-primary w-100"
                 disabled={!affordable}
-                onClick={() => upgradeAbility(ability.id)}
+                onClick={() => upgradeAbility(ability.id, buyCount)}
               >
-                {rank >= ability.maxRank ? 'Max rank' : `Upgrade — ${formatNumber(cost)} Focus`}
+                {maxedOut ? 'Max rank' : `${buyCount > 1 ? `Upgrade ×${buyCount}` : 'Upgrade'} — ${formatNumber(cost)} Focus`}
               </button>
             </div>
           )

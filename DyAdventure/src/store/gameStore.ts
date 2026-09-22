@@ -23,16 +23,16 @@ interface GameStore extends PersistedSlice {
   setActiveTab: (id: TabId) => void
   setDepthMode: (depthMode: DepthMode) => void
   selectZone: (zoneId: string) => void
-  trainStat: (statId: StatId) => void
-  upgradeAbility: (abilityId: string) => void
+  trainStat: (statId: StatId, count?: number) => void
+  upgradeAbility: (abilityId: string, count?: number) => void
   equipItem: (instanceId: string) => void
   unequipItem: (slot: GearSlot) => void
   socketAugment: (instanceId: string, augmentId: string) => void
   salvageItem: (instanceId: string) => void
   recall: () => void
   ascend: () => void
-  buyPerk: (perkId: string) => void
-  craftItem: (catalogId: string) => void
+  buyPerk: (perkId: string, count?: number) => void
+  craftItem: (catalogId: string, count?: number) => void
   exportSave: () => string
   importSave: (data: string) => boolean
   resetGame: () => void
@@ -97,16 +97,16 @@ export const useGameStore = create<GameStore>()(
 
       setDepthMode: (depthMode) => post({ type: 'SET_DEPTH_MODE', depthMode }),
       selectZone: (zoneId) => post({ type: 'SELECT_ZONE', zoneId }),
-      trainStat: (statId) => post({ type: 'TRAIN_STAT', statId }),
-      upgradeAbility: (abilityId) => post({ type: 'UPGRADE_ABILITY', abilityId }),
+      trainStat: (statId, count) => post({ type: 'TRAIN_STAT', statId, count }),
+      upgradeAbility: (abilityId, count) => post({ type: 'UPGRADE_ABILITY', abilityId, count }),
       equipItem: (instanceId) => post({ type: 'EQUIP_ITEM', instanceId }),
       unequipItem: (slot) => post({ type: 'UNEQUIP_ITEM', slot }),
       socketAugment: (instanceId, augmentId) => post({ type: 'SOCKET_AUGMENT', instanceId, augmentId }),
       salvageItem: (instanceId) => post({ type: 'SALVAGE_ITEM', instanceId }),
       recall: () => post({ type: 'RECALL' }),
       ascend: () => post({ type: 'ASCEND' }),
-      buyPerk: (perkId) => post({ type: 'BUY_PERK', perkId }),
-      craftItem: (catalogId) => post({ type: 'CRAFT_ITEM', catalogId }),
+      buyPerk: (perkId, count) => post({ type: 'BUY_PERK', perkId, count }),
+      craftItem: (catalogId, count) => post({ type: 'CRAFT_ITEM', catalogId, count }),
 
       exportSave: () => btoa(JSON.stringify(omitUiFields(get()))),
 

@@ -1,26 +1,32 @@
+import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import {
   ascendRequiredEchoes,
   canAscend,
   canRecall,
   computeAscendSigils,
-  computePerkCost,
+  computeMaxPerkCount,
+  computePerkCostN,
   computeRecallEchoes,
   computeStatGainPerTrain,
   listPerks,
   recallRequiredDepth,
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
+import { QtySelector, type BuyQty } from '../components/QtySelector'
 import type { PerkDef } from '../types'
 
 const PERKS = listPerks()
 
-function PerkRow({ perk }: { perk: PerkDef }) {
+function PerkRow({ perk, qty }: { perk: PerkDef; qty: BuyQty }) {
   const level = useGameStore((s) => s.perkLevels[perk.id] ?? 0)
   const balance = useGameStore((s) => (perk.currency === 'echoes' ? s.echoes : s.sigils))
   const buyPerk = useGameStore((s) => s.buyPerk)
   const maxed = level >= perk.maxLevel
-  const cost = computePerkCost(perk, level)
+  const remainingLevels = perk.maxLevel - level
+  const buyCount = qty === 'max' ? Math.max(1, computeMaxPerkCount(perk, level, balance)) : Math.min(qty, remainingLevels)
+  const cost = computePerkCostN(perk, level, buyCount)
+  const affordable = !maxed && balance >= cost
 
   return (
     <div className="d-flex align-items-center justify-content-between border-bottom py-2 gap-3">
@@ -31,10 +37,10 @@ function PerkRow({ perk }: { perk: PerkDef }) {
       <button
         type="button"
         className="btn btn-sm btn-outline-primary text-nowrap"
-        disabled={maxed || balance < cost}
-        onClick={() => buyPerk(perk.id)}
+        disabled={!affordable}
+        onClick={() => buyPerk(perk.id, buyCount)}
       >
-        {maxed ? 'Maxed' : `${formatNumber(cost)} ${perk.currency === 'echoes' ? 'Echoes' : 'Sigils'}`}
+        {maxed ? 'Maxed' : `${buyCount > 1 ? `×${buyCount} — ` : ''}${formatNumber(cost)} ${perk.currency === 'echoes' ? 'Echoes' : 'Sigils'}`}
       </button>
     </div>
   )
@@ -45,6 +51,7 @@ export default function PrestigePage() {
   const recall = useGameStore((s) => s.recall)
   const ascend = useGameStore((s) => s.ascend)
   const gain = computeStatGainPerTrain(state)
+  const [perkQty, setPerkQty] = useState<BuyQty>(1)
 
   const recallEchoes = computeRecallEchoes(state)
   const ascendSigils = computeAscendSigils(state)
@@ -104,14 +111,16 @@ export default function PrestigePage() {
         </button>
       </div>
 
+      <QtySelector value={perkQty} onChange={setPerkQty} />
+
       <div className="panel p-3 mb-3">
         <div className="fw-bold mb-1">Echo Perks <span className="text-body-secondary small fw-normal">· reset on Ascend</span></div>
-        {PERKS.filter((p) => p.currency === 'echoes').map((perk) => <PerkRow key={perk.id} perk={perk} />)}
+        {PERKS.filter((p) => p.currency === 'echoes').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
       </div>
 
       <div className="panel p-3">
         <div className="fw-bold mb-1">Sigil Perks <span className="text-body-secondary small fw-normal">· permanent</span></div>
-        {PERKS.filter((p) => p.currency === 'sigils').map((perk) => <PerkRow key={perk.id} perk={perk} />)}
+        {PERKS.filter((p) => p.currency === 'sigils').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
       </div>
     </div>
   )

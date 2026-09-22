@@ -176,9 +176,9 @@ export interface CurrentMonster {
 export type CombatEvent =
   | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; crit?: boolean; timestamp: number }
   | { kind: 'loot'; item: GearItem; timestamp: number }
-  | { kind: 'fuse'; catalogId: string; newLevel: number; timestamp: number }
+  | { kind: 'fuse'; catalogId: string; newLevel: number; count?: number; timestamp: number }
   | { kind: 'salvage'; catalogId: string; focusGained: number; materialId: string; materialsGained: number; timestamp: number }
-  | { kind: 'crafted'; catalogId: string; timestamp: number }
+  | { kind: 'crafted'; catalogId: string; count?: number; timestamp: number }
   | { kind: 'kill'; monsterName: string; depth: number; timestamp: number }
   | { kind: 'levelUp'; statId: StatId; newLevel: number; timestamp: number }
   | { kind: 'bossDefeated'; depth: number; timestamp: number }
@@ -230,16 +230,16 @@ export type MainToWorkerMessage =
   | { type: 'INIT'; state: SimState }
   | { type: 'SET_DEPTH_MODE'; depthMode: DepthMode }
   | { type: 'SELECT_ZONE'; zoneId: string }
-  | { type: 'TRAIN_STAT'; statId: StatId }
-  | { type: 'UPGRADE_ABILITY'; abilityId: string }
+  | { type: 'TRAIN_STAT'; statId: StatId; count?: number }
+  | { type: 'UPGRADE_ABILITY'; abilityId: string; count?: number }
   | { type: 'EQUIP_ITEM'; instanceId: string }
   | { type: 'UNEQUIP_ITEM'; slot: GearSlot }
   | { type: 'SOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'SALVAGE_ITEM'; instanceId: string }
   | { type: 'RECALL' }
   | { type: 'ASCEND' }
-  | { type: 'BUY_PERK'; perkId: string }
-  | { type: 'CRAFT_ITEM'; catalogId: string }
+  | { type: 'BUY_PERK'; perkId: string; count?: number }
+  | { type: 'CRAFT_ITEM'; catalogId: string; count?: number }
   | { type: 'IMPORT_SAVE'; state: SimState }
 
 export type WorkerToMainMessage =

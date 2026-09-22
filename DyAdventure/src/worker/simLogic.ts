@@ -123,6 +123,27 @@ export function canAffordCraft(state: SimState, catalogId: string): boolean {
   return state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
 }
 
+/** Total cost to craft `count` copies of an item (cost per copy is flat, so this is just cost × count). */
+export function computeCraftCostN(catalogId: string, count: number): CraftCost {
+  const cost = computeCraftCost(catalogId)
+  return {
+    focus: cost.focus * count,
+    materials: cost.materials.map((m) => ({ materialId: m.materialId, amount: m.amount * count })),
+  }
+}
+
+/** How many copies of an item can be crafted in a row with the current Focus and material balances. */
+export function computeMaxCraftCount(state: SimState, catalogId: string): number {
+  const cost = computeCraftCost(catalogId)
+  let max = cost.focus > 0 ? Math.floor(state.focus / cost.focus) : Number.MAX_SAFE_INTEGER
+  for (const m of cost.materials) {
+    if (m.amount <= 0) continue
+    const have = state.materials[m.materialId] ?? 0
+    max = Math.min(max, Math.floor(have / m.amount))
+  }
+  return Math.max(0, max)
+}
+
 export function listPerks(): PerkDef[] {
   return PERKS
 }
@@ -138,6 +159,29 @@ export function perkBonus(state: SimState, effect: PerkEffect): number {
 
 export function computePerkCost(perk: PerkDef, currentLevel: number): number {
   return Math.max(1, Math.floor(perk.baseCost * Math.pow(perk.costMultiplier, currentLevel)))
+}
+
+/** Total cost to raise a perk by up to `count` levels (capped at maxLevel), starting from currentLevel. */
+export function computePerkCostN(perk: PerkDef, currentLevel: number, count: number): number {
+  let total = 0
+  let level = currentLevel
+  for (let i = 0; i < count && level < perk.maxLevel; i++, level++) total += computePerkCost(perk, level)
+  return total
+}
+
+/** How many levels can be afforded in a row (capped at maxLevel) with the given currency balance. */
+export function computeMaxPerkCount(perk: PerkDef, currentLevel: number, balance: number): number {
+  let remaining = balance
+  let level = currentLevel
+  let count = 0
+  while (level < perk.maxLevel) {
+    const cost = computePerkCost(perk, level)
+    if (cost > remaining) break
+    remaining -= cost
+    level++
+    count++
+  }
+  return count
 }
 
 export function getDefaultZoneId(): string {
@@ -177,9 +221,54 @@ export function computeTrainCost(statId: StatId, currentLevel: number): number {
   return Math.floor(def.baseTrainCost * Math.pow(def.trainCostMultiplier, currentLevel))
 }
 
+/** Total cost to train `count` times in a row, starting from currentLevel. */
+export function computeTrainCostN(statId: StatId, currentLevel: number, count: number): number {
+  let total = 0
+  for (let i = 0; i < count; i++) total += computeTrainCost(statId, currentLevel + i)
+  return total
+}
+
+/** How many times training can be afforded in a row with the given Focus balance. */
+export function computeMaxTrainCount(statId: StatId, currentLevel: number, focus: number): number {
+  let remaining = focus
+  let count = 0
+  while (true) {
+    const cost = computeTrainCost(statId, currentLevel + count)
+    if (cost > remaining) break
+    remaining -= cost
+    count++
+  }
+  return count
+}
+
 export function computeAbilityRankCost(abilityId: string, currentRank: number): number {
   const def = getAbilityDef(abilityId)
   return Math.floor(def.baseRankCost * Math.pow(def.rankCostMultiplier, currentRank))
+}
+
+/** Total cost to raise an ability by up to `count` ranks (capped at maxRank), starting from currentRank. */
+export function computeAbilityRankCostN(abilityId: string, currentRank: number, count: number): number {
+  const def = getAbilityDef(abilityId)
+  let total = 0
+  let rank = currentRank
+  for (let i = 0; i < count && rank < def.maxRank; i++, rank++) total += computeAbilityRankCost(abilityId, rank)
+  return total
+}
+
+/** How many ranks can be afforded in a row (capped at maxRank) with the given Focus balance. */
+export function computeMaxAbilityCount(abilityId: string, currentRank: number, focus: number): number {
+  const def = getAbilityDef(abilityId)
+  let remaining = focus
+  let rank = currentRank
+  let count = 0
+  while (rank < def.maxRank) {
+    const cost = computeAbilityRankCost(abilityId, rank)
+    if (cost > remaining) break
+    remaining -= cost
+    rank++
+    count++
+  }
+  return count
 }
 
 /** Every stat an owned item gives, scaled by its level (+1% per level). */
@@ -477,8 +566,8 @@ function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
   }
 }
 
-/** Adds a catalog item to the player: fuses into an owned copy (level +1) or creates a new inventory item. */
-function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: number, events: CombatEvent[]): SimState {
+/** Adds a catalog item to the player `count` times: fuses into an owned copy (level += count) or creates a new inventory item at that level. */
+function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: number, events: CombatEvent[], count: number = 1): SimState {
   let next = state
   if (!next.discoveredItemIds.includes(catalogEntry.id)) {
     next = { ...next, discoveredItemIds: [...next.discoveredItemIds, catalogEntry.id] }
@@ -488,28 +577,29 @@ function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: n
 
   if (equippedSlot) {
     const existing = next.gear[equippedSlot]!
-    const leveled = { ...existing, level: existing.level + 1 }
+    const leveled = { ...existing, level: existing.level + count }
     next = { ...next, gear: { ...next.gear, [equippedSlot]: leveled } }
-    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, timestamp: now })
-    next = addStat(next, 'itemsFused', 1)
+    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, count, timestamp: now })
+    next = addStat(next, 'itemsFused', count)
   } else if (inventoryIndex >= 0) {
     const existing = next.inventory[inventoryIndex]
-    const leveled = { ...existing, level: existing.level + 1 }
+    const leveled = { ...existing, level: existing.level + count }
     const inventory = [...next.inventory]
     inventory[inventoryIndex] = leveled
     next = { ...next, inventory }
-    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, timestamp: now })
-    next = addStat(next, 'itemsFused', 1)
+    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, count, timestamp: now })
+    next = addStat(next, 'itemsFused', count)
   } else {
     const newItem: GearItem = {
       instanceId: `${catalogEntry.id}_${now}_${Math.floor(Math.random() * 1e6)}`,
       catalogId: catalogEntry.id,
-      level: 1,
+      level: count,
       augmentIds: [],
     }
     next = { ...next, inventory: [...next.inventory, newItem] }
     events.push({ kind: 'loot', item: newItem, timestamp: now })
     next = addStat(next, 'itemsFound', 1)
+    if (count > 1) next = addStat(next, 'itemsFused', count - 1)
   }
   return next
 }
@@ -526,18 +616,21 @@ function rollMaterialDrops(state: SimState, zone: ZoneDef, depth: number, isBoss
   return next
 }
 
-export function craftItem(state: SimState, catalogId: string, now: number): { state: SimState; events: CombatEvent[] } {
+export function craftItem(state: SimState, catalogId: string, now: number, count: number = 1): { state: SimState; events: CombatEvent[] } {
   const events: CombatEvent[] = []
   const def = GEAR_ITEMS.find((i) => i.id === catalogId)
-  if (!def || def.bossOnly || !state.discoveredItemIds.includes(catalogId) || !canAffordCraft(state, catalogId)) {
+  if (!def || def.bossOnly || !state.discoveredItemIds.includes(catalogId)) {
     return { state, events }
   }
-  const cost = computeCraftCost(catalogId)
+  const actual = Math.min(count, computeMaxCraftCount(state, catalogId))
+  if (actual <= 0) return { state, events }
+
+  const cost = computeCraftCostN(catalogId, actual)
   const materials = { ...state.materials }
   for (const m of cost.materials) materials[m.materialId] = (materials[m.materialId] ?? 0) - m.amount
-  const paid = addStat(addStat({ ...state, focus: state.focus - cost.focus, materials }, 'itemsCrafted', 1), 'focusSpent', cost.focus)
-  events.push({ kind: 'crafted', catalogId, timestamp: now })
-  return { state: grantGearItem(paid, def, now, events), events }
+  const paid = addStat(addStat({ ...state, focus: state.focus - cost.focus, materials }, 'itemsCrafted', actual), 'focusSpent', cost.focus)
+  events.push({ kind: 'crafted', catalogId, count: actual, timestamp: now })
+  return { state: grantGearItem(paid, def, now, events, actual), events }
 }
 
 function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[]): SimState {
@@ -867,26 +960,27 @@ export function ascend(state: SimState): SimState {
   }
 }
 
-export function buyPerk(state: SimState, perkId: string): SimState {
+export function buyPerk(state: SimState, perkId: string, count: number = 1): SimState {
   const perk = PERKS.find((p) => p.id === perkId)
   if (!perk) return state
   const level = state.perkLevels[perkId] ?? 0
-  if (level >= perk.maxLevel) return state
-  const cost = computePerkCost(perk, level)
   const balance = perk.currency === 'echoes' ? state.echoes : state.sigils
-  if (balance < cost) return state
+  const actual = Math.min(count, computeMaxPerkCount(perk, level, balance))
+  if (actual <= 0) return state
+  const cost = computePerkCostN(perk, level, actual)
   return {
     ...state,
     echoes: perk.currency === 'echoes' ? state.echoes - cost : state.echoes,
     sigils: perk.currency === 'sigils' ? state.sigils - cost : state.sigils,
-    perkLevels: { ...state.perkLevels, [perkId]: level + 1 },
+    perkLevels: { ...state.perkLevels, [perkId]: level + actual },
   }
 }
 
-export function trainStat(state: SimState, statId: StatId): SimState {
-  const cost = computeTrainCost(statId, state.stats[statId])
-  if (state.focus < cost) return state
-  const gain = computeStatGainPerTrain(state)
+export function trainStat(state: SimState, statId: StatId, count: number = 1): SimState {
+  const actual = Math.min(count, computeMaxTrainCount(statId, state.stats[statId], state.focus))
+  if (actual <= 0) return state
+  const cost = computeTrainCostN(statId, state.stats[statId], actual)
+  const gain = computeStatGainPerTrain(state) * actual
   return addStat({
     ...state,
     focus: state.focus - cost,
@@ -894,16 +988,15 @@ export function trainStat(state: SimState, statId: StatId): SimState {
   }, 'focusSpent', cost)
 }
 
-export function upgradeAbility(state: SimState, abilityId: string): SimState {
-  const def = getAbilityDef(abilityId)
+export function upgradeAbility(state: SimState, abilityId: string, count: number = 1): SimState {
   const progress = state.abilities[abilityId] ?? { rank: 0 }
-  if (progress.rank >= def.maxRank) return state
-  const cost = computeAbilityRankCost(abilityId, progress.rank)
-  if (state.focus < cost) return state
+  const actual = Math.min(count, computeMaxAbilityCount(abilityId, progress.rank, state.focus))
+  if (actual <= 0) return state
+  const cost = computeAbilityRankCostN(abilityId, progress.rank, actual)
   return addStat({
     ...state,
     focus: state.focus - cost,
-    abilities: { ...state.abilities, [abilityId]: { rank: progress.rank + 1 } },
+    abilities: { ...state.abilities, [abilityId]: { rank: progress.rank + actual } },
   }, 'focusSpent', cost)
 }
 

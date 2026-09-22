@@ -76,10 +76,10 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       state = selectZone(state, msg.zoneId)
       break
     case 'TRAIN_STAT':
-      state = trainStat(state, msg.statId)
+      state = trainStat(state, msg.statId, msg.count)
       break
     case 'UPGRADE_ABILITY':
-      state = upgradeAbility(state, msg.abilityId)
+      state = upgradeAbility(state, msg.abilityId, msg.count)
       break
     case 'EQUIP_ITEM':
       state = equipItem(state, msg.instanceId)
@@ -103,13 +103,13 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       state = ascend(state)
       break
     case 'CRAFT_ITEM': {
-      const result = craftItem(state, msg.catalogId, now)
+      const result = craftItem(state, msg.catalogId, now, msg.count)
       state = result.state
       for (const event of result.events) post({ type: 'EVENT', event })
       break
     }
     case 'BUY_PERK':
-      state = buyPerk(state, msg.perkId)
+      state = buyPerk(state, msg.perkId, msg.count)
       break
     case 'IMPORT_SAVE':
       state = msg.state

@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import statsData from '../content/stats.json'
 import { useGameStore } from '../store/gameStore'
-import { computeTrainCost } from '../worker/simLogic'
+import { computeMaxTrainCount, computeTrainCostN } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
+import { QtySelector, type BuyQty } from '../components/QtySelector'
 import type { StatDef } from '../types'
 
 const STATS = statsData as StatDef[]
@@ -11,6 +13,7 @@ export default function TrainingPage() {
   const stats = useGameStore((s) => s.stats)
   const focus = useGameStore((s) => s.focus)
   const trainStat = useGameStore((s) => s.trainStat)
+  const [qty, setQty] = useState<BuyQty>(1)
 
   return (
     <div style={{ padding: '24px' }}>
@@ -19,10 +22,13 @@ export default function TrainingPage() {
         Focus available: <strong style={{ color: 'var(--text)' }}>{formatNumber(focus)}</strong>
       </p>
 
+      <QtySelector value={qty} onChange={setQty} />
+
       <div className="stat-grid">
         {STATS.map((stat) => {
           const level = stats[stat.id] ?? 0
-          const cost = computeTrainCost(stat.id, level)
+          const buyCount = qty === 'max' ? Math.max(1, computeMaxTrainCount(stat.id, level, focus)) : qty
+          const cost = computeTrainCostN(stat.id, level, buyCount)
           const affordable = focus >= cost
           return (
             <div key={stat.id} className="panel" style={{ padding: '18px' }}>
@@ -42,9 +48,9 @@ export default function TrainingPage() {
                 type="button"
                 className="btn btn-sm btn-outline-primary w-100"
                 disabled={!affordable}
-                onClick={() => trainStat(stat.id)}
+                onClick={() => trainStat(stat.id, buyCount)}
               >
-                Train — {formatNumber(cost)} Focus
+                {buyCount > 1 ? `Train ×${buyCount}` : 'Train'} — {formatNumber(cost)} Focus
               </button>
             </div>
           )

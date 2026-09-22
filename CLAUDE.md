@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Monorepo hosting two independent React + TypeScript idle games, both deployed to GitHub Pages under separate subdirectories:
+Monorepo hosting three independent React + TypeScript idle games, all deployed to GitHub Pages under separate subdirectories:
 
-- **`idle-game/`** — Lifespan-based idle game (age progression, skills, rebirth) NOTE: You can not access this part. It is not used in development
-- **`DyWorld-Inc/`** — Business simulation (jobs, buildings, market, passive income)
+- **`DyAdventure/`** — **The active project.** This is what we work on. An incremental combat/loot RPG (train stats, upgrade abilities, fight through zones, craft and equip gear, Recall/Ascend prestige layers).
+- **`DyWorld-Inc/`** — Business simulation (jobs, buildings, market, passive income). Reference only — not actively developed. Useful for patterns (e.g. multi-buy UI), but don't make changes here unless explicitly asked.
+- **`idle-game/`** — Lifespan-based idle game (age progression, skills, rebirth). Reference only — not actively developed, and off-limits for changes.
 
 ## Commands
 
-All commands must be run from within the project subdirectory (`idle-game/` or `DyWorld-Inc/`).
+All commands must be run from within the project subdirectory (`DyAdventure/`, `DyWorld-Inc/`, or `idle-game/`).
 
 ```bash
 npm run dev       # Vite dev server with HMR
@@ -25,34 +26,54 @@ TypeScript type-checking without building:
 npx tsc --noEmit
 ```
 
-There are no test suites in either project.
+There are no test suites in any project.
 
 ## Deployment
 
 GitHub Actions (`.github/workflows/deploy.yml`) triggers on push to `main`:
-1. Builds both projects sequentially
-2. Merges `idle-game/dist/` → `deploy/idle-game/` and `DyWorld-Inc/dist/` → `deploy/DyWorld-Inc/`
+1. Builds all three projects sequentially (`idle-game`, `DyWorld-Inc`, `DyAdventure`)
+2. Merges each project's `dist/` into `deploy/<project-name>/`
 3. Pushes `deploy/` to the `gh-pages` branch
 
 Each project's `vite.config.ts` must set `base: '/<project-name>/'` to match its subdirectory path on GitHub Pages. Changing the base breaks routing and asset loading.
 
 ## Architecture
 
-### Shared patterns across both projects
+### Shared patterns across all three projects
 
-Both use the same stack: **React 19 + TypeScript 5 + Bootstrap 5.3 + Zustand 5 + Vite 7**.
+All three use the same stack: **React 19 + TypeScript 5 + Bootstrap 5.3 + Zustand 5 + Vite 7**.
 
-**UI layout:** Fixed three-panel shell — `TopBar` (56px, z-index 1030) → `SideBar` (220px wide, z-index 1020) → `ContentArea` (fills remaining space). Tab navigation is state-driven (no router): `activeTab` in Zustand determines which page component renders inside `ContentArea`.
+**Tab navigation is state-driven** (no router) in all three: `activeTab` in Zustand determines which page component renders. The UI shell differs per project — see each section below.
 
-**Data-driven design:** All game content lives in JSON files (`src/content/` or `src/data/`), loaded as typed module imports. Adding a new resource/job/building means editing JSON only — the store and pages iterate over these arrays dynamically.
+**Data-driven design:** All game content lives in JSON files (`src/content/` or `src/data/`), loaded as typed module imports. Adding a new resource/job/building/etc. means editing JSON only — the store and pages iterate over these arrays dynamically.
 
-**Bootstrap theming:** Dark/light mode is set via `document.documentElement.setAttribute('data-bs-theme', theme)`. Bootstrap JS is **not loaded** — dropdowns and modals are implemented manually in React. Tooltips use the HTML `title` attribute.
+**Bootstrap JS is not loaded** in any of the three — dropdowns/modals are implemented manually in React, tooltips use the HTML `title` attribute, only `bootstrap.min.css` is imported.
 
 **TypeScript:** Strict mode, no unused locals/parameters. ESLint v9 flat config. `verbatimModuleSyntax` is enabled — use `import type` for type-only imports.
 
 ---
 
-### DyWorld-Inc
+### DyAdventure (the active project — start here)
+
+**Simulation runs in a Web Worker** (`src/worker/simWorker.ts`), not on the main thread. `src/worker/simLogic.ts` holds all pure game-logic functions (combat, costs, crafting, prestige) operating on a plain `SimState` object. The worker owns the authoritative state; the main thread only dispatches messages and renders whatever `STATE_UPDATE`/`EVENT` messages send back.
+
+**Store** (`src/store/gameStore.ts`): Zustand store persisted to localStorage under key `'DyAdventure'` (5s debounced writes via `createDebouncedLocalStorage`, flushed on `pagehide`/tab-hide). Store actions (e.g. `trainStat`, `craftItem`) don't mutate state directly — they `post()` a `MainToWorkerMessage` to the worker; the worker's `onmessage` handler calls the matching `simLogic.ts` function, then always calls `syncState()` to push the new state back. A 250ms interval (`STATE_SYNC_MS`) also syncs during the worker's own tick loop (`TICK_MS` = 100ms) so combat updates without user interaction.
+
+**UI shell:** `HudHeader` (resources/portrait) → `TabBar` (tab buttons) → `page-content` (active page). No sidebar, unlike DyWorld-Inc/idle-game.
+
+**Buy-quantity pattern:** Actions that spend a resource to raise a level/rank/count (`trainStat`, `upgradeAbility`, `buyPerk`, `craftItem`) all take an optional trailing `count` parameter, all the way through store → `MainToWorkerMessage` → `simLogic.ts`. Each `simLogic.ts` function re-derives the true affordable count from current worker state (`computeMax*Count` helpers) and clamps to it — never trust a `count` computed on the main thread, since worker state can lag slightly behind what's rendered. Pages compute their own display numbers directly from the pure `compute*CostN`/`computeMax*Count` functions (no worker round-trip needed for read-only cost previews) and use the shared `QtySelector` component (`src/components/QtySelector.tsx`, options ×1/×5/×10/×25/Max) for the picker UI. For literal quantities (×5/×10/×25) always show the full requested cost — even unaffordable — and disable the button; only "Max" computes the largest affordable count.
+
+**Offline catch-up:** On `INIT`, if more than 1s has elapsed since `lastTickTimestamp` (capped at `MAX_OFFLINE_SIMULATED_MS` = 48h), `simulateOfflineElapsed` fast-forwards `advanceTick` in 1s steps.
+
+**Content files** (`src/content/`): `stats.json` (`baseTrainCost`/`trainCostMultiplier`), `abilities.json` (`baseRankCost`/`rankCostMultiplier`/`maxRank`), `gear.json` (rarities, catalog items, sets), `augments.json`, `zones.json`, `prestige.json` (perks + Recall/Ascend config), `materials.json` (`craftCostByRarity`, slot materials).
+
+**Cost formulas:** Stats/abilities/perks all use `base × multiplier^level`, capped where a `maxRank`/`maxLevel` exists. Gear crafting cost is flat per rarity (doesn't scale with count owned).
+
+---
+
+### DyWorld-Inc — reference only, not actively developed
+
+**UI layout:** Fixed three-panel shell — `TopBar` (56px, z-index 1030) → `SideBar` (220px wide, z-index 1020) → `ContentArea` (fills remaining space). Dark/light mode is set via `document.documentElement.setAttribute('data-bs-theme', theme)`.
 
 **Store** (`src/store/gameStore.ts`): Single Zustand store persisted to localStorage under key `'DyWorld-Inc'`. All game state lives here: resources, stats, activeJob, buildings, marketPrices, numberFormat, theme.
 
@@ -87,7 +108,7 @@ Both use the same stack: **React 19 + TypeScript 5 + Bootstrap 5.3 + Zustand 5 +
 
 ---
 
-### idle-game
+### idle-game — reference only, off-limits for changes
 
 **Store** (`src/store/gameStore.ts`): Zustand store, optionally persisted. Contains lifespan, resources, skills, rebirth count, and game flags (`isDead`, `isPaused`).
 
