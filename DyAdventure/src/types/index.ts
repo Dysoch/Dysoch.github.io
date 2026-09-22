@@ -206,7 +206,7 @@ export interface CurrentMonster {
 }
 
 export type CombatEvent =
-  | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; crit?: boolean; timestamp: number }
+  | { kind: 'damage'; source: 'player' | 'monster'; amount: number; abilityId?: string; crit?: boolean; count?: number; timestamp: number }
   | { kind: 'loot'; item: GearItem; timestamp: number }
   | { kind: 'fuse'; catalogId: string; newLevel: number; count?: number; timestamp: number }
   | { kind: 'salvage'; catalogId: string; focusGained: number; materialId: string; materialsGained: number; timestamp: number }

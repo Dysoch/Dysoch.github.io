@@ -7,9 +7,12 @@ import type { CombatEvent } from '../types'
 
 function describeEvent(event: CombatEvent): string {
   switch (event.kind) {
-    case 'damage':
-      if (event.source === 'monster') return `The monster hit you for ${formatNumber(event.amount)} damage${event.crit ? ' (critical!)' : ''}`
-      return `You hit for ${formatNumber(event.amount)} damage`
+    case 'damage': {
+      const times = event.count && event.count > 1 ? ` ${event.count}×` : ''
+      const total = event.count && event.count > 1 ? ' total' : ''
+      if (event.source === 'monster') return `The monster hit you${times} for ${formatNumber(event.amount)}${total} damage${event.crit ? ' (critical!)' : ''}`
+      return `You hit${times} for ${formatNumber(event.amount)}${total} damage`
+    }
     case 'kill':
       return `Defeated ${event.monsterName} at depth ${event.depth}`
     case 'bossDefeated':

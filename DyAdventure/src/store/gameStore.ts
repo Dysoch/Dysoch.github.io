@@ -179,13 +179,25 @@ export const useGameStore = create<GameStore>()(
   ),
 )
 
+/**
+ * Consecutive same-source damage ticks (ability hits, DoT ticks, monster attacks) are collapsed
+ * into a single running entry instead of one log line per hit, so a burst of routine damage
+ * doesn't push loot/kills/buffs off the (size-limited) combat log. Any other event breaks the streak.
+ */
+function appendCombatEvent(log: CombatEvent[], event: CombatEvent): CombatEvent[] {
+  const [front, ...rest] = log
+  if (event.kind === 'damage' && front?.kind === 'damage' && front.source === event.source) {
+    const merged: CombatEvent = { ...event, amount: front.amount + event.amount, count: (front.count ?? 1) + 1, crit: front.crit || event.crit }
+    return [merged, ...rest].slice(0, COMBAT_LOG_LIMIT)
+  }
+  return [event, ...log].slice(0, COMBAT_LOG_LIMIT)
+}
+
 worker.onmessage = (e: MessageEvent<WorkerToMainMessage>) => {
   const msg = e.data
   if (msg.type === 'STATE_UPDATE') {
     useGameStore.setState(msg.state)
   } else if (msg.type === 'EVENT') {
-    useGameStore.setState((prev) => ({
-      combatLog: [msg.event, ...prev.combatLog].slice(0, COMBAT_LOG_LIMIT),
-    }))
+    useGameStore.setState((prev) => ({ combatLog: appendCombatEvent(prev.combatLog, msg.event) }))
   }
 }
