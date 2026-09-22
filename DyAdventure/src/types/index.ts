@@ -151,7 +151,26 @@ export interface MaterialDef {
   description: string
 }
 
-export type PerkEffect = 'trainGain' | 'focusGain' | 'hpCap' | 'dropChance' | 'echoGain' | 'damage'
+export type PerkEffect =
+  | 'trainGain'
+  | 'focusGain'
+  | 'hpCap'
+  | 'dropChance'
+  | 'echoGain'
+  | 'damage'
+  | 'critChance'
+  | 'critDamage'
+  | 'resistance'
+  | 'lifeSteal'
+  | 'materialFind'
+  | 'regen'
+  | 'staminaCap'
+  | 'manaCap'
+  | 'speed'
+  | 'buffDuration'
+  | 'bonusDotTicks'
+  | 'overkillPower'
+  | 'executeThreshold'
 
 export interface PerkDef {
   id: string

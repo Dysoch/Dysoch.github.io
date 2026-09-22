@@ -370,34 +370,34 @@ export function bonusFor(state: SimState, statId: PrimaryStat): number {
   return gearBonusForStat(state, statId) + computeSetBonusForStat(state, statId) + buffBonusForStat(state, statId)
 }
 
-/** Chance (0-0.75) that an ability hit is a critical hit: +0.5% per point. */
+/** Chance (0-0.75) that an ability hit is a critical hit: +0.5% per point, plus perks. */
 export function computeCritChance(state: SimState): number {
-  return Math.min(0.75, bonusFor(state, 'critChance') * 0.005)
+  return Math.min(0.75, bonusFor(state, 'critChance') * 0.005 + perkBonus(state, 'critChance'))
 }
 
-/** Damage multiplier on a crit: 1.5x base, +2% per point of Crit Damage. */
+/** Damage multiplier on a crit: 1.5x base, +2% per point of Crit Damage, plus perks. */
 export function computeCritMultiplier(state: SimState): number {
-  return 1.5 + bonusFor(state, 'critDamage') * 0.02
+  return 1.5 + bonusFor(state, 'critDamage') * 0.02 + perkBonus(state, 'critDamage')
 }
 
-/** Damage reduction (0-0.6): 0.5% per point of Resistance. */
+/** Damage reduction (0-0.6): 0.5% per point of Resistance, plus perks. */
 export function computeResistance(state: SimState): number {
-  return Math.min(0.6, bonusFor(state, 'resistance') * 0.005)
+  return Math.min(0.6, bonusFor(state, 'resistance') * 0.005 + perkBonus(state, 'resistance'))
 }
 
-/** Regeneration speed multiplier for HP, Stamina and Mana: +1% per point. */
+/** Regeneration speed multiplier for HP, Stamina and Mana: +1% per point, plus perks. */
 export function computeRegenMultiplier(state: SimState): number {
-  return 1 + bonusFor(state, 'regen') * 0.01
+  return 1 + bonusFor(state, 'regen') * 0.01 + perkBonus(state, 'regen')
 }
 
-/** Fraction of max HP healed per ability hit: 0.1% per point of Life Steal. */
+/** Fraction of max HP healed per ability hit: 0.1% per point of Life Steal, plus perks. */
 export function computeLifeStealPct(state: SimState): number {
-  return bonusFor(state, 'lifeSteal') * 0.001
+  return bonusFor(state, 'lifeSteal') * 0.001 + perkBonus(state, 'lifeSteal')
 }
 
-/** Multiplier on material drop chance: +1% per point of Material Find. */
+/** Multiplier on material drop chance: +1% per point of Material Find, plus perks. */
 export function computeMaterialFindMultiplier(state: SimState): number {
-  return 1 + bonusFor(state, 'materialFind') * 0.01
+  return 1 + bonusFor(state, 'materialFind') * 0.01 + perkBonus(state, 'materialFind')
 }
 
 export function computeEffectiveStat(state: SimState, statId: StatId): number {
@@ -405,12 +405,12 @@ export function computeEffectiveStat(state: SimState, statId: StatId): number {
 }
 
 export function computeStaminaCap(state: SimState): number {
-  return BASE_STAMINA_CAP + gearBonusForStat(state, 'staminaCap') + computeSetBonusForStat(state, 'staminaCap')
+  return BASE_STAMINA_CAP + gearBonusForStat(state, 'staminaCap') + computeSetBonusForStat(state, 'staminaCap') + perkBonus(state, 'staminaCap')
 }
 
 export function computeManaCap(state: SimState): number {
   const totalWillpower = computeEffectiveStat(state, 'willpower') + gearBonusForStat(state, 'willpower')
-  return BASE_MANA_CAP + gearBonusForStat(state, 'manaCap') + computeSetBonusForStat(state, 'manaCap') + totalWillpower * 1.5
+  return BASE_MANA_CAP + gearBonusForStat(state, 'manaCap') + computeSetBonusForStat(state, 'manaCap') + perkBonus(state, 'manaCap') + totalWillpower * 1.5
 }
 
 export function computeHpCap(state: SimState): number {
@@ -436,7 +436,7 @@ export function computeFortune(state: SimState): number {
 
 export function computeEffectiveCooldownMs(state: SimState, abilityId: string): number {
   const def = getAbilityDef(abilityId)
-  const speed = computeEffectiveStat(state, 'speed') + gearBonusForStat(state, 'speed') + buffBonusForStat(state, 'speed')
+  const speed = computeEffectiveStat(state, 'speed') + gearBonusForStat(state, 'speed') + buffBonusForStat(state, 'speed') + perkBonus(state, 'speed')
   return def.cooldownMs / (1 + speed * SPEED_COOLDOWN_FACTOR)
 }
 
@@ -718,7 +718,7 @@ function applyDamageToMonster(
     return { ...state, currentMonster: { ...state.currentMonster, hp: remainingHp } }
   }
   let next = handleMonsterDeath({ ...state, monsterDot: null }, now, events)
-  const spillover = -remainingHp
+  const spillover = overkill ? -remainingHp * (1 + perkBonus(state, 'overkillPower')) : -remainingHp
   if (overkill && spillover > 0 && next.currentMonster && next.currentDepth === depthAtStart) {
     next = applyDamageToMonster(next, spillover, now, events, depthAtStart, overkill)
   }
@@ -729,16 +729,17 @@ function applyDamageToMonster(
 function applyDot(state: SimState, def: AbilityDef): SimState {
   const damagePerTick = computeAbilityDamage(state, def.id)
   const tickIntervalMs = def.dotTickIntervalMs ?? 1000
+  const ticksRemaining = (def.dotTicks ?? 0) + Math.round(perkBonus(state, 'bonusDotTicks'))
   return {
     ...state,
-    monsterDot: { damagePerTick, ticksRemaining: def.dotTicks ?? 0, tickIntervalMs, msUntilNextTick: tickIntervalMs },
+    monsterDot: { damagePerTick, ticksRemaining, tickIntervalMs, msUntilNextTick: tickIntervalMs },
   }
 }
 
 /** kind: 'buff' — upserts (by ability id) a temporary stat bonus in activeBuffs. */
 function applyBuff(state: SimState, def: AbilityDef, rank: number, now: number, events: CombatEvent[]): SimState {
   const magnitude = def.baseEffect + def.effectPerRank * (rank - 1)
-  const durationMs = def.buffDurationMs ?? 0
+  const durationMs = (def.buffDurationMs ?? 0) * (1 + perkBonus(state, 'buffDuration'))
   const statId = def.buffStatId!
   events.push({ kind: 'buff', statId, magnitude, durationMs, timestamp: now })
   return {
@@ -777,7 +778,7 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
   let damage = computeAbilityDamage(next, abilityId) * (crit ? computeCritMultiplier(next) : 1)
   if (def.executeThresholdPct != null && def.executeMultiplier != null) {
     const hpPct = next.currentMonster!.hp / next.currentMonster!.maxHp
-    if (hpPct <= def.executeThresholdPct) damage *= def.executeMultiplier
+    if (hpPct <= def.executeThresholdPct + perkBonus(next, 'executeThreshold')) damage *= def.executeMultiplier
   }
   events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, crit, timestamp: now })
 
