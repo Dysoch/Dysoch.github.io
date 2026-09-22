@@ -26,7 +26,14 @@ TypeScript type-checking without building:
 npx tsc --noEmit
 ```
 
-There are no test suites in any project.
+**DyAdventure** additionally has:
+```bash
+npm test                              # vitest run — fast, deterministic regression tests (src/worker/simLogic.test.ts)
+npm run test:watch                    # vitest in watch mode
+npm run sim                           # progression simulator — see below
+npm run sim -- --hours 14 --recall asap
+```
+`DyWorld-Inc` and `idle-game` have no test suites.
 
 ## Deployment
 
@@ -68,6 +75,10 @@ All three use the same stack: **React 19 + TypeScript 5 + Bootstrap 5.3 + Zustan
 **Content files** (`src/content/`): `stats.json` (`baseTrainCost`/`trainCostMultiplier`), `abilities.json` (`baseRankCost`/`rankCostMultiplier`/`maxRank`), `gear.json` (rarities, catalog items, sets), `augments.json`, `zones.json`, `prestige.json` (perks + Recall/Ascend config), `materials.json` (`craftCostByRarity`, slot materials).
 
 **Cost formulas:** Stats/abilities/perks all use `base × multiplier^level`, capped where a `maxRank`/`maxLevel` exists. Gear crafting cost is flat per rarity (doesn't scale with count owned).
+
+**Testing:** Two separate tools, for two separate questions — don't conflate them:
+- `npm test` (Vitest, `src/worker/simLogic.test.ts`) — fast (~1s), deterministic pass/fail regression tests against `simLogic.ts`'s pure functions directly (build a `SimState` via `createInitialState()` + targeted overrides, call the real exported function, assert). Run this after any `simLogic.ts` or `content/*.json` change. Covers: ability-firing fairness (no ability should be starved by a fixed loop order), the dot/buff ability-uses stat, DoT/buff/overkill/execute mechanics, buy-N cost-math consistency, perk-effect wiring (a perk added to `prestige.json` without a formula hook fails this), and Recall economy invariants.
+- `npm run sim` (`scripts/simulate.ts`, via `tsx`) — a bot-driven progression simulator for pacing/balance questions that aren't pass/fail (e.g. "does Recall still pay off over N hours", "is a depth wall forming"). Takes `--hours` and `--recall <never|threshold|asap>`; prints a depth/focus/faints-over-time report, not assertions. Redirect to a file to diff before/after a balance change. This is how the resource-starvation, ability-uses, and Recall-exploit bugs fixed this session were actually found — reading the code alone didn't surface them.
 
 ---
 
