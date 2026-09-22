@@ -933,7 +933,11 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
 }
 
 export function computeStatGainPerTrain(state: SimState): number {
-  return (1 + state.bestRecallDepth * 0.01) * (1 + state.ascendCount * 0.5) * (1 + perkBonus(state, 'trainGain'))
+  return (
+    (1 + state.bestRecallDepth * 0.01) *
+    (1 + sigilsForEchoesEarned(state.bestAscendEchoes) * ASCEND_CONFIG.trainGainPerBestSigil) *
+    (1 + perkBonus(state, 'trainGain'))
+  )
 }
 
 export function createInitialState(): SimState {
@@ -987,6 +991,7 @@ export function createInitialState(): SimState {
     monsterDot: null,
     tickCount: 0,
     bestRecallDepth: 0,
+    bestAscendEchoes: 0,
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
@@ -1037,10 +1042,14 @@ export function recallRequiredDepth(): number {
   return RECALL_CONFIG.minDepth
 }
 
+function sigilsForEchoesEarned(echoesEarned: number): number {
+  return Math.floor(Math.sqrt(echoesEarned / ASCEND_CONFIG.echoesPerSigilSquared))
+}
+
 /** Sigils an Ascend would grant right now, based on all Echoes earned since the last Ascend. */
 export function computeAscendSigils(state: SimState): number {
   if (state.echoesEarned < ASCEND_CONFIG.minEchoesEarned) return 0
-  return Math.floor(Math.sqrt(state.echoesEarned / ASCEND_CONFIG.echoesPerSigilSquared))
+  return sigilsForEchoesEarned(state.echoesEarned)
 }
 
 export function canAscend(state: SimState): boolean {
@@ -1084,6 +1093,9 @@ export function ascend(state: SimState): SimState {
     sigils: state.sigils + sigils,
     ascendCount: state.ascendCount + 1,
     bestRecallDepth: 0,
+    // Ascending shallowly (low echoesEarned banked) again doesn't raise this — only a bigger single
+    // Ascend does — so the permanent trainGain bonus can't be farmed by spamming minimum-cost Ascends.
+    bestAscendEchoes: Math.max(state.bestAscendEchoes, state.echoesEarned),
   }
 }
 

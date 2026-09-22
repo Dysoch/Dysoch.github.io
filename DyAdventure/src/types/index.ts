@@ -263,6 +263,8 @@ export interface SimState {
   tickCount: number
   /** Deepest a Recall has ever been performed at, this Ascension. Drives Recall's permanent trainGain/damage bonus. */
   bestRecallDepth: number
+  /** Most Echoes ever spent on a single Ascend (never reset by Ascend). Drives Ascend's permanent trainGain bonus. */
+  bestAscendEchoes: number
 }
 
 export type MainToWorkerMessage =

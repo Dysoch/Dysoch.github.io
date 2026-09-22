@@ -6,7 +6,8 @@
   },
   "ascend": {
     "minEchoesEarned": 100,
-    "echoesPerSigilSquared": 25
+    "echoesPerSigilSquared": 25,
+    "trainGainPerBestSigil": 0.15
   },
   "perks": [
     { "id": "swift_learner", "name": "Swift Learner", "description": "+10% stat gain per training, per level.", "currency": "echoes", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.5, "effect": "trainGain", "perLevel": 0.1 },

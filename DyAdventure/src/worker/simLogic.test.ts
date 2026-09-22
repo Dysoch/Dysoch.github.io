@@ -31,6 +31,8 @@ import {
   computeRecallEchoes,
   recall,
   ascend,
+  ascendRequiredEchoes,
+  canAscend,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
@@ -325,5 +327,42 @@ describe('Recall economy (regression: bonus scaled with recall count, so spam-sh
     expect(state.bestRecallDepth).toBeGreaterThan(0)
     state = ascend({ ...state, echoesEarned: 100000 })
     expect(state.bestRecallDepth).toBe(0)
+  })
+})
+
+describe('Ascend economy (regression: bonus scaled with ascend count, so spam-minimum-Ascending out-paced hoarding a real Echo payout)', () => {
+  const minEchoes = ascendRequiredEchoes()
+
+  test('Ascend requires banking Echoes again after resetting echoesEarned to 0', () => {
+    const state = ascend({ ...createInitialState(), echoesEarned: minEchoes })
+    expect(state.echoesEarned).toBe(0)
+    expect(canAscend(state)).toBe(false)
+  })
+
+  test('ascending twice at the minimum echoesEarned does not raise bestAscendEchoes further', () => {
+    let state = ascend({ ...createInitialState(), echoesEarned: minEchoes })
+    const after1 = state.bestAscendEchoes
+    expect(after1).toBeGreaterThan(0)
+    state = ascend({ ...state, echoesEarned: minEchoes })
+    expect(state.bestAscendEchoes).toBe(after1)
+  })
+
+  test('a single bigger Ascend raises bestAscendEchoes and the trainGain multiplier more than repeated minimum Ascends', () => {
+    // Spam path: Ascend at the minimum threshold repeatedly (cheap, fast to repeat in real play).
+    let spamState = createInitialState()
+    for (let i = 0; i < 5; i++) {
+      spamState = ascend({ ...spamState, echoesEarned: minEchoes })
+    }
+    // Hoard path: a single Ascend banking a much bigger Echo payout before cashing in.
+    const hoardState = ascend({ ...createInitialState(), echoesEarned: minEchoes * 25 })
+    expect(computeStatGainPerTrain(hoardState)).toBeGreaterThan(computeStatGainPerTrain(spamState))
+  })
+
+  test('ascending deeper (more Echoes banked) raises bestAscendEchoes and the trainGain multiplier', () => {
+    let state = ascend({ ...createInitialState(), echoesEarned: minEchoes })
+    const gainAfter1 = computeStatGainPerTrain(state)
+    state = ascend({ ...state, echoesEarned: minEchoes * 10 })
+    expect(state.bestAscendEchoes).toBe(minEchoes * 10)
+    expect(computeStatGainPerTrain(state)).toBeGreaterThan(gainAfter1)
   })
 })
