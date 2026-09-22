@@ -24,6 +24,8 @@ const PATHS: Record<string, string> = {
   ring: '<circle cx="12" cy="14" r="5"/><path d="M9 9l3-6 3 6"/>',
   boots: '<path d="M8 4h4v9l4 2v3a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-3z"/>',
   gloves: '<path d="M7 10V6a2 2 0 0 1 4 0v3m0-3a2 2 0 0 1 4 0v3m0 0V7a2 2 0 0 1 4 0v6a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5v-3z"/>',
+  cleave: '<path d="M4 12L14 4l3 3-8 8z"/><path d="M20 12L10 20l-3-3 8-8z"/>',
+  chain: '<circle cx="8" cy="8" r="3.5"/><circle cx="16" cy="16" r="3.5"/><path d="M10.5 10.5l3 3"/>',
 }
 
 export type IconName = keyof typeof PATHS

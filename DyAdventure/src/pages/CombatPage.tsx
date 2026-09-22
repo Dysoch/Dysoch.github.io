@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { computeMonsterAttackIntervalMs, listMaterials, getCheckpointDepth, getGearCatalogItem, getMaxDepthReached, getZoneDef } from '../worker/simLogic'
+import { computeMonsterAttackIntervalMs, getStatLabel, listMaterials, getCheckpointDepth, getGearCatalogItem, getMaxDepthReached, getZoneDef } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import AbilityBar from '../components/AbilityBar'
 import { Icon } from '../components/icons'
@@ -34,6 +34,8 @@ function describeEvent(event: CombatEvent): string {
       return `Gate Boss defeated — new zone unlocked: ${getZoneDef(event.zoneId).name}!`
     case 'recovered':
       return `You've recovered and rejoined the fight`
+    case 'buff':
+      return `${getStatLabel(event.statId)} boosted by ${formatNumber(event.magnitude)} for ${Math.round(event.durationMs / 1000)}s`
   }
 }
 
@@ -84,6 +86,9 @@ export default function CombatPage() {
                 <div style={{ fontSize: '12.5px', color: 'var(--text-dim)', whiteSpace: 'nowrap' }}>
                   {formatNumber(monster.hp)} / {formatNumber(monster.maxHp)}
                   <div>Clears {state.depthClears}/{state.depthClearsRequired}</div>
+                  {state.monsterDot && (
+                    <div style={{ color: 'var(--physical)' }}>Bleeding ({state.monsterDot.ticksRemaining} left)</div>
+                  )}
                 </div>
               </div>
 
@@ -94,6 +99,16 @@ export default function CombatPage() {
               <div className="hud-bar-track">
                 <div className="hud-bar-fill" style={{ width: `${monsterTimerPct}%`, background: 'var(--physical)' }} />
               </div>
+            </div>
+          )}
+
+          {state.activeBuffs.length > 0 && (
+            <div className="d-flex flex-wrap gap-2 small">
+              {state.activeBuffs.map((buff) => (
+                <span key={buff.sourceAbilityId} className="hud-chip">
+                  {getStatLabel(buff.statId)} +{formatNumber(buff.magnitude)} · {Math.ceil(buff.remainingMs / 1000)}s
+                </span>
+              ))}
             </div>
           )}
 

@@ -356,9 +356,18 @@ export function computeSetBonusForStat(state: SimState, statId: PrimaryStat): nu
   return bonus
 }
 
-/** Gear plus set bonuses for one stat. */
+/** Sum of active temporary buffs (from 'buff'-kind abilities) for one stat. */
+export function buffBonusForStat(state: SimState, statId: PrimaryStat): number {
+  let total = 0
+  for (const buff of state.activeBuffs) {
+    if (buff.statId === statId) total += buff.magnitude
+  }
+  return total
+}
+
+/** Gear plus set plus active-buff bonuses for one stat. */
 export function bonusFor(state: SimState, statId: PrimaryStat): number {
-  return gearBonusForStat(state, statId) + computeSetBonusForStat(state, statId)
+  return gearBonusForStat(state, statId) + computeSetBonusForStat(state, statId) + buffBonusForStat(state, statId)
 }
 
 /** Chance (0-0.75) that an ability hit is a critical hit: +0.5% per point. */
@@ -427,7 +436,7 @@ export function computeFortune(state: SimState): number {
 
 export function computeEffectiveCooldownMs(state: SimState, abilityId: string): number {
   const def = getAbilityDef(abilityId)
-  const speed = computeEffectiveStat(state, 'speed') + gearBonusForStat(state, 'speed')
+  const speed = computeEffectiveStat(state, 'speed') + gearBonusForStat(state, 'speed') + buffBonusForStat(state, 'speed')
   return def.cooldownMs / (1 + speed * SPEED_COOLDOWN_FACTOR)
 }
 
@@ -689,6 +698,58 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
   }, `deepest_${zone.id}`, nextDepth)
 }
 
+/**
+ * Applies damage to the current monster. On a kill, any bleed on that target ends, and if
+ * `overkill` is set and the kill left leftover damage and a new monster spawned on the same
+ * depth (not a depth transition), the leftover chains into it — recursively, so one big hit can
+ * clear several monsters, but it never spills across a depth change.
+ */
+function applyDamageToMonster(
+  state: SimState,
+  damage: number,
+  now: number,
+  events: CombatEvent[],
+  depthAtStart: number,
+  overkill: boolean,
+): SimState {
+  if (!state.currentMonster) return state
+  const remainingHp = state.currentMonster.hp - damage
+  if (remainingHp > 0) {
+    return { ...state, currentMonster: { ...state.currentMonster, hp: remainingHp } }
+  }
+  let next = handleMonsterDeath({ ...state, monsterDot: null }, now, events)
+  const spillover = -remainingHp
+  if (overkill && spillover > 0 && next.currentMonster && next.currentDepth === depthAtStart) {
+    next = applyDamageToMonster(next, spillover, now, events, depthAtStart, overkill)
+  }
+  return next
+}
+
+/** kind: 'dot' — sets/refreshes the bleed on the current monster (no stacking). */
+function applyDot(state: SimState, def: AbilityDef): SimState {
+  const damagePerTick = computeAbilityDamage(state, def.id)
+  const tickIntervalMs = def.dotTickIntervalMs ?? 1000
+  return {
+    ...state,
+    monsterDot: { damagePerTick, ticksRemaining: def.dotTicks ?? 0, tickIntervalMs, msUntilNextTick: tickIntervalMs },
+  }
+}
+
+/** kind: 'buff' — upserts (by ability id) a temporary stat bonus in activeBuffs. */
+function applyBuff(state: SimState, def: AbilityDef, rank: number, now: number, events: CombatEvent[]): SimState {
+  const magnitude = def.baseEffect + def.effectPerRank * (rank - 1)
+  const durationMs = def.buffDurationMs ?? 0
+  const statId = def.buffStatId!
+  events.push({ kind: 'buff', statId, magnitude, durationMs, timestamp: now })
+  return {
+    ...state,
+    activeBuffs: [
+      ...state.activeBuffs.filter((b) => b.sourceAbilityId !== def.id),
+      { statId, magnitude, remainingMs: durationMs, sourceAbilityId: def.id },
+    ],
+  }
+}
+
 function fireAbility(state: SimState, abilityId: string, now: number, events: CombatEvent[]): SimState {
   if (state.fainted || !state.currentMonster) return state
   const def = getAbilityDef(abilityId)
@@ -701,10 +762,6 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
     return state
   }
 
-  const crit = Math.random() < computeCritChance(state)
-  const damage = computeAbilityDamage(state, abilityId) * (crit ? computeCritMultiplier(state) : 1)
-  events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, crit, timestamp: now })
-
   const spentPool = { ...pool, current: pool.current - def.resourceCost }
   const cooldownMs = computeEffectiveCooldownMs(state, abilityId)
   const abilityCooldowns = { ...state.abilityCooldowns, [abilityId]: cooldownMs }
@@ -712,6 +769,17 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
     def.type === 'physical'
       ? { ...state, stamina: spentPool, abilityCooldowns }
       : { ...state, mana: spentPool, abilityCooldowns }
+
+  if (def.kind === 'dot') return applyDot(next, def)
+  if (def.kind === 'buff') return applyBuff(next, def, progress.rank, now, events)
+
+  const crit = Math.random() < computeCritChance(next)
+  let damage = computeAbilityDamage(next, abilityId) * (crit ? computeCritMultiplier(next) : 1)
+  if (def.executeThresholdPct != null && def.executeMultiplier != null) {
+    const hpPct = next.currentMonster!.hp / next.currentMonster!.maxHp
+    if (hpPct <= def.executeThresholdPct) damage *= def.executeMultiplier
+  }
+  events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, crit, timestamp: now })
 
   next = addStat(maxStat(next, 'highestHit', damage), 'damageDealt', damage)
   next = addStat(addStat(next, 'abilityUses', 1), `ability_${abilityId}_uses`, 1)
@@ -723,13 +791,7 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
     next = { ...next, playerHp: { max: hpMax, current: Math.min(hpMax, next.playerHp.current + hpMax * lifeSteal) } }
   }
 
-  const remainingHp = next.currentMonster!.hp - damage
-  if (remainingHp <= 0) {
-    next = handleMonsterDeath(next, now, events)
-  } else {
-    next = { ...next, currentMonster: { ...next.currentMonster!, hp: remainingHp } }
-  }
-  return next
+  return applyDamageToMonster(next, damage, now, events, next.currentDepth, !!def.overkill)
 }
 
 export interface TickResult {
@@ -737,9 +799,44 @@ export interface TickResult {
   events: CombatEvent[]
 }
 
+/** Ticks down remainingMs on every active buff, dropping expired ones. */
+function decayBuffs(state: SimState, deltaMs: number): SimState {
+  if (state.activeBuffs.length === 0) return state
+  const activeBuffs = state.activeBuffs
+    .map((b) => ({ ...b, remainingMs: b.remainingMs - deltaMs }))
+    .filter((b) => b.remainingMs > 0)
+  return { ...state, activeBuffs }
+}
+
+/**
+ * Applies any due bleed ticks (there may be several if deltaMs is large, e.g. offline catch-up).
+ * A tick that kills the monster ends the bleed and does not carry over to whatever spawns next.
+ */
+function tickMonsterDot(state: SimState, deltaMs: number, now: number, events: CombatEvent[]): SimState {
+  let next = state
+  let remaining = deltaMs
+  while (next.monsterDot && next.currentMonster && remaining >= next.monsterDot.msUntilNextTick) {
+    const dot = next.monsterDot
+    remaining -= dot.msUntilNextTick
+    events.push({ kind: 'damage', source: 'player', amount: dot.damagePerTick, timestamp: now })
+    next = applyDamageToMonster(next, dot.damagePerTick, now, events, next.currentDepth, false)
+    if (next.monsterDot) {
+      const ticksRemaining = next.monsterDot.ticksRemaining - 1
+      next = {
+        ...next,
+        monsterDot: ticksRemaining > 0 ? { ...next.monsterDot, ticksRemaining, msUntilNextTick: next.monsterDot.tickIntervalMs } : null,
+      }
+    }
+  }
+  if (next.monsterDot && remaining > 0) {
+    next = { ...next, monsterDot: { ...next.monsterDot, msUntilNextTick: next.monsterDot.msUntilNextTick - remaining } }
+  }
+  return next
+}
+
 export function advanceTick(state: SimState, deltaMs: number, now: number): TickResult {
   const events: CombatEvent[] = []
-  let next = addStat(applyRegen(state, deltaMs / 1000), 'timeMs', deltaMs)
+  let next = decayBuffs(addStat(applyRegen(state, deltaMs / 1000), 'timeMs', deltaMs), deltaMs)
 
   if (next.descendCooldownMs > 0) {
     // Cooldown between floors: extra regen, no monster, nothing attacks
@@ -785,6 +882,7 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
         fainted: true,
         currentDepth: checkpointDepth,
         depthMode: next.depthMode.auto ? next.depthMode : { auto: false, pinnedDepth: Math.min(next.depthMode.pinnedDepth, checkpointDepth) },
+        monsterDot: null,
         ...resetMonsterEncounter(zone, checkpointDepth),
       }
       events.push({ kind: 'faint', checkpointDepth, timestamp: now })
@@ -796,6 +894,8 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
   if (next.fainted) {
     return { state: { ...next, lastTickTimestamp: now }, events }
   }
+
+  next = tickMonsterDot(next, deltaMs, now, events)
 
   const cooldowns = { ...next.abilityCooldowns }
   for (const abilityId of Object.keys(next.abilities)) {
@@ -867,6 +967,8 @@ export function createInitialState(): SimState {
     sigils: 0,
     perkLevels: {},
     lastTickTimestamp: Date.now(),
+    activeBuffs: [],
+    monsterDot: null,
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
@@ -891,6 +993,8 @@ function resetRun(state: SimState): SimState {
     maxDepthByZone: {},
     lastRunStats: state.runStats,
     runStats: {},
+    activeBuffs: [],
+    monsterDot: null,
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }

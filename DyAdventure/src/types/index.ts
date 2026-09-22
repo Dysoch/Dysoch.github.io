@@ -46,6 +46,19 @@ export interface AbilityDef {
   baseRankCost: number
   rankCostMultiplier: number
   maxRank: number
+  /** Absent = a normal damage ability. */
+  kind?: 'dot' | 'buff'
+  /** Damage abilities: at/below this monster HP fraction, damage is multiplied by executeMultiplier. */
+  executeThresholdPct?: number
+  executeMultiplier?: number
+  /** Damage abilities: leftover kill damage carries into the next monster, but never across a depth change. */
+  overkill?: boolean
+  /** kind: 'dot' */
+  dotTicks?: number
+  dotTickIntervalMs?: number
+  /** kind: 'buff' */
+  buffStatId?: PrimaryStat
+  buffDurationMs?: number
 }
 
 export interface AbilityProgress {
@@ -185,6 +198,7 @@ export type CombatEvent =
   | { kind: 'faint'; checkpointDepth: number; timestamp: number }
   | { kind: 'zoneUnlocked'; zoneId: string; timestamp: number }
   | { kind: 'recovered'; timestamp: number }
+  | { kind: 'buff'; statId: PrimaryStat; magnitude: number; durationMs: number; timestamp: number }
 
 export interface SimState {
   saveVersion: number
@@ -224,6 +238,8 @@ export interface SimState {
   sigils: number
   perkLevels: Record<string, number>
   lastTickTimestamp: number
+  activeBuffs: { statId: PrimaryStat; magnitude: number; remainingMs: number; sourceAbilityId: string }[]
+  monsterDot: { damagePerTick: number; ticksRemaining: number; tickIntervalMs: number; msUntilNextTick: number } | null
 }
 
 export type MainToWorkerMessage =

@@ -41,10 +41,15 @@
       "Bash(python \"C:/Users/FRITS~1.DEV/AppData/Local/Temp/claude/c--Service-Tool-GitHub-Dysoch-github-io/3cf647f0-3ee0-43c2-b5b4-19a80f84e9d2/scratchpad/newstats_edit.py\")",
       "Read(//c/Program Files \\\\\\(x86\\\\\\)/Microsoft/Edge/Application/**)",
       "Read(//c/Program Files/Google/Chrome/Application/**)",
-      "Bash(node check.js)"
+      "Bash(node check.js)",
+      "Bash(node check_dot.js)",
+      "Bash(lsof -ti:5173 -sTCP:LISTEN)"
     ],
     "deny": [
       "Read(idle-game)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify2"
     ]
   }
 }

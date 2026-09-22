@@ -9,6 +9,14 @@ import type { AbilityDef } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
 
+function mechanicTag(ability: AbilityDef): string | null {
+  if (ability.kind === 'dot') return `Bleed ×${ability.dotTicks}`
+  if (ability.kind === 'buff') return `Buff ${Math.round((ability.buffDurationMs ?? 0) / 1000)}s`
+  if (ability.overkill) return 'Overkill'
+  if (ability.executeThresholdPct != null) return `Execute <${Math.round(ability.executeThresholdPct * 100)}% HP`
+  return null
+}
+
 export default function AbilitiesPage() {
   const abilities = useGameStore((s) => s.abilities)
   const focus = useGameStore((s) => s.focus)
@@ -33,6 +41,7 @@ export default function AbilitiesPage() {
           const buyCount = qty === 'max' ? Math.max(1, computeMaxAbilityCount(ability.id, rank, focus)) : Math.min(qty, remainingRanks)
           const cost = computeAbilityRankCostN(ability.id, rank, buyCount)
           const affordable = !maxedOut && focus >= cost
+          const tag = mechanicTag(ability)
 
           return (
             <div key={ability.id} className={`panel ${ability.type === 'physical' ? '' : ''}`} style={{ padding: '18px', borderColor: ability.type === 'physical' ? 'var(--physical)' : 'var(--arcane)' }}>
@@ -44,6 +53,11 @@ export default function AbilitiesPage() {
                   <div style={{ fontWeight: 600, fontSize: '15px' }}>{ability.name}</div>
                   <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Rank {rank} / {ability.maxRank}</div>
                 </div>
+                {tag && (
+                  <span className="hud-chip" style={{ marginLeft: 'auto', fontSize: '10.5px' }}>
+                    {tag}
+                  </span>
+                )}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '8px', minHeight: '32px' }}>
                 {ability.description}
