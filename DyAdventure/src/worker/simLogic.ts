@@ -720,7 +720,7 @@ function applyDamageToMonster(
   let next = handleMonsterDeath({ ...state, monsterDot: null }, now, events)
   const spillover = overkill ? -remainingHp * (1 + perkBonus(state, 'overkillPower')) : -remainingHp
   if (overkill && spillover > 0 && next.currentMonster && next.currentDepth === depthAtStart) {
-    next = applyDamageToMonster(next, spillover, now, events, depthAtStart, overkill)
+    next = applyDamageToMonster(addStat(next, 'overkillKills', 1), spillover, now, events, depthAtStart, overkill)
   }
   return next
 }
@@ -742,13 +742,13 @@ function applyBuff(state: SimState, def: AbilityDef, rank: number, now: number, 
   const durationMs = (def.buffDurationMs ?? 0) * (1 + perkBonus(state, 'buffDuration'))
   const statId = def.buffStatId!
   events.push({ kind: 'buff', statId, magnitude, durationMs, timestamp: now })
-  return {
+  return addStat({
     ...state,
     activeBuffs: [
       ...state.activeBuffs.filter((b) => b.sourceAbilityId !== def.id),
       { statId, magnitude, remainingMs: durationMs, sourceAbilityId: def.id },
     ],
-  }
+  }, 'buffsCast', 1)
 }
 
 function fireAbility(state: SimState, abilityId: string, now: number, events: CombatEvent[]): SimState {
@@ -770,6 +770,7 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
     def.type === 'physical'
       ? { ...state, stamina: spentPool, abilityCooldowns }
       : { ...state, mana: spentPool, abilityCooldowns }
+  next = addStat(addStat(next, 'abilityUses', 1), `ability_${abilityId}_uses`, 1)
 
   if (def.kind === 'dot') return applyDot(next, def)
   if (def.kind === 'buff') return applyBuff(next, def, progress.rank, now, events)
@@ -783,7 +784,6 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
   events.push({ kind: 'damage', source: 'player', amount: damage, abilityId, crit, timestamp: now })
 
   next = addStat(maxStat(next, 'highestHit', damage), 'damageDealt', damage)
-  next = addStat(addStat(next, 'abilityUses', 1), `ability_${abilityId}_uses`, 1)
 
   if (crit) next = addStat(next, 'crits', 1)
   const lifeSteal = computeLifeStealPct(next)
@@ -820,6 +820,7 @@ function tickMonsterDot(state: SimState, deltaMs: number, now: number, events: C
     const dot = next.monsterDot
     remaining -= dot.msUntilNextTick
     events.push({ kind: 'damage', source: 'player', amount: dot.damagePerTick, timestamp: now })
+    next = addStat(addStat(next, 'damageDealt', dot.damagePerTick), 'bleedDamageDealt', dot.damagePerTick)
     next = applyDamageToMonster(next, dot.damagePerTick, now, events, next.currentDepth, false)
     if (next.monsterDot) {
       const ticksRemaining = next.monsterDot.ticksRemaining - 1

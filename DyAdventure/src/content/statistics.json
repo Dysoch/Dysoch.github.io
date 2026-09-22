@@ -43,6 +43,18 @@
       {
         "key": "crits",
         "label": "Critical hits"
+      },
+      {
+        "key": "bleedDamageDealt",
+        "label": "Bleed damage dealt"
+      },
+      {
+        "key": "buffsCast",
+        "label": "Buffs cast"
+      },
+      {
+        "key": "overkillKills",
+        "label": "Overkill kills"
       }
     ]
   },
