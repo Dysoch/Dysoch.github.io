@@ -43,14 +43,42 @@
       "Read(//c/Program Files/Google/Chrome/Application/**)",
       "Bash(node check.js)",
       "Bash(node check_dot.js)",
-      "Bash(lsof -ti:5173 -sTCP:LISTEN)"
+      "Bash(lsof -ti:5173 -sTCP:LISTEN)",
+      "Bash(node \"C:/Users/FRITS~1.DEV/AppData/Local/Temp/claude/c--Service-Tool-GitHub-Dysoch-github-io/52671e49-fc18-4bdf-a99e-2e7170284421/scratchpad/resource_sim.js\")",
+      "Bash(npm approve-builds *)",
+      "Bash(npm approve-scripts *)",
+      "Bash(npx tsx *)",
+      "Bash(sed -i 's/const SIM_HOURS = 6/const SIM_HOURS = 14/' progression_sim.ts progression_sim_recall_perks.ts)",
+      "Bash(grep -n SIM_HOURS progression_sim.ts progression_sim_recall_perks.ts)",
+      "Bash(rm -f \"/c/Users/FRITS~1.DEV/AppData/Local/Temp/claude/c--Service-Tool-GitHub-Dysoch-github-io/52671e49-fc18-4bdf-a99e-2e7170284421/scratchpad/simcheck/progression_sim_recall_asap.ts\")",
+      "Bash(ls tsconfig*.json)",
+      "Bash(cat tsconfig.json)",
+      "Bash(npx vitest *)",
+      "Bash(npm test *)",
+      "Bash(cd DyAdventure && npm *)",
+      "Bash(cd DyAdventure && npx *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git stash *)",
+      "Bash(python -c \"import json; json.load\\(open\\(r'C:/Service-Tool/GitHub/Dysoch.github.io/.claude/settings.local.json'\\)\\)\")",
+      "Bash(rm -f \"c:/Service-Tool/GitHub/Dysoch.github.io/DyAdventure/scripts/gen-state-tmp.ts\" *)",
+      "Bash(command -v chromium-cli)",
+      "Bash(python3 -c \"import playwright\")"
     ],
     "deny": [
       "Read(idle-game)"
     ],
     "additionalDirectories": [
       "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify2",
-      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify3"
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify3",
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify4",
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify5",
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\simcheck",
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\52671e49-fc18-4bdf-a99e-2e7170284421\\scratchpad\\verify6",
+      "C:\\Users\\FRITS~1.DEV\\AppData\\Local\\Temp\\claude\\c--Service-Tool-GitHub-Dysoch-github-io\\4dc0e31c-2194-43e7-8a08-036eae3b7c5c\\scratchpad\\ckpt-test"
     ]
   }
 }
