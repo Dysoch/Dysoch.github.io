@@ -30,6 +30,7 @@ import type {
   PerkDef,
   PerkEffect,
   PrimaryStat,
+  Rarity,
   RarityDef,
   SetDef,
   SimState,
@@ -121,10 +122,9 @@ export interface CraftCost {
   materials: { materialId: string; amount: number }[]
 }
 
-export function computeCraftCost(catalogId: string): CraftCost {
-  const def = getGearCatalogItem(catalogId)
-  const cost = CRAFT_COSTS[def.rarity] ?? CRAFT_COSTS.common
-  const [primary, secondary] = SLOT_MATERIALS[def.slot]
+function costForRaritySlot(rarity: Rarity, slot: GearSlot): CraftCost {
+  const cost = CRAFT_COSTS[rarity] ?? CRAFT_COSTS.common
+  const [primary, secondary] = SLOT_MATERIALS[slot]
   return {
     focus: cost.focus,
     materials: [
@@ -132,6 +132,27 @@ export function computeCraftCost(catalogId: string): CraftCost {
       { materialId: secondary, amount: Math.ceil(cost.materials / 2) },
     ],
   }
+}
+
+export function computeCraftCost(catalogId: string): CraftCost {
+  const def = getGearCatalogItem(catalogId)
+  return costForRaritySlot(def.rarity, def.slot)
+}
+
+/** Cost to reforge an owned item into its next rarity tier, or null if it has no next tier. */
+export function computeReforgeCost(catalogId: string): CraftCost | null {
+  const def = getGearCatalogItem(catalogId)
+  if (!def.nextTierId) return null
+  const targetDef = getGearCatalogItem(def.nextTierId)
+  return costForRaritySlot(targetDef.rarity, targetDef.slot)
+}
+
+/** The zone depth that must be reached (state.maxDepthByZone) before an item can reforge into its next tier, or null if it has no next tier. */
+export function computeReforgeDepthRequirement(catalogId: string): { zoneId: string; depth: number } | null {
+  const def = getGearCatalogItem(catalogId)
+  if (!def.nextTierId) return null
+  const targetDef = getGearCatalogItem(def.nextTierId)
+  return { zoneId: targetDef.zoneId ?? '', depth: targetDef.minDepth }
 }
 
 /** Items the player can craft: discovered, and not a boss-only unique. */
@@ -545,6 +566,17 @@ export function computeFocusReward(state: SimState, depth: number): number {
   return Math.max(1, Math.round(base * fortuneBonus * focusGainMultiplier(state)))
 }
 
+/** Picks one item at random, weighted so low-weight (e.g. rare-tier) entries come up far less often than weight-1 ones. */
+export function pickWeighted<T>(items: T[], weight: (item: T) => number): T {
+  const total = items.reduce((sum, item) => sum + weight(item), 0)
+  let roll = Math.random() * total
+  for (const item of items) {
+    roll -= weight(item)
+    if (roll <= 0) return item
+  }
+  return items[items.length - 1]
+}
+
 function rollLootCatalogEntry(state: SimState, zone: ZoneDef, depth: number, isBoss: boolean): GearCatalogItemDef | null {
   const fortune = computeFortune(state)
   const dropChance = 0.12 + fortune * 0.002 + perkBonus(state, 'dropChance')
@@ -553,7 +585,7 @@ function rollLootCatalogEntry(state: SimState, zone: ZoneDef, depth: number, isB
     (i) => zone.gearItemIds.includes(i.id) && i.minDepth <= depth && (!i.bossOnly || isBoss),
   )
   if (eligible.length === 0) return null
-  return eligible[Math.floor(Math.random() * eligible.length)]
+  return pickWeighted(eligible, (i) => getRarityDef(i.rarity).dropWeight ?? 1)
 }
 
 export function computeSalvageValue(item: GearItem): number {
@@ -603,24 +635,32 @@ function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
   }
 }
 
-/** Adds a catalog item to the player `count` times: fuses into an owned copy (level += count) or creates a new inventory item at that level. */
+/**
+ * Adds a catalog item to the player `count` times: fuses into an owned copy or creates a new inventory item.
+ * Level gained per duplicate fused in is scaled by the item's rarity (RarityDef.fuseRate, default 1) — higher
+ * rarities level slower on duplicates, so shallow-depth farming can't out-level a deep push. A freshly found
+ * item's first copy always grants a full level 1; the fuse rate only applies to additional copies beyond that.
+ */
 function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: number, events: CombatEvent[], count: number = 1): SimState {
   let next = state
   if (!next.discoveredItemIds.includes(catalogEntry.id)) {
     next = { ...next, discoveredItemIds: [...next.discoveredItemIds, catalogEntry.id] }
   }
+  const rarityDef = getRarityDef(catalogEntry.rarity)
+  const fuseRate = rarityDef.fuseRate ?? 1
+  const maxLevel = rarityDef.maxLevel ?? Infinity
   const equippedSlot = (Object.keys(next.gear) as GearSlot[]).find((slot) => next.gear[slot]?.catalogId === catalogEntry.id)
   const inventoryIndex = next.inventory.findIndex((i) => i.catalogId === catalogEntry.id)
 
   if (equippedSlot) {
     const existing = next.gear[equippedSlot]!
-    const leveled = { ...existing, level: existing.level + count }
+    const leveled = { ...existing, level: Math.min(maxLevel, existing.level + count * fuseRate) }
     next = { ...next, gear: { ...next.gear, [equippedSlot]: leveled } }
     events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, count, timestamp: now })
     next = addStat(next, 'itemsFused', count)
   } else if (inventoryIndex >= 0) {
     const existing = next.inventory[inventoryIndex]
-    const leveled = { ...existing, level: existing.level + count }
+    const leveled = { ...existing, level: Math.min(maxLevel, existing.level + count * fuseRate) }
     const inventory = [...next.inventory]
     inventory[inventoryIndex] = leveled
     next = { ...next, inventory }
@@ -630,7 +670,7 @@ function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: n
     const newItem: GearItem = {
       instanceId: `${catalogEntry.id}_${now}_${Math.floor(Math.random() * 1e6)}`,
       catalogId: catalogEntry.id,
-      level: count,
+      level: Math.min(maxLevel, 1 + (count - 1) * fuseRate),
       augmentIds: [],
     }
     next = { ...next, inventory: [...next.inventory, newItem] }
@@ -668,6 +708,39 @@ export function craftItem(state: SimState, catalogId: string, now: number, count
   const paid = addStat(addStat({ ...state, focus: state.focus - cost.focus, materials }, 'itemsCrafted', actual), 'focusSpent', cost.focus)
   events.push({ kind: 'crafted', catalogId, count: actual, timestamp: now })
   return { state: grantGearItem(paid, def, now, events, actual), events }
+}
+
+/** Spends materials to jump an owned item (equipped or in inventory) to its next rarity tier, resetting its level to 1. */
+export function reforgeItem(state: SimState, instanceId: string, now: number): { state: SimState; event: CombatEvent | null } {
+  const equippedSlot = (Object.keys(state.gear) as GearSlot[]).find((slot) => state.gear[slot]?.instanceId === instanceId)
+  const inventoryIndex = state.inventory.findIndex((i) => i.instanceId === instanceId)
+  const item = equippedSlot ? state.gear[equippedSlot] : inventoryIndex >= 0 ? state.inventory[inventoryIndex] : null
+  if (!item) return { state, event: null }
+
+  const targetId = getGearCatalogItem(item.catalogId).nextTierId
+  if (!targetId) return { state, event: null }
+  const targetDef = getGearCatalogItem(targetId)
+  const depthReached = state.maxDepthByZone[targetDef.zoneId ?? ''] ?? 0
+  if (depthReached < targetDef.minDepth) return { state, event: null }
+  const cost = costForRaritySlot(targetDef.rarity, targetDef.slot)
+  if (state.focus < cost.focus || cost.materials.some((m) => (state.materials[m.materialId] ?? 0) < m.amount)) {
+    return { state, event: null }
+  }
+
+  const materials = { ...state.materials }
+  for (const m of cost.materials) materials[m.materialId] = (materials[m.materialId] ?? 0) - m.amount
+  const reforged: GearItem = { ...item, catalogId: targetDef.id, level: 1 }
+
+  let next: SimState = { ...state, focus: state.focus - cost.focus, materials }
+  next = equippedSlot
+    ? { ...next, gear: { ...next.gear, [equippedSlot]: reforged } }
+    : { ...next, inventory: next.inventory.map((i, idx) => (idx === inventoryIndex ? reforged : i)) }
+  if (!next.discoveredItemIds.includes(targetDef.id)) {
+    next = { ...next, discoveredItemIds: [...next.discoveredItemIds, targetDef.id] }
+  }
+  next = addStat(next, 'itemsReforged', 1)
+
+  return { state: next, event: { kind: 'reforge', fromCatalogId: item.catalogId, toCatalogId: targetDef.id, timestamp: now } }
 }
 
 function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[]): SimState {

@@ -47,6 +47,10 @@ import {
   selectZone,
   getZoneDef,
   isBossDepth,
+  reforgeItem,
+  computeReforgeCost,
+  computeReforgeDepthRequirement,
+  getGearCatalogItem,
 } from '../src/worker/simLogic.ts'
 import statsData from '../src/content/stats.json' with { type: 'json' }
 import abilitiesData from '../src/content/abilities.json' with { type: 'json' }
@@ -120,6 +124,7 @@ let ascendCountLocal = 0
 let firstAscendAt: number | null = null
 const recallLog: { minute: number; depth: number; echoes: number }[] = []
 const ascendLog: { minute: number; echoesEarned: number; sigils: number; multiplierAfter: number }[] = []
+const reforgeLog: { minute: number; itemName: string; fromRarity: string; toRarity: string }[] = []
 const depthSnapshots: {
   minute: number
   zoneId: string
@@ -208,6 +213,36 @@ function spendPerks() {
   }
 }
 
+// Greedily reforges any owned item (equipped or inventory) that has a next tier, is depth-eligible,
+// and is affordable — mirrors a diligent player who reforges the moment they can, funded by whatever
+// materials combat/salvage has produced (the bot never salvages, so this is drop-only material income).
+function spendReforges(minute: number) {
+  let reforged = true
+  while (reforged) {
+    reforged = false
+    const candidates = [...Object.values(state.gear), ...state.inventory].filter((i) => i != null)
+    for (const item of candidates) {
+      const def = getGearCatalogItem(item.catalogId)
+      if (!def.nextTierId) continue
+      const cost = computeReforgeCost(item.catalogId)
+      const depthReq = computeReforgeDepthRequirement(item.catalogId)
+      if (!cost || !depthReq) continue
+      const depthReached = state.maxDepthByZone[depthReq.zoneId] ?? 0
+      if (depthReached < depthReq.depth) continue
+      const affordable = state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
+      if (!affordable) continue
+      const targetDef = getGearCatalogItem(def.nextTierId)
+      const result = reforgeItem(state, item.instanceId, now)
+      if (result.event) {
+        state = result.state
+        reforgeLog.push({ minute, itemName: targetDef.name, fromRarity: def.rarity, toRarity: targetDef.rarity })
+        reforged = true
+        break
+      }
+    }
+  }
+}
+
 console.log(`Simulating ${SIM_HOURS}h, recall policy: ${RECALL_POLICY}, ascend policy: ${ASCEND_POLICY}\n`)
 
 let lastMinuteLogged = -1
@@ -269,6 +304,7 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
     msSinceDecision = 0
     decide()
     spendPerks()
+    spendReforges(Math.round(t / 60000))
 
     if (RECALL_POLICY !== 'never') {
       const deepestNow = state.lifetime['deepest_' + state.currentZoneId] ?? 0
@@ -346,6 +382,22 @@ if (ascendLog.length > 0) {
 if (recallLog.length > 0 || ascendLog.length > 0) {
   console.log('\n--- Perk levels ---')
   for (const p of PERKS) console.log(`  ${p.id} (${p.currency}): ${state.perkLevels[p.id] ?? 0}/${p.maxLevel}`)
+}
+
+if (reforgeLog.length > 0) {
+  console.log('\n--- Reforges ---')
+  console.log('minute\titem\tfromRarity\ttoRarity')
+  for (const r of reforgeLog) console.log(`${r.minute}\t${r.itemName}\t${r.fromRarity}\t${r.toRarity}`)
+}
+
+console.log('\n--- Final equipped gear rarity ---')
+for (const [slot, item] of Object.entries(state.gear)) {
+  if (!item) {
+    console.log(`  ${slot}: (empty)`)
+    continue
+  }
+  const def = getGearCatalogItem(item.catalogId)
+  console.log(`  ${slot}: ${def.name} (${def.rarity}, Lv.${item.level.toFixed(2)})`)
 }
 
 if (zoneUnlockLog.length > 0) {

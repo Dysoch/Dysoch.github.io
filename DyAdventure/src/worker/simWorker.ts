@@ -8,6 +8,7 @@ import {
   createInitialState,
   equipItem,
   recall,
+  reforgeItem,
   salvageItem,
   selectZone,
   setDepthMode,
@@ -92,6 +93,12 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       break
     case 'SALVAGE_ITEM': {
       const result = salvageItem(state, msg.instanceId)
+      state = result.state
+      if (result.event) post({ type: 'EVENT', event: result.event })
+      break
+    }
+    case 'REFORGE_ITEM': {
+      const result = reforgeItem(state, msg.instanceId, now)
       state = result.state
       if (result.event) post({ type: 'EVENT', event: result.event })
       break

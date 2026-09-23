@@ -70,6 +70,12 @@ export interface RarityDef {
   name: string
   color: string
   augmentSlots: number
+  /** Relative weight when picking among multiple eligible drop candidates (default 1 if absent). Lets rare tiers stay rare even once depth-eligible. */
+  dropWeight?: number
+  /** Multiplier on level gained per duplicate fused in (default 1 if absent). Lets higher rarities level slower than common. */
+  fuseRate?: number
+  /** Level a duplicate-fused item of this rarity can never exceed (default uncapped if absent). Keeps a maxed-out lower tier from ever outscaling a fresh copy of the next tier, so reforging (where available) is never a net downgrade. */
+  maxLevel?: number
 }
 
 export interface GearStatDef {
@@ -89,6 +95,10 @@ export interface GearCatalogItemDef {
   setId: string | null
   minDepth: number
   bossOnly?: boolean
+  /** Catalog id of the item this reforges into at the next rarity tier, if any. */
+  nextTierId?: string
+  /** Zone whose maxDepthByZone entry gates reforging into this item (its own minDepth is the required depth). */
+  zoneId?: string
 }
 
 export interface SetBonusDef {
@@ -213,6 +223,7 @@ export type CombatEvent =
   | { kind: 'fuse'; catalogId: string; newLevel: number; count?: number; timestamp: number }
   | { kind: 'salvage'; catalogId: string; focusGained: number; materialId: string; materialsGained: number; timestamp: number }
   | { kind: 'crafted'; catalogId: string; count?: number; timestamp: number }
+  | { kind: 'reforge'; fromCatalogId: string; toCatalogId: string; timestamp: number }
   | { kind: 'kill'; monsterName: string; depth: number; timestamp: number }
   | { kind: 'levelUp'; statId: StatId; newLevel: number; timestamp: number }
   | { kind: 'bossDefeated'; depth: number; timestamp: number }
@@ -281,6 +292,7 @@ export type MainToWorkerMessage =
   | { type: 'UNEQUIP_ITEM'; slot: GearSlot }
   | { type: 'SOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'SALVAGE_ITEM'; instanceId: string }
+  | { type: 'REFORGE_ITEM'; instanceId: string }
   | { type: 'RECALL' }
   | { type: 'ASCEND' }
   | { type: 'BUY_PERK'; perkId: string; count?: number }

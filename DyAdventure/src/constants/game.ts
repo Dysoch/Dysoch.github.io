@@ -1,5 +1,5 @@
 export const APP_NAME = 'DyAdventure'
-export const APP_VERSION = '0.1.1'
+export const APP_VERSION = '0.1.3'
 
 export const TICK_MS = 100
 export const STATE_SYNC_MS = 250

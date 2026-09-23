@@ -1,13 +1,12 @@
-import { useState } from 'react'
 import abilitiesData from '../content/abilities.json'
 import { useGameStore } from '../store/gameStore'
 import { computeAbilityRankCostN, computeMaxAbilityCount } from '../worker/simLogic'
-import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
-import { QtySelector, type BuyQty } from '../components/QtySelector'
+import { BuyButtonRow, type BuyRowOption } from '../components/BuyButtonRow'
 import type { AbilityDef } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
+const QTY_STEPS = [1, 5, 10, 25] as const
 
 function mechanicTag(ability: AbilityDef): string | null {
   if (ability.kind === 'dot') return `Bleed ×${ability.dotTicks}`
@@ -21,7 +20,6 @@ export default function AbilitiesPage() {
   const abilities = useGameStore((s) => s.abilities)
   const focus = useGameStore((s) => s.focus)
   const upgradeAbility = useGameStore((s) => s.upgradeAbility)
-  const [qty, setQty] = useState<BuyQty>(1)
 
   return (
     <div style={{ padding: '24px' }}>
@@ -30,17 +28,18 @@ export default function AbilitiesPage() {
         physical abilities draw from Stamina, spells from Mana, and several can be active at once.
       </p>
 
-      <QtySelector value={qty} onChange={setQty} />
-
       <div className="ability-grid">
         {ABILITIES.map((ability) => {
           const progress = abilities[ability.id]
           const rank = progress ? progress.rank : 0
           const maxedOut = rank >= ability.maxRank
           const remainingRanks = ability.maxRank - rank
-          const buyCount = qty === 'max' ? Math.max(1, computeMaxAbilityCount(ability.id, rank, focus)) : Math.min(qty, remainingRanks)
-          const cost = computeAbilityRankCostN(ability.id, rank, buyCount)
-          const affordable = !maxedOut && focus >= cost
+          const maxQty = Math.max(1, computeMaxAbilityCount(ability.id, rank, focus))
+          const steps: BuyRowOption[] = QTY_STEPS.map((step) => {
+            const qty = Math.min(step, remainingRanks)
+            return { qty, label: `×${qty}`, cost: computeAbilityRankCostN(ability.id, rank, qty) }
+          })
+          const maxOption: BuyRowOption = { qty: maxQty, label: 'Max', cost: computeAbilityRankCostN(ability.id, rank, maxQty) }
           const tag = mechanicTag(ability)
 
           return (
@@ -65,14 +64,11 @@ export default function AbilitiesPage() {
               <div style={{ fontSize: '11px', color: 'var(--text-dim)', marginBottom: '14px' }}>
                 Cost {ability.resourceCost} {ability.type === 'physical' ? 'Stamina' : 'Mana'} · Cooldown {(ability.cooldownMs / 1000).toFixed(1)}s
               </div>
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-primary w-100"
-                disabled={!affordable}
-                onClick={() => upgradeAbility(ability.id, buyCount)}
-              >
-                {maxedOut ? 'Max rank' : `${buyCount > 1 ? `Upgrade ×${buyCount}` : 'Upgrade'} — ${formatNumber(cost)} Focus`}
-              </button>
+              {maxedOut ? (
+                <div className="btn btn-sm btn-outline-secondary w-100 disabled">Max rank</div>
+              ) : (
+                <BuyButtonRow steps={steps} maxOption={maxOption} balance={focus} onBuy={(qty) => upgradeAbility(ability.id, qty)} />
+              )}
             </div>
           )
         })}

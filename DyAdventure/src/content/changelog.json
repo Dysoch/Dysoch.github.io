@@ -1,5 +1,32 @@
 [
   {
+    "version": "0.1.3",
+    "date": "2026-09-23",
+    "changes": [
+      "Added a full Reforge upgrade path for Whispering Woods gear: every Vanguard/Adept piece can now be reforged common -> uncommon -> rare -> epic -> legendary from the Inventory page, each tier gated behind reaching a deeper part of the zone and costing materials plus Focus.",
+      "Legendary gear can also now drop directly from bosses deep in a zone.",
+      "Gear leveling from duplicates now caps per rarity, so grinding one common item can no longer out-power reforging into a higher tier.",
+      "Prestige is reorganized into separate Recall and Ascend tabs, and stays hidden from the main navigation until you're actually close to unlocking it.",
+      "The Guide page now only shows articles relevant to your progress (e.g. Gear and Crafting stay hidden until you've found your first item).",
+      "Training and Abilities now use direct ×1/×5/×10/×25/Max buy buttons instead of a separate quantity toggle.",
+      "Reworked several pages (Guide, Settings, Prestige, Training, Abilities, Inventory) to use the full width of the screen instead of a narrow centered column, and fixed Inventory action buttons overlapping on smaller cards."
+    ]
+  },
+  {
+    "version": "0.1.2",
+    "date": "2026-09-22",
+    "changes": [
+      "Added new prestige perks, including Keen Edge, Heavy Hitter, and Vampiric Touch.",
+      "Fixed fast, cheap abilities starving slower ones of Stamina and Mana, and doubled base Stamina/Mana caps.",
+      "Fixed several abilities not counting toward their own usage statistics.",
+      "The combat log now collapses repeated hits into a single running line instead of flooding out other events.",
+      "Recall's permanent stat-gain bonus now scales with the deepest depth you've ever Recalled at, closing an exploit where recalling shallowly on repeat out-paced genuine progress.",
+      "Ascend's permanent stat-gain bonus now scales with your biggest single Ascend payout for the same reason.",
+      "Added a compounding Boss Power bonus so your damage keeps pace with monster scaling at extreme depth, and zones now unlock after clearing a set number of that zone's bosses rather than requiring a full depth clear.",
+      "Fixed a rare crash and performance issue when Overkill chained through many kills at once."
+    ]
+  },
+  {
     "version": "0.1.1",
     "date": "2026-09-20",
     "changes": [

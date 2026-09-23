@@ -20,7 +20,7 @@
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 10px;
 }
 
@@ -255,7 +255,7 @@ a {
 .stat-grid,
 .ability-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
 
@@ -273,7 +273,7 @@ a {
 }
 
 .inventory-split .inventory-grid {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 @media (max-width: 900px) {
@@ -327,4 +327,20 @@ a {
 
 .stat-row > :first-child {
   text-align: left;
+}
+
+.guide-columns {
+  column-width: 380px;
+  column-gap: 16px;
+}
+
+.guide-columns > .panel {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+.perk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 4px 16px;
 }

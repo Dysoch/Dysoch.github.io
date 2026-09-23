@@ -1,4 +1,5 @@
 import { useGameStore } from '../store/gameStore'
+import { canRecall } from '../worker/simLogic'
 import type { TabId } from '../types'
 import { Icon } from './icons'
 
@@ -18,10 +19,14 @@ const TABS: { id: TabId; icon: string; label: string }[] = [
 export default function TabBar() {
   const activeTab = useGameStore((s) => s.activeTab)
   const setActiveTab = useGameStore((s) => s.setActiveTab)
+  // Once unlocked, stays visible forever — canRecall alone would flicker off right after every
+  // Recall/Ascend (both wipe maxDepthByZone), so a permanent lifetime counter backs it up.
+  const prestigeUnlocked = useGameStore((s) => canRecall(s) || (s.lifetime.recalls ?? 0) > 0)
+  const tabs = TABS.filter((tab) => tab.id !== 'prestige' || prestigeUnlocked)
 
   return (
     <nav className="tab-bar">
-      {TABS.map((tab) => (
+      {tabs.map((tab) => (
         <button
           key={tab.id}
           type="button"

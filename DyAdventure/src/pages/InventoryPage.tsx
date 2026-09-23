@@ -3,6 +3,8 @@ import augmentsData from '../content/augments.json'
 import { useGameStore } from '../store/gameStore'
 import {
   computeEquippedSetCounts,
+  computeReforgeCost,
+  computeReforgeDepthRequirement,
   computeSetBonusForStat,
   compareGear,
   effectiveGearStats,
@@ -11,15 +13,47 @@ import {
   getGearCatalogItem,
   getRarityDef,
   getSetDef,
+  getZoneDef,
+  listMaterials,
   listSets,
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
-import type { AugmentDef, GearItem, GearSlot, PrimaryStat } from '../types'
+import type { AugmentDef, GearItem, GearSlot, PrimaryStat, SimState } from '../types'
 
 const AUGMENTS = augmentsData as AugmentDef[]
+const MATERIALS = listMaterials()
 
 const statLabel = getStatLabel
+
+function materialName(id: string): string {
+  return MATERIALS.find((m) => m.id === id)?.name ?? id
+}
+
+function ReforgeButton({ item, state, onReforge }: { item: GearItem; state: SimState; onReforge: (instanceId: string) => void }) {
+  const targetId = getGearCatalogItem(item.catalogId).nextTierId
+  if (!targetId) return null
+  const cost = computeReforgeCost(item.catalogId)!
+  const targetRarity = getRarityDef(getGearCatalogItem(targetId).rarity)
+  const depthReq = computeReforgeDepthRequirement(item.catalogId)
+  const depthReached = depthReq ? (state.maxDepthByZone[depthReq.zoneId] ?? 0) : 0
+  const depthMet = !depthReq || depthReached >= depthReq.depth
+  const affordable = state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
+  const title = depthMet
+    ? `${cost.materials.map((m) => `${formatNumber(m.amount)} ${materialName(m.materialId)}`).join(', ')}, ${formatNumber(cost.focus)} Focus`
+    : `Requires reaching depth ${formatNumber(depthReq!.depth)} in ${getZoneDef(depthReq!.zoneId).name} (currently ${formatNumber(depthReached)})`
+  return (
+    <button
+      type="button"
+      className="btn btn-sm btn-outline-warning"
+      disabled={!affordable || !depthMet}
+      title={title}
+      onClick={() => onReforge(item.instanceId)}
+    >
+      Reforge → {targetRarity.name}
+    </button>
+  )
+}
 
 const SLOT_LABELS: Record<GearSlot, string> = {
   weapon: 'Weapon',
@@ -42,7 +76,7 @@ function ItemLine({ item }: { item: GearItem }) {
   return (
     <span>
       <span style={{ color: rarityDef.color }}>{catalogDef.name}</span>{' '}
-      <span style={{ color: 'var(--text-dim)' }}>Lv.{item.level} · {effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(', ')}</span>
+      <span style={{ color: 'var(--text-dim)' }}>Lv.{Math.round(item.level * 10) / 10} · {effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(', ')}</span>
     </span>
   )
 }
@@ -53,6 +87,7 @@ export default function InventoryPage() {
   const unequipItem = useGameStore((s) => s.unequipItem)
   const socketAugment = useGameStore((s) => s.socketAugment)
   const salvageItem = useGameStore((s) => s.salvageItem)
+  const reforgeItem = useGameStore((s) => s.reforgeItem)
   const [augmentChoice, setAugmentChoice] = useState<Record<string, string>>({})
 
   const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({})
@@ -127,7 +162,10 @@ export default function InventoryPage() {
               {item ? <ItemLine item={item} /> : <div className="text-body-secondary">Empty</div>}
             </div>
             {item && (
-              <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => unequipItem(slot)}>Unequip</button>
+              <div className="d-flex gap-2 flex-wrap justify-content-end">
+                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => unequipItem(slot)}>Unequip</button>
+                <ReforgeButton item={item} state={state} onReforge={reforgeItem} />
+              </div>
             )}
           </div>
         ))}
@@ -173,9 +211,10 @@ export default function InventoryPage() {
                     <div key={aug.id} className="small" style={{ color: 'var(--focus)' }}>{aug.name}: {aug.description}</div>
                   ))}
                 </div>
-                <div className="d-flex gap-2 mt-auto">
+                <div className="d-flex gap-2 flex-wrap mt-auto">
                   <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => equipItem(item.instanceId)}>Equip</button>
                   <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => salvageItem(item.instanceId)}>Salvage</button>
+                  <ReforgeButton item={item} state={state} onReforge={reforgeItem} />
                 </div>
               </div>
 

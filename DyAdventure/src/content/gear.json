@@ -4,31 +4,45 @@
       "id": "common",
       "name": "Common",
       "color": "#adb5bd",
-      "augmentSlots": 0
+      "augmentSlots": 0,
+      "dropWeight": 1,
+      "fuseRate": 1,
+      "maxLevel": 80
     },
     {
       "id": "uncommon",
       "name": "Uncommon",
       "color": "#40c057",
-      "augmentSlots": 1
+      "augmentSlots": 1,
+      "dropWeight": 1,
+      "fuseRate": 0.5,
+      "maxLevel": 100
     },
     {
       "id": "rare",
       "name": "Rare",
       "color": "#339af0",
-      "augmentSlots": 1
+      "augmentSlots": 1,
+      "dropWeight": 1,
+      "fuseRate": 0.25,
+      "maxLevel": 115
     },
     {
       "id": "epic",
       "name": "Epic",
       "color": "#9775fa",
-      "augmentSlots": 2
+      "augmentSlots": 2,
+      "dropWeight": 1,
+      "fuseRate": 0.125,
+      "maxLevel": 125
     },
     {
       "id": "legendary",
       "name": "Legendary",
       "color": "#f59f00",
-      "augmentSlots": 3
+      "augmentSlots": 3,
+      "dropWeight": 0.05,
+      "fuseRate": 0.0625
     }
   ],
   "sets": [
@@ -253,7 +267,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 1
+      "minDepth": 1,
+      "nextTierId": "vanguard_sword_uncommon",
+      "zoneId": "whispering_woods"
     },
     {
       "id": "vanguard_armor",
@@ -269,7 +285,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_armor_uncommon"
     },
     {
       "id": "vanguard_boots",
@@ -285,7 +303,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_boots_uncommon"
     },
     {
       "id": "vanguard_gloves",
@@ -301,7 +321,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_gloves_uncommon"
     },
     {
       "id": "adept_wand",
@@ -317,7 +339,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 1
+      "minDepth": 1,
+      "nextTierId": "adept_wand_uncommon",
+      "zoneId": "whispering_woods"
     },
     {
       "id": "adept_robe",
@@ -333,7 +357,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_robe_uncommon"
     },
     {
       "id": "adept_amulet",
@@ -349,7 +375,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_amulet_uncommon"
     },
     {
       "id": "adept_ring",
@@ -365,7 +393,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_ring_uncommon"
     },
     {
       "id": "vanguard_amulet",
@@ -381,7 +411,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_amulet_uncommon"
     },
     {
       "id": "vanguard_ring",
@@ -397,7 +429,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_ring_uncommon"
     },
     {
       "id": "vanguard_charm",
@@ -413,7 +447,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_charm_uncommon"
     },
     {
       "id": "vanguard_banner",
@@ -429,7 +465,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_vanguard",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_banner_uncommon"
     },
     {
       "id": "adept_boots",
@@ -445,7 +483,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_boots_uncommon"
     },
     {
       "id": "adept_gloves",
@@ -461,7 +501,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_gloves_uncommon"
     },
     {
       "id": "adept_tome",
@@ -477,7 +519,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_tome_uncommon"
     },
     {
       "id": "adept_orb",
@@ -493,7 +537,9 @@
       ],
       "rarity": "common",
       "setId": "woodland_adept",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_orb_uncommon"
     },
     {
       "id": "lucky_charm",
@@ -578,7 +624,7 @@
       "stats": [
         {
           "statId": "might",
-          "value": 6.0
+          "value": 6
         },
         {
           "statId": "resistance",
@@ -598,7 +644,7 @@
       "stats": [
         {
           "statId": "grit",
-          "value": 6.0
+          "value": 6
         },
         {
           "statId": "staminaCap",
@@ -738,7 +784,7 @@
       "stats": [
         {
           "statId": "might",
-          "value": 14.0
+          "value": 14
         },
         {
           "statId": "critDamage",
@@ -758,7 +804,7 @@
       "stats": [
         {
           "statId": "arcana",
-          "value": 14.0
+          "value": 14
         },
         {
           "statId": "critDamage",
@@ -898,7 +944,7 @@
       "stats": [
         {
           "statId": "arcana",
-          "value": 32.0
+          "value": 32
         },
         {
           "statId": "critDamage",
@@ -922,7 +968,7 @@
       "stats": [
         {
           "statId": "willpower",
-          "value": 32.0
+          "value": 32
         },
         {
           "statId": "speed",
@@ -970,7 +1016,7 @@
       "stats": [
         {
           "statId": "willpower",
-          "value": 23.0
+          "value": 23
         },
         {
           "statId": "critDamage",
@@ -1018,7 +1064,7 @@
       "stats": [
         {
           "statId": "arcana",
-          "value": 23.0
+          "value": 23
         },
         {
           "statId": "speed",
@@ -1042,7 +1088,7 @@
       "stats": [
         {
           "statId": "willpower",
-          "value": 23.0
+          "value": 23
         },
         {
           "statId": "materialFind",
@@ -1080,6 +1126,1542 @@
       "rarity": "epic",
       "setId": "frost_sentinel",
       "minDepth": 20
+    },
+    {
+      "id": "vanguard_sword_legendary",
+      "name": "Elderheart Blade",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 74.1
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.3
+        },
+        {
+          "statId": "speed",
+          "value": 22.2
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_wand_legendary",
+      "name": "Elderheart Wand",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 74.1
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.3
+        },
+        {
+          "statId": "speed",
+          "value": 22.2
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_sword_uncommon",
+      "name": "Honed Vanguard Sword",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 5.8
+        },
+        {
+          "statId": "critDamage",
+          "value": 2.6
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_sword_rare"
+    },
+    {
+      "id": "vanguard_sword_rare",
+      "name": "Warforged Vanguard Sword",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 13.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 6.1
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_sword_epic"
+    },
+    {
+      "id": "vanguard_sword_epic",
+      "name": "Ancient Vanguard Sword",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 31.7
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.3
+        },
+        {
+          "statId": "speed",
+          "value": 9.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_sword_legendary"
+    },
+    {
+      "id": "vanguard_armor_uncommon",
+      "name": "Honed Vanguard Armor",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 5.8
+        },
+        {
+          "statId": "staminaCap",
+          "value": 2.6
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_armor_rare"
+    },
+    {
+      "id": "vanguard_armor_rare",
+      "name": "Warforged Vanguard Armor",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 13.6
+        },
+        {
+          "statId": "staminaCap",
+          "value": 6.1
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_armor_epic"
+    },
+    {
+      "id": "vanguard_armor_epic",
+      "name": "Ancient Vanguard Armor",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 31.7
+        },
+        {
+          "statId": "staminaCap",
+          "value": 14.3
+        },
+        {
+          "statId": "resistance",
+          "value": 9.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_armor_legendary"
+    },
+    {
+      "id": "vanguard_armor_legendary",
+      "name": "Elderheart Plate",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 74.1
+        },
+        {
+          "statId": "staminaCap",
+          "value": 33.3
+        },
+        {
+          "statId": "resistance",
+          "value": 22.2
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_boots_uncommon",
+      "name": "Honed Vanguard Boots",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 14
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_boots_rare"
+    },
+    {
+      "id": "vanguard_boots_rare",
+      "name": "Warforged Vanguard Boots",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_boots_epic"
+    },
+    {
+      "id": "vanguard_boots_epic",
+      "name": "Ancient Vanguard Boots",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_boots_legendary"
+    },
+    {
+      "id": "vanguard_boots_legendary",
+      "name": "Elderheart Treads",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "speed",
+          "value": 80
+        },
+        {
+          "statId": "regen",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_gloves_uncommon",
+      "name": "Honed Vanguard Gloves",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 4.2
+        },
+        {
+          "statId": "regen",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_gloves_rare"
+    },
+    {
+      "id": "vanguard_gloves_rare",
+      "name": "Warforged Vanguard Gloves",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 9.8
+        },
+        {
+          "statId": "regen",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_gloves_epic"
+    },
+    {
+      "id": "vanguard_gloves_epic",
+      "name": "Ancient Vanguard Gloves",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 22.9
+        },
+        {
+          "statId": "regen",
+          "value": 10.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_gloves_legendary"
+    },
+    {
+      "id": "vanguard_gloves_legendary",
+      "name": "Elderheart Gauntlets",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 53.3
+        },
+        {
+          "statId": "regen",
+          "value": 24
+        },
+        {
+          "statId": "staminaCap",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_amulet_uncommon",
+      "name": "Honed Vanguard Pendant",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 14
+        },
+        {
+          "statId": "grit",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_amulet_rare"
+    },
+    {
+      "id": "vanguard_amulet_rare",
+      "name": "Warforged Vanguard Pendant",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 32.7
+        },
+        {
+          "statId": "grit",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_amulet_epic"
+    },
+    {
+      "id": "vanguard_amulet_epic",
+      "name": "Ancient Vanguard Pendant",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 76.2
+        },
+        {
+          "statId": "grit",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_amulet_legendary"
+    },
+    {
+      "id": "vanguard_amulet_legendary",
+      "name": "Elderheart Pendant",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 177.8
+        },
+        {
+          "statId": "grit",
+          "value": 80
+        },
+        {
+          "statId": "regen",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_ring_uncommon",
+      "name": "Honed Vanguard Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 4.2
+        },
+        {
+          "statId": "staminaCap",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_ring_rare"
+    },
+    {
+      "id": "vanguard_ring_rare",
+      "name": "Warforged Vanguard Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 9.8
+        },
+        {
+          "statId": "staminaCap",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_ring_epic"
+    },
+    {
+      "id": "vanguard_ring_epic",
+      "name": "Ancient Vanguard Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 22.9
+        },
+        {
+          "statId": "staminaCap",
+          "value": 10.3
+        },
+        {
+          "statId": "critChance",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_ring_legendary"
+    },
+    {
+      "id": "vanguard_ring_legendary",
+      "name": "Elderheart Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 53.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 24
+        },
+        {
+          "statId": "critChance",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_charm_uncommon",
+      "name": "Honed Vanguard Charm",
+      "icon": "shield",
+      "slot": "trinket1",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 4.2
+        },
+        {
+          "statId": "fortune",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_charm_rare"
+    },
+    {
+      "id": "vanguard_charm_rare",
+      "name": "Warforged Vanguard Charm",
+      "icon": "shield",
+      "slot": "trinket1",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 9.8
+        },
+        {
+          "statId": "fortune",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_charm_epic"
+    },
+    {
+      "id": "vanguard_charm_epic",
+      "name": "Ancient Vanguard Charm",
+      "icon": "shield",
+      "slot": "trinket1",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 22.9
+        },
+        {
+          "statId": "fortune",
+          "value": 10.3
+        },
+        {
+          "statId": "materialFind",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_charm_legendary"
+    },
+    {
+      "id": "vanguard_charm_legendary",
+      "name": "Elderheart Charm",
+      "icon": "shield",
+      "slot": "trinket1",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 53.3
+        },
+        {
+          "statId": "fortune",
+          "value": 24
+        },
+        {
+          "statId": "materialFind",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_banner_uncommon",
+      "name": "Honed Vanguard Banner",
+      "icon": "flame",
+      "slot": "trinket2",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 14
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_banner_rare"
+    },
+    {
+      "id": "vanguard_banner_rare",
+      "name": "Warforged Vanguard Banner",
+      "icon": "flame",
+      "slot": "trinket2",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_banner_epic"
+    },
+    {
+      "id": "vanguard_banner_epic",
+      "name": "Ancient Vanguard Banner",
+      "icon": "flame",
+      "slot": "trinket2",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "fortune",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_banner_legendary"
+    },
+    {
+      "id": "vanguard_banner_legendary",
+      "name": "Elderheart Banner",
+      "icon": "flame",
+      "slot": "trinket2",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "speed",
+          "value": 80
+        },
+        {
+          "statId": "fortune",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_wand_uncommon",
+      "name": "Honed Adept Wand",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 5.8
+        },
+        {
+          "statId": "critDamage",
+          "value": 2.6
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_wand_rare"
+    },
+    {
+      "id": "adept_wand_rare",
+      "name": "Warforged Adept Wand",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 13.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 6.1
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_wand_epic"
+    },
+    {
+      "id": "adept_wand_epic",
+      "name": "Ancient Adept Wand",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 31.7
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.3
+        },
+        {
+          "statId": "speed",
+          "value": 9.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_wand_legendary"
+    },
+    {
+      "id": "adept_robe_uncommon",
+      "name": "Honed Adept Robe",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 5.8
+        },
+        {
+          "statId": "manaCap",
+          "value": 2.6
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_robe_rare"
+    },
+    {
+      "id": "adept_robe_rare",
+      "name": "Warforged Adept Robe",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 13.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 6.1
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_robe_epic"
+    },
+    {
+      "id": "adept_robe_epic",
+      "name": "Ancient Adept Robe",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 31.7
+        },
+        {
+          "statId": "manaCap",
+          "value": 14.3
+        },
+        {
+          "statId": "regen",
+          "value": 9.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_robe_legendary"
+    },
+    {
+      "id": "adept_robe_legendary",
+      "name": "Elderheart Vestments",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 74.1
+        },
+        {
+          "statId": "manaCap",
+          "value": 33.3
+        },
+        {
+          "statId": "regen",
+          "value": 22.2
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_amulet_uncommon",
+      "name": "Honed Adept Amulet",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 14
+        },
+        {
+          "statId": "willpower",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_amulet_rare"
+    },
+    {
+      "id": "adept_amulet_rare",
+      "name": "Warforged Adept Amulet",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "willpower",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_amulet_epic"
+    },
+    {
+      "id": "adept_amulet_epic",
+      "name": "Ancient Adept Amulet",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "willpower",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_amulet_legendary"
+    },
+    {
+      "id": "adept_amulet_legendary",
+      "name": "Elderheart Amulet",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "willpower",
+          "value": 80
+        },
+        {
+          "statId": "regen",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_ring_uncommon",
+      "name": "Honed Adept Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 4.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_ring_rare"
+    },
+    {
+      "id": "adept_ring_rare",
+      "name": "Warforged Adept Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 9.8
+        },
+        {
+          "statId": "manaCap",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_ring_epic"
+    },
+    {
+      "id": "adept_ring_epic",
+      "name": "Ancient Adept Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 22.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 10.3
+        },
+        {
+          "statId": "critChance",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_ring_legendary"
+    },
+    {
+      "id": "adept_ring_legendary",
+      "name": "Elderheart Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 53.3
+        },
+        {
+          "statId": "manaCap",
+          "value": 24
+        },
+        {
+          "statId": "critChance",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_boots_uncommon",
+      "name": "Honed Adept Sandals",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 14
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_boots_rare"
+    },
+    {
+      "id": "adept_boots_rare",
+      "name": "Warforged Adept Sandals",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_boots_epic"
+    },
+    {
+      "id": "adept_boots_epic",
+      "name": "Ancient Adept Sandals",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_boots_legendary"
+    },
+    {
+      "id": "adept_boots_legendary",
+      "name": "Elderheart Sandals",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "speed",
+          "value": 80
+        },
+        {
+          "statId": "regen",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_gloves_uncommon",
+      "name": "Honed Adept Mitts",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 4.2
+        },
+        {
+          "statId": "regen",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_gloves_rare"
+    },
+    {
+      "id": "adept_gloves_rare",
+      "name": "Warforged Adept Mitts",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 9.8
+        },
+        {
+          "statId": "regen",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_gloves_epic"
+    },
+    {
+      "id": "adept_gloves_epic",
+      "name": "Ancient Adept Mitts",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 22.9
+        },
+        {
+          "statId": "regen",
+          "value": 10.3
+        },
+        {
+          "statId": "manaCap",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_gloves_legendary"
+    },
+    {
+      "id": "adept_gloves_legendary",
+      "name": "Elderheart Mitts",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 53.3
+        },
+        {
+          "statId": "regen",
+          "value": 24
+        },
+        {
+          "statId": "manaCap",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_tome_uncommon",
+      "name": "Honed Adept Tome",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 4.2
+        },
+        {
+          "statId": "fortune",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_tome_rare"
+    },
+    {
+      "id": "adept_tome_rare",
+      "name": "Warforged Adept Tome",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 9.8
+        },
+        {
+          "statId": "fortune",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_tome_epic"
+    },
+    {
+      "id": "adept_tome_epic",
+      "name": "Ancient Adept Tome",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 22.9
+        },
+        {
+          "statId": "fortune",
+          "value": 10.3
+        },
+        {
+          "statId": "materialFind",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_tome_legendary"
+    },
+    {
+      "id": "adept_tome_legendary",
+      "name": "Elderheart Tome",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 53.3
+        },
+        {
+          "statId": "fortune",
+          "value": 24
+        },
+        {
+          "statId": "materialFind",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_orb_uncommon",
+      "name": "Honed Adept Orb",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 14
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_orb_rare"
+    },
+    {
+      "id": "adept_orb_rare",
+      "name": "Warforged Adept Orb",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_orb_epic"
+    },
+    {
+      "id": "adept_orb_epic",
+      "name": "Ancient Adept Orb",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "fortune",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_orb_legendary"
+    },
+    {
+      "id": "adept_orb_legendary",
+      "name": "Elderheart Orb",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "speed",
+          "value": 80
+        },
+        {
+          "statId": "fortune",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
     }
   ]
 }

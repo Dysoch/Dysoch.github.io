@@ -46,6 +46,8 @@ function PerkRow({ perk, qty }: { perk: PerkDef; qty: BuyQty }) {
   )
 }
 
+type PrestigeLayer = 'recall' | 'ascend'
+
 export default function PrestigePage() {
   const state = useGameStore((s) => s)
   const recall = useGameStore((s) => s.recall)
@@ -55,72 +57,107 @@ export default function PrestigePage() {
 
   const recallEchoes = computeRecallEchoes(state)
   const ascendSigils = computeAscendSigils(state)
+  // Ascend is meaningless before a first Recall (it needs Echoes, which only Recall grants), so its
+  // layer stays hidden until then — recallCount resets on Ascend, so lifetime.recalls is what's checked.
+  const ascendUnlocked = (state.lifetime.recalls ?? 0) > 0
+  const [layer, setLayer] = useState<PrestigeLayer>('recall')
+  const activeLayer = layer === 'ascend' && !ascendUnlocked ? 'recall' : layer
 
   return (
-    <div style={{ padding: '24px', maxWidth: '720px' }}>
-      <p className="text-body-secondary small">
+    <div style={{ padding: '24px' }}>
+      <p className="text-body-secondary small" style={{ maxWidth: '900px' }}>
         Recall resets your depth, stats, and ability ranks in exchange for <strong>Echoes</strong> — the deeper you got, the more you earn.
         Ascend resets your Echoes and Echo perks for <strong>Sigils</strong>, based on every Echo earned since your last Ascend.
         Gear, inventory, discoveries, zone unlocks, and learned augments are always kept.
       </p>
 
-      <div className="d-flex gap-3 mb-3">
-        <div className="hud-chip"><span className="text-body-secondary">Echoes</span> {formatNumber(state.echoes)}</div>
-        <div className="hud-chip"><span className="text-body-secondary">Sigils</span> {formatNumber(state.sigils)}</div>
-      </div>
-
-      <div className="panel p-3 mb-3">
-        <div className="fw-bold">Recall</div>
-        <div className="small text-body-secondary">Recalls this Ascension: {state.recallCount} · Stat gain per train: ×{gain.toFixed(2)}</div>
-        {canRecall(state) ? (
-          <div className="small mb-2">Recalling now grants <strong>{formatNumber(recallEchoes)} Echoes</strong>.</div>
-        ) : (
-          <div className="small mb-2 text-body-secondary">Reach depth {recallRequiredDepth()} in any zone to Recall.</div>
-        )}
+      <div className="d-flex gap-2 mb-3">
         <button
           type="button"
-          className="btn btn-sm btn-outline-warning"
-          disabled={!canRecall(state)}
-          onClick={() => {
-            if (confirm(`Recall now for ${formatNumber(recallEchoes)} Echoes? This resets depth, stats, and ability ranks.`)) recall()
-          }}
+          className={`btn btn-sm ${activeLayer === 'recall' ? 'btn-warning' : 'btn-outline-secondary'}`}
+          onClick={() => setLayer('recall')}
         >
-          Recall
+          Recall <span className="text-body-secondary">· {formatNumber(state.echoes)} Echoes</span>
         </button>
-      </div>
-
-      <div className="panel p-3 mb-3">
-        <div className="fw-bold">Ascend</div>
-        <div className="small text-body-secondary">
-          Ascensions: {state.ascendCount} · Echoes earned this Ascension: {formatNumber(state.echoesEarned)}
-        </div>
-        {canAscend(state) ? (
-          <div className="small mb-2">Ascending now grants <strong>{formatNumber(ascendSigils)} Sigils</strong>.</div>
-        ) : (
-          <div className="small mb-2 text-body-secondary">Earn {formatNumber(ascendRequiredEchoes())} Echoes in total to Ascend.</div>
+        {ascendUnlocked && (
+          <button
+            type="button"
+            className={`btn btn-sm ${activeLayer === 'ascend' ? 'btn-danger' : 'btn-outline-secondary'}`}
+            onClick={() => setLayer('ascend')}
+          >
+            Ascend <span className="text-body-secondary">· {formatNumber(state.sigils)} Sigils</span>
+          </button>
         )}
-        <button
-          type="button"
-          className="btn btn-sm btn-outline-danger"
-          disabled={!canAscend(state)}
-          onClick={() => {
-            if (confirm(`Ascend now for ${formatNumber(ascendSigils)} Sigils? This also resets your Echoes and Echo perks.`)) ascend()
-          }}
-        >
-          Ascend
-        </button>
       </div>
 
-      <QtySelector value={perkQty} onChange={setPerkQty} />
+      <div className="inventory-split">
+        {activeLayer === 'recall' ? (
+          <>
+            <div className="panel p-3" style={{ height: 'fit-content' }}>
+              <div className="fw-bold">Recall</div>
+              <div className="small text-body-secondary">Recalls this Ascension: {state.recallCount} · Stat gain per train: ×{gain.toFixed(2)}</div>
+              {canRecall(state) ? (
+                <div className="small mb-2">Recalling now grants <strong>{formatNumber(recallEchoes)} Echoes</strong>.</div>
+              ) : (
+                <div className="small mb-2 text-body-secondary">Reach depth {recallRequiredDepth()} in any zone to Recall.</div>
+              )}
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-warning"
+                disabled={!canRecall(state)}
+                onClick={() => {
+                  if (confirm(`Recall now for ${formatNumber(recallEchoes)} Echoes? This resets depth, stats, and ability ranks.`)) recall()
+                }}
+              >
+                Recall
+              </button>
+            </div>
 
-      <div className="panel p-3 mb-3">
-        <div className="fw-bold mb-1">Echo Perks <span className="text-body-secondary small fw-normal">· reset on Ascend</span></div>
-        {PERKS.filter((p) => p.currency === 'echoes').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
-      </div>
+            <div>
+              <QtySelector value={perkQty} onChange={setPerkQty} />
+              <div className="panel p-3 mt-3">
+                <div className="fw-bold mb-1">Echo Perks <span className="text-body-secondary small fw-normal">· reset on Ascend</span></div>
+                <div className="perk-grid">
+                  {PERKS.filter((p) => p.currency === 'echoes').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="panel p-3" style={{ height: 'fit-content' }}>
+              <div className="fw-bold">Ascend</div>
+              <div className="small text-body-secondary">
+                Ascensions: {state.ascendCount} · Echoes earned this Ascension: {formatNumber(state.echoesEarned)}
+              </div>
+              {canAscend(state) ? (
+                <div className="small mb-2">Ascending now grants <strong>{formatNumber(ascendSigils)} Sigils</strong>.</div>
+              ) : (
+                <div className="small mb-2 text-body-secondary">Earn {formatNumber(ascendRequiredEchoes())} Echoes in total to Ascend.</div>
+              )}
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-danger"
+                disabled={!canAscend(state)}
+                onClick={() => {
+                  if (confirm(`Ascend now for ${formatNumber(ascendSigils)} Sigils? This also resets your Echoes and Echo perks.`)) ascend()
+                }}
+              >
+                Ascend
+              </button>
+            </div>
 
-      <div className="panel p-3">
-        <div className="fw-bold mb-1">Sigil Perks <span className="text-body-secondary small fw-normal">· permanent</span></div>
-        {PERKS.filter((p) => p.currency === 'sigils').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
+            <div>
+              <QtySelector value={perkQty} onChange={setPerkQty} />
+              <div className="panel p-3 mt-3">
+                <div className="fw-bold mb-1">Sigil Perks <span className="text-body-secondary small fw-normal">· permanent</span></div>
+                <div className="perk-grid">
+                  {PERKS.filter((p) => p.currency === 'sigils').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

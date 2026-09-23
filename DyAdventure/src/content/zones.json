@@ -44,7 +44,23 @@
       "lucky_charm",
       "tattered_pouch",
       "woods_warden_fang",
-      "spider_silk_cloak"
+      "spider_silk_cloak",
+      "vanguard_sword_legendary",
+      "adept_wand_legendary",
+      "vanguard_armor_legendary",
+      "vanguard_boots_legendary",
+      "vanguard_gloves_legendary",
+      "vanguard_amulet_legendary",
+      "vanguard_ring_legendary",
+      "vanguard_charm_legendary",
+      "vanguard_banner_legendary",
+      "adept_robe_legendary",
+      "adept_amulet_legendary",
+      "adept_ring_legendary",
+      "adept_boots_legendary",
+      "adept_gloves_legendary",
+      "adept_tome_legendary",
+      "adept_orb_legendary"
     ],
     "echoMultiplier": 1,
     "unlocksZoneId": "sunken_crypt",
@@ -61,6 +77,10 @@
       {
         "materialId": "stone",
         "chance": 0.15
+      },
+      {
+        "materialId": "crystals",
+        "chance": 0.1
       }
     ]
   },

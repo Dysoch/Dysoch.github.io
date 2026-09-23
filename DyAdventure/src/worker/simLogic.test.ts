@@ -11,6 +11,12 @@ import {
   computeCraftCost,
   computeCraftCostN,
   computeMaxCraftCount,
+  craftItem,
+  computeReforgeCost,
+  computeReforgeDepthRequirement,
+  reforgeItem,
+  pickWeighted,
+  effectiveGearStats,
   computePerkCost,
   computePerkCostN,
   computeMaxPerkCount,
@@ -39,7 +45,7 @@ import {
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
-import type { AbilityDef, PerkEffect, SimState } from '../types'
+import type { AbilityDef, GearCatalogItemDef, PerkEffect, RarityDef, SimState } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
 
@@ -266,6 +272,191 @@ describe('buy-N cost math is self-consistent', () => {
       materials: Object.fromEntries(totalN.materials.map((m) => [m.materialId, m.amount])),
     }
     expect(computeMaxCraftCount(state, catalogId)).toBe(N)
+  })
+})
+
+describe('reforge: jumping an owned item to its next rarity tier', () => {
+  const baseId = 'vanguard_sword'
+  const uncommonId = 'vanguard_sword_uncommon'
+  const legendaryId = 'vanguard_sword_legendary'
+
+  test('computeReforgeCost matches the target tier craft cost, and is null once there is no further tier', () => {
+    const cost = computeReforgeCost(baseId)
+    expect(cost).not.toBeNull()
+    expect(cost!.focus).toBe(computeCraftCost(uncommonId).focus)
+    expect(computeReforgeCost(legendaryId)).toBeNull()
+  })
+
+  test('reforging an inventory item deducts the cost, repoints catalogId, and resets level, once depth is reached', () => {
+    const cost = computeReforgeCost(baseId)!
+    const depthReq = computeReforgeDepthRequirement(baseId)!
+    const item = { instanceId: 'test_inv', catalogId: baseId, level: 7, augmentIds: [] }
+    const state: SimState = {
+      ...createInitialState(),
+      focus: cost.focus,
+      materials: Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])),
+      maxDepthByZone: { [depthReq.zoneId]: depthReq.depth },
+      inventory: [item],
+    }
+    const { state: next, event } = reforgeItem(state, 'test_inv', Date.now())
+    expect(next.inventory[0]).toEqual({ instanceId: 'test_inv', catalogId: uncommonId, level: 1, augmentIds: [] })
+    expect(next.focus).toBe(0)
+    for (const m of cost.materials) expect(next.materials[m.materialId]).toBe(0)
+    expect(next.discoveredItemIds).toContain(uncommonId)
+    expect(event?.kind).toBe('reforge')
+  })
+
+  test('reforging an equipped item upgrades it in place, once depth is reached', () => {
+    const cost = computeReforgeCost(baseId)!
+    const depthReq = computeReforgeDepthRequirement(baseId)!
+    const item = { instanceId: 'test_eq', catalogId: baseId, level: 3, augmentIds: [] }
+    const state: SimState = {
+      ...createInitialState(),
+      focus: cost.focus,
+      materials: Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])),
+      maxDepthByZone: { [depthReq.zoneId]: depthReq.depth },
+      gear: { ...createInitialState().gear, weapon: item },
+    }
+    const { state: next } = reforgeItem(state, 'test_eq', Date.now())
+    expect(next.gear.weapon).toEqual({ instanceId: 'test_eq', catalogId: uncommonId, level: 1, augmentIds: [] })
+  })
+
+  test('reforge is a no-op when materials or focus are short', () => {
+    const depthReq = computeReforgeDepthRequirement(baseId)!
+    const item = { instanceId: 'test_poor', catalogId: baseId, level: 1, augmentIds: [] }
+    const state: SimState = {
+      ...createInitialState(),
+      focus: 0,
+      materials: {},
+      maxDepthByZone: { [depthReq.zoneId]: depthReq.depth },
+      inventory: [item],
+    }
+    const { state: next, event } = reforgeItem(state, 'test_poor', Date.now())
+    expect(next).toBe(state)
+    expect(event).toBeNull()
+  })
+
+  test('reforge is a no-op for an item with no next tier defined', () => {
+    const item = { instanceId: 'test_maxed', catalogId: legendaryId, level: 1, augmentIds: [] }
+    const state: SimState = {
+      ...createInitialState(),
+      focus: 1e9,
+      materials: { wood: 1e9, stone: 1e9, leather: 1e9, crystals: 1e9 },
+      maxDepthByZone: { whispering_woods: 1000 },
+      inventory: [item],
+    }
+    const { state: next, event } = reforgeItem(state, 'test_maxed', Date.now())
+    expect(next).toBe(state)
+    expect(event).toBeNull()
+  })
+
+  test('regression: reforge is refused below the target tier\'s depth requirement, even with unlimited materials and focus', () => {
+    const depthReq = computeReforgeDepthRequirement(baseId)!
+    const item = { instanceId: 'test_shallow', catalogId: baseId, level: 1, augmentIds: [] }
+    const state: SimState = {
+      ...createInitialState(),
+      focus: 1e9,
+      materials: { wood: 1e9, stone: 1e9, leather: 1e9, crystals: 1e9 },
+      maxDepthByZone: { [depthReq.zoneId]: depthReq.depth - 1 },
+      inventory: [item],
+    }
+    const { state: next, event } = reforgeItem(state, 'test_shallow', Date.now())
+    expect(next).toBe(state)
+    expect(event).toBeNull()
+  })
+
+  const CHAIN_BASE_IDS = [
+    'vanguard_sword', 'vanguard_armor', 'vanguard_boots', 'vanguard_gloves',
+    'vanguard_amulet', 'vanguard_ring', 'vanguard_charm', 'vanguard_banner',
+    'adept_wand', 'adept_robe', 'adept_amulet', 'adept_ring',
+    'adept_boots', 'adept_gloves', 'adept_tome', 'adept_orb',
+  ]
+  const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary']
+
+  test('chain integrity: every zone-1 item chains common -> uncommon -> rare -> epic -> legendary with no dangling nextTierId', () => {
+    const byId = Object.fromEntries((gearData.items as GearCatalogItemDef[]).map((i) => [i.id, i]))
+    for (const baseId of CHAIN_BASE_IDS) {
+      let current: GearCatalogItemDef | undefined = byId[baseId]
+      const seenRarities: string[] = []
+      for (let i = 0; i < RARITY_ORDER.length; i++) {
+        expect(current, `${baseId}: chain ended early at "${seenRarities.join(' -> ')}"`).toBeDefined()
+        seenRarities.push(current!.rarity)
+        current = current!.nextTierId ? byId[current!.nextTierId!] : undefined
+      }
+      expect(seenRarities, baseId).toEqual(RARITY_ORDER)
+      expect(current, `${baseId}: legendary entry should have no further nextTierId`).toBeUndefined()
+    }
+  })
+})
+
+describe('weighted loot pick (regression: a low-dropWeight tier like legendary must stay rare, not uniform-odds)', () => {
+  test('a low-weight entry is picked far less often than a weight-1 entry over many trials', () => {
+    const entries = ['common', 'legendary']
+    const weight = (id: string) => (id === 'legendary' ? 0.05 : 1)
+    const trials = 5000
+    let legendaryCount = 0
+    for (let i = 0; i < trials; i++) {
+      if (pickWeighted(entries, weight) === 'legendary') legendaryCount++
+    }
+    const expectedFraction = 0.05 / 1.05
+    const observedFraction = legendaryCount / trials
+    expect(observedFraction).toBeGreaterThan(expectedFraction * 0.4)
+    expect(observedFraction).toBeLessThan(expectedFraction * 2.5)
+  })
+})
+
+describe('fuse rate: duplicate pickups level up slower at higher rarities (regression: shallow-depth material farming should not out-level a deep push)', () => {
+  function levelAfterTwoCrafts(catalogId: string): number {
+    const unit = computeCraftCost(catalogId)
+    let state: SimState = {
+      ...createInitialState(),
+      discoveredItemIds: [catalogId],
+      focus: unit.focus * 10,
+      materials: Object.fromEntries(unit.materials.map((m) => [m.materialId, m.amount * 10])),
+    }
+    state = craftItem(state, catalogId, Date.now(), 1).state
+    state = craftItem(state, catalogId, Date.now(), 1).state
+    return state.inventory.find((i) => i.catalogId === catalogId)!.level
+  }
+
+  test('a common item (fuseRate 1) gains a full level per duplicate; an epic item (fuseRate 0.125) gains a fraction', () => {
+    expect(levelAfterTwoCrafts('vanguard_boots')).toBeCloseTo(2, 5)
+    expect(levelAfterTwoCrafts('vanguard_sword_epic')).toBeCloseTo(1.125, 5)
+  })
+})
+
+describe('gear level cap (regression: a maxed-out lower rarity must never outscale a fresh copy of the next tier, or reforging is a net downgrade)', () => {
+  test('level growth stops at the rarity maxLevel no matter how many duplicates are fused in', () => {
+    const catalogId = 'vanguard_boots' // common
+    const maxLevel = (gearData.rarities as RarityDef[]).find((r) => r.id === 'common')!.maxLevel!
+    const cost = computeCraftCostN(catalogId, 1000)
+    const state: SimState = {
+      ...createInitialState(),
+      discoveredItemIds: [catalogId],
+      focus: cost.focus,
+      materials: Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])),
+    }
+    const { state: next } = craftItem(state, catalogId, Date.now(), 1000)
+    expect(next.inventory.find((i) => i.catalogId === catalogId)!.level).toBe(maxLevel)
+  })
+
+  test('a maxed-out item of every capped rarity is still weaker than a fresh level-1 copy of the next tier up', () => {
+    const chain: { catalogId: string; rarity: string }[] = [
+      { catalogId: 'vanguard_sword', rarity: 'common' },
+      { catalogId: 'vanguard_sword_uncommon', rarity: 'uncommon' },
+      { catalogId: 'vanguard_sword_rare', rarity: 'rare' },
+      { catalogId: 'vanguard_sword_epic', rarity: 'epic' },
+      { catalogId: 'vanguard_sword_legendary', rarity: 'legendary' },
+    ]
+    const rarities = Object.fromEntries((gearData.rarities as RarityDef[]).map((r) => [r.id, r]))
+    for (let i = 0; i < chain.length - 1; i++) {
+      const maxLevel = rarities[chain[i].rarity].maxLevel!
+      const maxedLower = { instanceId: 'a', catalogId: chain[i].catalogId, level: maxLevel, augmentIds: [] }
+      const freshNext = { instanceId: 'b', catalogId: chain[i + 1].catalogId, level: 1, augmentIds: [] }
+      const lowerMight = effectiveGearStats(maxedLower).find((s) => s.statId === 'might')!.value
+      const nextMight = effectiveGearStats(freshNext).find((s) => s.statId === 'might')!.value
+      expect(nextMight, `${chain[i].catalogId} (Lv.${maxLevel}) should be weaker than ${chain[i + 1].catalogId} (Lv.1)`).toBeGreaterThan(lowerMight)
+    }
   })
 })
 
