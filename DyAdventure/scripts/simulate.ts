@@ -13,6 +13,7 @@
  *   npm run sim -- --ascend threshold        # also Ascend, hoarding Echoes first (see --ascend never/asap)
  *   npm run sim -- --hours 14 --recall threshold > before.log   # keep a report to diff against
  *   npm run sim -- --hours 500 --auto-zone     # push through zone gate bosses, switching zones as they unlock
+ *   npm run sim -- --hours 14 --automation     # switch on each autobuyer as it unlocks (reports unlock times)
  *
  * Checkpoints — testing a single zone transition (e.g. zone 5→6) means replaying every zone
  * before it, which gets very expensive as the chain grows. --checkpoint-dir writes the state to
@@ -51,11 +52,17 @@ import {
   computeReforgeCost,
   computeReforgeDepthRequirement,
   getGearCatalogItem,
+  fuseAll,
+  computeAllTimeDepth,
+  setAutomation,
+  isAutomationUnlocked,
+  getMilestone,
+  describeMilestoneReward,
 } from '../src/worker/simLogic.ts'
 import statsData from '../src/content/stats.json' with { type: 'json' }
 import abilitiesData from '../src/content/abilities.json' with { type: 'json' }
 import zonesData from '../src/content/zones.json' with { type: 'json' }
-import type { AbilityDef, SimState, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
+import type { AbilityDef, AutomationFeature, SimState, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
 
 type RecallPolicy = 'never' | 'threshold' | 'asap'
 type AscendPolicy = 'never' | 'threshold' | 'asap'
@@ -68,6 +75,7 @@ function parseArgs(): {
   autoZone: boolean
   checkpointDir: string | null
   loadState: string | null
+  automation: boolean
 } {
   const args = process.argv.slice(2)
   let hours = 6
@@ -77,6 +85,7 @@ function parseArgs(): {
   let autoZone = false
   let checkpointDir: string | null = null
   let loadState: string | null = null
+  let automation = false
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
@@ -85,8 +94,9 @@ function parseArgs(): {
     if (args[i] === '--auto-zone') autoZone = true
     if (args[i] === '--checkpoint-dir') checkpointDir = args[++i]
     if (args[i] === '--load-state') loadState = args[++i]
+    if (args[i] === '--automation') automation = true
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, automation }
 }
 
 const {
@@ -97,6 +107,7 @@ const {
   autoZone: AUTO_ZONE,
   checkpointDir: CHECKPOINT_DIR,
   loadState: LOAD_STATE_PATH,
+  automation: USE_AUTOMATION,
 } = parseArgs()
 if (CHECKPOINT_DIR) fs.mkdirSync(CHECKPOINT_DIR, { recursive: true })
 const STATS = statsData as StatDef[]
@@ -144,6 +155,10 @@ const bossFirstReachedAt: Record<string, number> = {}
 const bossFaintCounts: Record<string, number> = {}
 const bossDefeatLog: { minute: number; zoneId: string; depth: number; minutesStuck: number; faints: number }[] = []
 const zoneUnlockLog: { minute: number; zoneId: string }[] = []
+// --automation: the bot switches on each autobuyer as soon as it unlocks and stops doing that part by hand
+const AUTOMATION_FEATURES: AutomationFeature[] = ['autoTrain', 'autoAbilities', 'autoFuse']
+const automationUnlockedAt: Partial<Record<AutomationFeature, number>> = {}
+const milestoneLog: { minute: number; id: string }[] = []
 function bossKey(zoneId: string, depth: number): string {
   return `${zoneId}:${depth}`
 }
@@ -168,8 +183,10 @@ function decide() {
     for (let i = 0; i < spendTargets.length; i++) {
       const target = spendTargets[spendIdx]
       spendIdx = (spendIdx + 1) % spendTargets.length
+      if (USE_AUTOMATION && state.automation.autoTrain && target.kind === 'stat' && isAutomationUnlocked(state, 'autoTrain')) continue
+      if (USE_AUTOMATION && state.automation.autoAbilities && target.kind === 'ability' && isAutomationUnlocked(state, 'autoAbilities')) continue
       if (target.kind === 'stat') {
-        const level = state.stats[target.id as StatId]
+        const level = state.statLevels[target.id as StatId]
         const cost = computeTrainCost(target.id as StatId, level)
         if (state.focus >= cost) {
           state = trainStat(state, target.id as StatId)
@@ -227,7 +244,7 @@ function spendReforges(minute: number) {
       const cost = computeReforgeCost(item.catalogId)
       const depthReq = computeReforgeDepthRequirement(item.catalogId)
       if (!cost || !depthReq) continue
-      const depthReached = state.maxDepthByZone[depthReq.zoneId] ?? 0
+      const depthReached = computeAllTimeDepth(state, depthReq.zoneId)
       if (depthReached < depthReq.depth) continue
       const affordable = state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
       if (!affordable) continue
@@ -274,6 +291,7 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
       const key = bossKey(state.currentZoneId, nextBossDepth(zone, event.checkpointDepth))
       bossFaintCounts[key] = (bossFaintCounts[key] ?? 0) + 1
     }
+    if (event.kind === 'milestone') milestoneLog.push({ minute: Math.round(t / 60000), id: event.milestoneId })
     if (event.kind === 'zoneUnlocked') {
       zoneUnlockLog.push({ minute: Math.round(t / 60000), zoneId: event.zoneId })
       process.stderr.write(`[live] t=${(t / 60000).toFixed(1)}min zone unlocked: ${event.zoneId}\n`)
@@ -302,6 +320,14 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
   msSinceDecision += TICK_MS
   if (msSinceDecision >= DECISION_INTERVAL_MS) {
     msSinceDecision = 0
+    if (USE_AUTOMATION) {
+      state = setAutomation(state, { autoTrain: true, autoAbilities: true, duplicateMode: 'fuse' })
+      for (const feature of AUTOMATION_FEATURES) {
+        if (automationUnlockedAt[feature] === undefined && isAutomationUnlocked(state, feature)) automationUnlockedAt[feature] = Math.round(t / 60000)
+      }
+    }
+    // Duplicates wait as pending levels until fused (auto-fuse is a later unlock); a diligent player fuses often
+    state = fuseAll(state, now).state
     decide()
     spendPerks()
     spendReforges(Math.round(t / 60000))
@@ -426,10 +452,24 @@ for (const zone of ZONES) {
   }
 }
 
+if (USE_AUTOMATION) {
+  console.log('\n--- Automation unlocks ---')
+  for (const feature of AUTOMATION_FEATURES) console.log(`  ${feature}: ${automationUnlockedAt[feature] !== undefined ? `minute ${automationUnlockedAt[feature]}` : 'NOT UNLOCKED'}`)
+}
+
+if (milestoneLog.length > 0) {
+  console.log('\n--- Milestones ---')
+  console.log('minute\tmilestone\treward')
+  for (const m of milestoneLog) {
+    const { track, tierIndex } = getMilestone(m.id)
+    console.log(`${m.minute}\t${track.tiers[tierIndex].name}\t${describeMilestoneReward(track, tierIndex)}`)
+  }
+}
+
 console.log('\n--- Final ability ranks ---')
 for (const a of ABILITIES) console.log(`  ${a.id}: rank ${state.abilities[a.id]?.rank ?? 0}`)
 console.log('\n--- Final stat levels ---')
-for (const s of STATS) console.log(`  ${s.id}: ${state.stats[s.id as StatId].toFixed(1)}`)
+for (const s of STATS) console.log(`  ${s.id}: ${state.stats[s.id as StatId].toFixed(1)} (trained ${state.statLevels[s.id as StatId]}×)`)
 
 console.log(`\nTotal Recalls: ${recallCount}`)
 console.log(`Total lifetime Echoes earned: ${Math.round(state.lifetime.echoesEarnedTotal ?? 0)}`)

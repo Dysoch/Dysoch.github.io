@@ -5,6 +5,8 @@ import augmentsData from '../content/augments.json'
 import zonesData from '../content/zones.json'
 import prestigeData from '../content/prestige.json'
 import materialsData from '../content/materials.json'
+import automationData from '../content/automation.json'
+import milestonesData from '../content/milestones.json'
 import {
   BASE_HP_CAP,
   DEPTH_CLEARS_MAX,
@@ -19,6 +21,8 @@ import {
 import type {
   AbilityDef,
   AugmentDef,
+  AutomationFeature,
+  AutomationSettings,
   CombatEvent,
   CurrentMonster,
   DepthMode,
@@ -27,6 +31,8 @@ import type {
   GearSlot,
   GearStatDef,
   MaterialDef,
+  MilestoneTrack,
+  OfflineSummary,
   PerkDef,
   PerkEffect,
   PrimaryStat,
@@ -50,6 +56,12 @@ const PERKS = prestigeData.perks as PerkDef[]
 const MATERIALS = materialsData.materials as MaterialDef[]
 const SLOT_MATERIALS = materialsData.slotMaterials as Record<GearSlot, [string, string]>
 const CRAFT_COSTS = materialsData.craftCostByRarity as Record<string, { materials: number; focus: number }>
+const IMBUE_CONFIG = materialsData.imbue
+const MILESTONE_TRACKS = milestonesData.tracks as MilestoneTrack[]
+/** Reward per reached milestone id ("trackId:tierIndex"), for perkBonus */
+const MILESTONE_REWARDS = new Map(
+  MILESTONE_TRACKS.flatMap((track) => track.tiers.map((tier, i) => [milestoneId(track, i), { effect: track.effect, value: tier.value }] as const)),
+)
 const RECALL_CONFIG = prestigeData.recall
 const ASCEND_CONFIG = prestigeData.ascend
 // Boss Power: a permanent (never reset by Recall or Ascend) damage multiplier driven by the
@@ -155,6 +167,34 @@ export function computeReforgeDepthRequirement(catalogId: string): { zoneId: str
   return { zoneId: targetDef.zoneId ?? '', depth: targetDef.minDepth }
 }
 
+// Reforge chains: each item's previous tier (the item whose nextTierId points at it)
+const PREV_TIER_ID = new Map<string, string>(GEAR_ITEMS.filter((i) => i.nextTierId).map((i) => [i.nextTierId!, i.id]))
+
+/** Every rarity tier of an item's reforge line, lowest first (just [catalogId] for items outside a chain). */
+export function getTierChain(catalogId: string): string[] {
+  let root = catalogId
+  while (PREV_TIER_ID.has(root)) root = PREV_TIER_ID.get(root)!
+  const chain = [root]
+  while (getGearCatalogItem(chain[chain.length - 1]).nextTierId) chain.push(getGearCatalogItem(chain[chain.length - 1]).nextTierId!)
+  return chain
+}
+
+/**
+ * Level gained on `target` per copy of `source` fused into it. Same item: the rarity's fuseRate.
+ * A lower tier of the same line merging into an owned higher tier: the target's fuseRate scaled by
+ * the ratio of their craft Focus costs — so crafting the cheap tier to feed the expensive one is
+ * exactly break-even with crafting the expensive one directly (no crafting arbitrage).
+ */
+export function computeFuseRate(sourceCatalogId: string, targetCatalogId: string): number {
+  const target = getGearCatalogItem(targetCatalogId)
+  const targetRate = getRarityDef(target.rarity).fuseRate ?? 1
+  if (sourceCatalogId === targetCatalogId) return targetRate
+  const source = getGearCatalogItem(sourceCatalogId)
+  const sourceFocus = (CRAFT_COSTS[source.rarity] ?? CRAFT_COSTS.common).focus
+  const targetFocus = (CRAFT_COSTS[target.rarity] ?? CRAFT_COSTS.common).focus
+  return targetRate * (sourceFocus / targetFocus)
+}
+
 /** Items the player can craft: discovered, and not a boss-only unique. */
 export function listCraftableItems(state: SimState): GearCatalogItemDef[] {
   return GEAR_ITEMS.filter((i) => !i.bossOnly && state.discoveredItemIds.includes(i.id))
@@ -183,20 +223,62 @@ export function computeMaxCraftCount(state: SimState, catalogId: string): number
     const have = state.materials[m.materialId] ?? 0
     max = Math.min(max, Math.floor(have / m.amount))
   }
-  return Math.max(0, max)
+  // Never craft copies the owned item can't absorb (they would only be salvaged back at a loss)
+  return Math.max(0, Math.min(max, computeFuseRoomCopies(state, catalogId)))
 }
 
 export function listPerks(): PerkDef[] {
   return PERKS
 }
 
-/** Sum of every owned perk's bonus for one effect. */
+/** Sum of every owned perk's bonus for one effect, plus every reached milestone's reward for it. */
 export function perkBonus(state: SimState, effect: PerkEffect): number {
   let total = 0
   for (const perk of PERKS) {
     if (perk.effect === effect) total += (state.perkLevels[perk.id] ?? 0) * perk.perLevel
   }
+  for (const id of state.milestonesReached) {
+    const reward = MILESTONE_REWARDS.get(id)
+    if (reward?.effect === effect) total += reward.value
+  }
   return total
+}
+
+// --- Milestones ---------------------------------------------------------------------------------
+
+export function milestoneId(track: MilestoneTrack, tierIndex: number): string {
+  return `${track.id}:${tierIndex}`
+}
+
+export function listMilestoneTracks(): MilestoneTrack[] {
+  return MILESTONE_TRACKS
+}
+
+export function getMilestone(id: string): { track: MilestoneTrack; tierIndex: number } {
+  const [trackId, index] = id.split(':')
+  const track = MILESTONE_TRACKS.find((t) => t.id === trackId)
+  if (!track) throw new Error(`Unknown milestone: ${id}`)
+  return { track, tierIndex: Number(index) }
+}
+
+export function describeMilestoneReward(track: MilestoneTrack, tierIndex: number): string {
+  const value = Math.round(track.tiers[tierIndex].value * track.displayScale * 100) / 100
+  return track.rewardLabel.replace('{value}', String(value))
+}
+
+/** Marks every milestone whose lifetime counter has crossed its threshold (they're permanent once reached). */
+function checkMilestones(state: SimState, now: number, events: CombatEvent[]): SimState {
+  let reached: string[] | null = null
+  for (const track of MILESTONE_TRACKS) {
+    const value = state.lifetime[track.statKey] ?? 0
+    for (let i = 0; i < track.tiers.length && value >= track.tiers[i].threshold; i++) {
+      const id = milestoneId(track, i)
+      if (state.milestonesReached.includes(id)) continue
+      reached = [...(reached ?? state.milestonesReached), id]
+      events.push({ kind: 'milestone', milestoneId: id, timestamp: now })
+    }
+  }
+  return reached ? { ...state, milestonesReached: reached } : state
 }
 
 export function computePerkCost(perk: PerkDef, currentLevel: number): number {
@@ -240,6 +322,61 @@ export function getAugmentDef(id: string): AugmentDef {
   const def = AUGMENTS.find((a) => a.id === id)
   if (!def) throw new Error(`Unknown augment: ${id}`)
   return def
+}
+
+/** An augment's strength including its Imbue rank (+magnitudePerRank of the base per rank). */
+export function computeAugmentMagnitude(state: SimState, augmentId: string): number {
+  return getAugmentDef(augmentId).magnitude * (1 + (state.augmentRanks[augmentId] ?? 0) * IMBUE_CONFIG.magnitudePerRank)
+}
+
+/** Live description of an augment, reflecting its current Imbue rank. */
+export function describeAugment(state: SimState, augmentId: string): string {
+  const def = getAugmentDef(augmentId)
+  const pct = Math.round(computeAugmentMagnitude(state, augmentId) * 1000) / 10
+  return def.statId === 'focusGain' ? `+${pct}% Focus from kills` : `+${pct}% ${getStatLabel(def.statId)} from gear`
+}
+
+export function computeImbueCost(augmentId: string, rank: number): CraftCost {
+  const [primary, secondary] = getAugmentDef(augmentId).imbueMaterials ?? ['wood', 'stone']
+  const amount = Math.floor(IMBUE_CONFIG.baseCost * Math.pow(IMBUE_CONFIG.costMultiplier, rank))
+  return { focus: 0, materials: [{ materialId: primary, amount }, { materialId: secondary, amount: Math.ceil(amount / 2) }] }
+}
+
+/** Total cost to raise an augment by `count` Imbue ranks starting from `rank`. */
+export function computeImbueCostN(augmentId: string, rank: number, count: number): CraftCost {
+  const total: Record<string, number> = {}
+  for (let i = 0; i < count; i++) {
+    for (const m of computeImbueCost(augmentId, rank + i).materials) total[m.materialId] = (total[m.materialId] ?? 0) + m.amount
+  }
+  return { focus: 0, materials: Object.entries(total).map(([materialId, amount]) => ({ materialId, amount })) }
+}
+
+/** How many Imbue ranks can be afforded in a row with the current material balances. */
+export function computeMaxImbueCount(state: SimState, augmentId: string): number {
+  const remaining = { ...state.materials }
+  let rank = state.augmentRanks[augmentId] ?? 0
+  let count = 0
+  for (;;) {
+    const cost = computeImbueCost(augmentId, rank)
+    if (cost.materials.some((m) => (remaining[m.materialId] ?? 0) < m.amount)) break
+    for (const m of cost.materials) remaining[m.materialId] -= m.amount
+    rank++
+    count++
+  }
+  return count
+}
+
+/** Spends materials to raise a learned augment's Imbue rank (a sink for surplus materials). */
+export function imbueAugment(state: SimState, augmentId: string, now: number, count: number = 1): { state: SimState; event: CombatEvent | null } {
+  if (!state.learnedAugmentIds.includes(augmentId)) return { state, event: null }
+  const actual = Math.min(count, computeMaxImbueCount(state, augmentId))
+  if (actual <= 0) return { state, event: null }
+  const rank = state.augmentRanks[augmentId] ?? 0
+  const cost = computeImbueCostN(augmentId, rank, actual)
+  const materials = { ...state.materials }
+  for (const m of cost.materials) materials[m.materialId] = (materials[m.materialId] ?? 0) - m.amount
+  const next = addStat({ ...state, materials, augmentRanks: { ...state.augmentRanks, [augmentId]: rank + actual } }, 'imbueRanks', actual)
+  return { state: next, event: { kind: 'imbued', augmentId, newRank: rank + actual, timestamp: now } }
 }
 
 export function getGearCatalogItem(id: string): GearCatalogItemDef {
@@ -329,6 +466,25 @@ export function compareGear(item: GearItem, other: GearItem | null): GearStatDef
   return ids.map((id) => ({ statId: id, value: valueOf(mine, id) - valueOf(theirs, id) })).filter((d) => Math.abs(d.value) > 0.005)
 }
 
+export type GearVerdict = 'upgrade' | 'sidegrade' | 'worse' | 'emptySlot'
+
+/** How an inventory item compares to what's worn in its slot, on raw item stats (augments and set bonuses aside). */
+export function gearVerdict(state: SimState, item: GearItem): GearVerdict {
+  const equipped = state.gear[getGearCatalogItem(item.catalogId).slot]
+  if (!equipped) return 'emptySlot'
+  const deltas = compareGear(item, equipped)
+  const better = deltas.some((d) => d.value > 0)
+  const worse = deltas.some((d) => d.value < 0)
+  if (better && !worse) return 'upgrade'
+  if (better && worse) return 'sidegrade'
+  return 'worse'
+}
+
+/** Inventory items safe to bulk-salvage: strictly worse than what's worn, with no augments socketed. */
+export function listWorseItems(state: SimState): GearItem[] {
+  return state.inventory.filter((i) => i.augmentIds.length === 0 && gearVerdict(state, i) === 'worse')
+}
+
 const CAP_LABELS: Record<string, string> = {
   staminaCap: 'Stamina Cap',
   manaCap: 'Mana Cap',
@@ -357,7 +513,7 @@ export function gearBonusForStat(state: SimState, statId: PrimaryStat): number {
     }
     for (const augId of item.augmentIds) {
       const aug = getAugmentDef(augId)
-      if (aug.statId === statId && statId !== 'focusGain') augmentMultiplier += aug.magnitude
+      if (aug.statId === statId && statId !== 'focusGain') augmentMultiplier += computeAugmentMagnitude(state, augId)
     }
   }
   return base * augmentMultiplier
@@ -369,7 +525,7 @@ export function focusGainMultiplier(state: SimState): number {
     if (!item) continue
     for (const augId of item.augmentIds) {
       const aug = getAugmentDef(augId)
-      if (aug.statId === 'focusGain') multiplier += aug.magnitude
+      if (aug.statId === 'focusGain') multiplier += computeAugmentMagnitude(state, augId)
     }
   }
   return multiplier
@@ -516,6 +672,11 @@ export function getMaxDepthReached(state: SimState, zone: ZoneDef): number {
   return Math.max(zone.minDepth, state.maxDepthByZone[zone.id] ?? zone.minDepth, state.currentDepth)
 }
 
+/** Deepest depth ever reached in a zone, across every run (maxDepthByZone only covers the current one, and Recall wipes it). */
+export function computeAllTimeDepth(state: SimState, zoneId: string): number {
+  return Math.max(state.lifetime[`deepest_${zoneId}`] ?? 0, state.maxDepthByZone[zoneId] ?? 0)
+}
+
 /** The best (across zones) getMaxDepthReached right now — what a Recall's Echo payout is based on. */
 function bestZoneDepthReached(state: SimState): number {
   let best = 0
@@ -595,22 +756,38 @@ export function computeSalvageValue(item: GearItem): number {
   return Math.max(1, Math.round(totalValue * item.level * (rarityWeight[catalogDef.rarity] ?? 1)))
 }
 
-export function salvageItem(state: SimState, instanceId: string): { state: SimState; event: CombatEvent | null } {
-  const index = state.inventory.findIndex((i) => i.instanceId === instanceId)
-  if (index < 0) return { state, event: null }
-  const item = state.inventory[index]
-  const focusGained = computeSalvageValue(item)
-  const inventory = state.inventory.filter((i) => i.instanceId !== instanceId)
+/** Credits the Focus and materials for salvaging `count` copies of an item (the caller removes the item itself, if any). */
+function creditSalvage(state: SimState, item: GearItem, now: number, count: number = 1): { state: SimState; event: CombatEvent } {
+  const focusGained = computeSalvageValue(item) * count
   const materialId = SLOT_MATERIALS[getGearCatalogItem(item.catalogId).slot][0]
   const materialsGained = Math.max(1, Math.round(focusGained / materialsData.salvageMaterialDivisor))
   const next = {
     ...state,
-    inventory,
     focus: state.focus + focusGained,
     materials: { ...state.materials, [materialId]: (state.materials[materialId] ?? 0) + materialsGained },
   }
-  const tracked = addStat(addStat(addStat(next, 'itemsSalvaged', 1), 'focusEarned', focusGained), `material_${materialId}_gathered`, materialsGained)
-  return { state: tracked, event: { kind: 'salvage', catalogId: item.catalogId, focusGained, materialId, materialsGained, timestamp: Date.now() } }
+  const tracked = addStat(addStat(addStat(next, 'itemsSalvaged', count), 'focusEarned', focusGained), `material_${materialId}_gathered`, materialsGained)
+  return { state: tracked, event: { kind: 'salvage', catalogId: item.catalogId, focusGained, materialId, materialsGained, timestamp: now } }
+}
+
+export function salvageItem(state: SimState, instanceId: string): { state: SimState; event: CombatEvent | null } {
+  const item = state.inventory.find((i) => i.instanceId === instanceId)
+  if (!item) return { state, event: null }
+  // Pending (unfused) levels still count toward the item's value
+  const valued = { ...item, level: item.level + (item.pendingLevels ?? 0) }
+  return creditSalvage({ ...state, inventory: state.inventory.filter((i) => i.instanceId !== instanceId) }, valued, Date.now())
+}
+
+/** Salvages several inventory items at once (e.g. "salvage everything worse than equipped"). */
+export function salvageItems(state: SimState, instanceIds: string[]): { state: SimState; events: CombatEvent[] } {
+  let next = state
+  const events: CombatEvent[] = []
+  for (const id of instanceIds) {
+    const result = salvageItem(next, id)
+    next = result.state
+    if (result.event) events.push(result.event)
+  }
+  return { state: next, events }
 }
 
 function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
@@ -635,49 +812,154 @@ function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
   }
 }
 
+/** Where an owned copy of a catalog item lives, if the player has one (equipped first, then inventory). */
+function findOwned(state: SimState, catalogId: string): { slot: GearSlot } | { inventoryIndex: number } | null {
+  const slot = (Object.keys(state.gear) as GearSlot[]).find((s) => state.gear[s]?.catalogId === catalogId)
+  if (slot) return { slot }
+  const inventoryIndex = state.inventory.findIndex((i) => i.catalogId === catalogId)
+  return inventoryIndex >= 0 ? { inventoryIndex } : null
+}
+
+/** The player's copy of a catalog item (equipped first, then inventory), or null if they don't own one. */
+export function getOwnedItem(state: SimState, catalogId: string): GearItem | null {
+  const where = findOwned(state, catalogId)
+  if (!where) return null
+  return 'slot' in where ? state.gear[where.slot] : state.inventory[where.inventoryIndex]
+}
+
+/** Catalog id a new copy of catalogId fuses into: the highest owned tier at or above it in its reforge line, or null if none is owned. */
+export function computeFuseTargetId(state: SimState, catalogId: string): string | null {
+  const chain = getTierChain(catalogId)
+  const owned = chain.slice(chain.indexOf(catalogId)).filter((id) => findOwned(state, id))
+  return owned[owned.length - 1] ?? null
+}
+
+/** Swaps in an updated copy of an owned item (matched by instanceId), wherever it lives. */
+function replaceOwnedItem(state: SimState, updated: GearItem): SimState {
+  const slot = (Object.keys(state.gear) as GearSlot[]).find((s) => state.gear[s]?.instanceId === updated.instanceId)
+  if (slot) return { ...state, gear: { ...state.gear, [slot]: updated } }
+  return { ...state, inventory: state.inventory.map((i) => (i.instanceId === updated.instanceId ? updated : i)) }
+}
+
+function allOwnedItems(state: SimState): GearItem[] {
+  return [...Object.values(state.gear).filter((i): i is GearItem => !!i), ...state.inventory]
+}
+
+/** Applies an item's pending duplicate levels (see DuplicateMode 'keep'). */
+export function fuseItem(state: SimState, instanceId: string, now: number): { state: SimState; event: CombatEvent | null } {
+  const item = allOwnedItems(state).find((i) => i.instanceId === instanceId)
+  if (!item || !item.pendingLevels) return { state, event: null }
+  const maxLevel = getRarityDef(getGearCatalogItem(item.catalogId).rarity).maxLevel ?? Infinity
+  const fused: GearItem = { ...item, level: Math.min(maxLevel, item.level + item.pendingLevels), pendingLevels: 0 }
+  return {
+    state: replaceOwnedItem(state, fused),
+    event: { kind: 'fuse', catalogId: item.catalogId, newLevel: fused.level, timestamp: now },
+  }
+}
+
+/** Applies pending duplicate levels on every owned item. */
+export function fuseAll(state: SimState, now: number): { state: SimState; events: CombatEvent[] } {
+  let next = state
+  const events: CombatEvent[] = []
+  for (const item of allOwnedItems(state)) {
+    if (!item.pendingLevels) continue
+    const result = fuseItem(next, item.instanceId, now)
+    next = result.state
+    if (result.event) events.push(result.event)
+  }
+  return { state: next, events }
+}
+
+export function totalPendingLevels(state: SimState): number {
+  return allOwnedItems(state).reduce((sum, i) => sum + (i.pendingLevels ?? 0), 0)
+}
+
+/**
+ * How many more copies of catalogId the item they'd fuse into can absorb before its rarity's level cap
+ * (pending levels included). Infinity when nothing is owned yet or the rarity is uncapped.
+ */
+export function computeFuseRoomCopies(state: SimState, catalogId: string): number {
+  const targetId = computeFuseTargetId(state, catalogId)
+  if (!targetId) return Infinity
+  const item = getOwnedItem(state, targetId)!
+  const maxLevel = getRarityDef(getGearCatalogItem(targetId).rarity).maxLevel
+  if (maxLevel == null) return Infinity
+  const room = Math.max(0, maxLevel - item.level - (item.pendingLevels ?? 0))
+  return Math.ceil(room / computeFuseRate(catalogId, targetId) - 1e-9)
+}
+
+/** Stat key counting duplicates of an item salvaged because it had hit its level cap. */
+export function overflowSalvagedKey(catalogId: string): string {
+  return `overflowSalvaged_${catalogId}`
+}
+
 /**
  * Adds a catalog item to the player `count` times: fuses into an owned copy or creates a new inventory item.
  * Level gained per duplicate fused in is scaled by the item's rarity (RarityDef.fuseRate, default 1) — higher
  * rarities level slower on duplicates, so shallow-depth farming can't out-level a deep push. A freshly found
  * item's first copy always grants a full level 1; the fuse rate only applies to additional copies beyond that.
+ * If the player owns a higher tier of the same reforge line, the copies merge into the highest such tier
+ * instead (at computeFuseRate's reduced rate) — so a reforged item keeps leveling from lower-tier drops.
  */
-function grantGearItem(state: SimState, catalogEntry: GearCatalogItemDef, now: number, events: CombatEvent[], count: number = 1): SimState {
+function grantGearItem(
+  state: SimState,
+  catalogEntry: GearCatalogItemDef,
+  now: number,
+  events: CombatEvent[],
+  count: number = 1,
+  source: 'drop' | 'craft' = 'drop',
+): SimState {
   let next = state
   if (!next.discoveredItemIds.includes(catalogEntry.id)) {
     next = { ...next, discoveredItemIds: [...next.discoveredItemIds, catalogEntry.id] }
   }
-  const rarityDef = getRarityDef(catalogEntry.rarity)
-  const fuseRate = rarityDef.fuseRate ?? 1
-  const maxLevel = rarityDef.maxLevel ?? Infinity
-  const equippedSlot = (Object.keys(next.gear) as GearSlot[]).find((slot) => next.gear[slot]?.catalogId === catalogEntry.id)
-  const inventoryIndex = next.inventory.findIndex((i) => i.catalogId === catalogEntry.id)
+  const targetId = computeFuseTargetId(next, catalogEntry.id)
 
-  if (equippedSlot) {
-    const existing = next.gear[equippedSlot]!
-    const leveled = { ...existing, level: Math.min(maxLevel, existing.level + count * fuseRate) }
-    next = { ...next, gear: { ...next.gear, [equippedSlot]: leveled } }
-    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, count, timestamp: now })
-    next = addStat(next, 'itemsFused', count)
-  } else if (inventoryIndex >= 0) {
-    const existing = next.inventory[inventoryIndex]
-    const leveled = { ...existing, level: Math.min(maxLevel, existing.level + count * fuseRate) }
-    const inventory = [...next.inventory]
-    inventory[inventoryIndex] = leveled
-    next = { ...next, inventory }
-    events.push({ kind: 'fuse', catalogId: catalogEntry.id, newLevel: leveled.level, count, timestamp: now })
-    next = addStat(next, 'itemsFused', count)
-  } else {
-    const newItem: GearItem = {
-      instanceId: `${catalogEntry.id}_${now}_${Math.floor(Math.random() * 1e6)}`,
-      catalogId: catalogEntry.id,
-      level: Math.min(maxLevel, 1 + (count - 1) * fuseRate),
-      augmentIds: [],
+  if (targetId) {
+    // Crafting is an explicit request for levels, so it always fuses; drops follow the player's setting
+    const mode = source === 'craft' ? 'fuse' : effectiveDuplicateMode(next)
+    if (mode === 'salvage') {
+      const result = creditSalvage(next, { instanceId: '', catalogId: catalogEntry.id, level: 1, augmentIds: [] }, now, count)
+      events.push(result.event)
+      return result.state
     }
-    next = { ...next, inventory: [...next.inventory, newItem] }
-    events.push({ kind: 'loot', item: newItem, timestamp: now })
-    next = addStat(next, 'itemsFound', 1)
-    if (count > 1) next = addStat(next, 'itemsFused', count - 1)
+    // Copies past the owned item's level cap would add nothing — salvage those instead of wasting them
+    const fitting = Math.min(count, computeFuseRoomCopies(next, catalogEntry.id))
+    if (fitting < count) {
+      const result = creditSalvage(next, { instanceId: '', catalogId: catalogEntry.id, level: 1, augmentIds: [] }, now, count - fitting)
+      events.push(result.event)
+      next = addStat(result.state, overflowSalvagedKey(targetId), count - fitting)
+      if (fitting <= 0) return next
+    }
+    const where = findOwned(next, targetId)!
+    const existing = 'slot' in where ? next.gear[where.slot]! : next.inventory[where.inventoryIndex]
+    const maxLevel = getRarityDef(getGearCatalogItem(targetId).rarity).maxLevel ?? Infinity
+    const gained = fitting * computeFuseRate(catalogEntry.id, targetId)
+    let updated: GearItem
+    // Counted as fused when absorbed, whether the levels apply now or wait for a manual Fuse
+    next = addStat(next, 'itemsFused', fitting)
+    if (mode === 'fuse') {
+      updated = { ...existing, level: Math.min(maxLevel, existing.level + gained) }
+      events.push({ kind: 'fuse', catalogId: targetId, newLevel: updated.level, count: fitting, timestamp: now })
+    } else {
+      // Held back, but never beyond what the item could still absorb before its level cap
+      updated = { ...existing, pendingLevels: Math.min(Math.max(0, maxLevel - existing.level), (existing.pendingLevels ?? 0) + gained) }
+      events.push({ kind: 'duplicateKept', catalogId: targetId, pendingLevels: updated.pendingLevels!, timestamp: now })
+    }
+    return replaceOwnedItem(next, updated)
   }
+
+  const rarityDef = getRarityDef(catalogEntry.rarity)
+  const newItem: GearItem = {
+    instanceId: `${catalogEntry.id}_${now}_${Math.floor(Math.random() * 1e6)}`,
+    catalogId: catalogEntry.id,
+    level: Math.min(rarityDef.maxLevel ?? Infinity, 1 + (count - 1) * (rarityDef.fuseRate ?? 1)),
+    augmentIds: [],
+  }
+  next = { ...next, inventory: [...next.inventory, newItem] }
+  events.push({ kind: 'loot', item: newItem, timestamp: now })
+  next = addStat(next, 'itemsFound', 1)
+  if (count > 1) next = addStat(next, 'itemsFused', count - 1)
   return next
 }
 
@@ -707,7 +989,7 @@ export function craftItem(state: SimState, catalogId: string, now: number, count
   for (const m of cost.materials) materials[m.materialId] = (materials[m.materialId] ?? 0) - m.amount
   const paid = addStat(addStat({ ...state, focus: state.focus - cost.focus, materials }, 'itemsCrafted', actual), 'focusSpent', cost.focus)
   events.push({ kind: 'crafted', catalogId, count: actual, timestamp: now })
-  return { state: grantGearItem(paid, def, now, events, actual), events }
+  return { state: grantGearItem(paid, def, now, events, actual, 'craft'), events }
 }
 
 /** Spends materials to jump an owned item (equipped or in inventory) to its next rarity tier, resetting its level to 1. */
@@ -720,7 +1002,8 @@ export function reforgeItem(state: SimState, instanceId: string, now: number): {
   const targetId = getGearCatalogItem(item.catalogId).nextTierId
   if (!targetId) return { state, event: null }
   const targetDef = getGearCatalogItem(targetId)
-  const depthReached = state.maxDepthByZone[targetDef.zoneId ?? ''] ?? 0
+  // All-time, not this run: a reforge earned once shouldn't lock again after a Recall
+  const depthReached = computeAllTimeDepth(state, targetDef.zoneId ?? '')
   if (depthReached < targetDef.minDepth) return { state, event: null }
   const cost = costForRaritySlot(targetDef.rarity, targetDef.slot)
   if (state.focus < cost.focus || cost.materials.some((m) => (state.materials[m.materialId] ?? 0) < m.amount)) {
@@ -729,7 +1012,11 @@ export function reforgeItem(state: SimState, instanceId: string, now: number): {
 
   const materials = { ...state.materials }
   for (const m of cost.materials) materials[m.materialId] = (materials[m.materialId] ?? 0) - m.amount
+  // Pending levels were counted at the old tier's fuse rate; convert them to the same number of copies at the new tier's
   const reforged: GearItem = { ...item, catalogId: targetDef.id, level: 1 }
+  if (item.pendingLevels) {
+    reforged.pendingLevels = item.pendingLevels * (computeFuseRate(item.catalogId, targetDef.id) / computeFuseRate(item.catalogId, item.catalogId))
+  }
 
   let next: SimState = { ...state, focus: state.focus - cost.focus, materials }
   next = equippedSlot
@@ -791,7 +1078,7 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
   }
   // Descend: brief cooldown with no monster, so HP and resources can recover
   const maxDepthByZone = { ...next.maxDepthByZone, [zone.id]: Math.max(getMaxDepthReached(next, zone), nextDepth) }
-  return maxStat({
+  return trackPeakEchoRate(maxStat({
     ...next,
     currentDepth: nextDepth,
     maxDepthByZone,
@@ -800,7 +1087,23 @@ function handleMonsterDeath(state: SimState, now: number, events: CombatEvent[])
     depthClears: 0,
     depthClearsRequired: rollClearsRequired(zone, nextDepth),
     descendCooldownMs: DESCEND_COOLDOWN_MS,
-  }, `deepest_${zone.id}`, nextDepth)
+  }, `deepest_${zone.id}`, nextDepth))
+}
+
+/** Echoes a Recall would pay right now, per hour of the current run. */
+export function computeEchoRatePerHour(state: SimState): number {
+  const hours = (state.runStats.timeMs ?? 0) / 3_600_000
+  return hours > 0 ? computeRecallEchoes(state) / hours : 0
+}
+
+/**
+ * Remembers this run's best Echoes-per-hour and when it happened. The Echo payout only rises when
+ * depth does, so checking on each descend catches every peak. Run-only (it means nothing lifetime).
+ */
+function trackPeakEchoRate(state: SimState): SimState {
+  const rate = computeEchoRatePerHour(state)
+  if (rate <= (state.runStats.peakEchoRate ?? 0)) return state
+  return { ...state, runStats: { ...state.runStats, peakEchoRate: rate, peakEchoRateAtMs: state.runStats.timeMs ?? 0 } }
 }
 
 // Safety cap on one hit's Overkill chain. It should already be bounded by depthClearsRequired
@@ -957,7 +1260,8 @@ function tickMonsterDot(state: SimState, deltaMs: number, now: number, events: C
 
 export function advanceTick(state: SimState, deltaMs: number, now: number): TickResult {
   const events: CombatEvent[] = []
-  let next = decayBuffs(addStat(applyRegen(state, deltaMs / 1000), 'timeMs', deltaMs), deltaMs)
+  let next = checkMilestones(state, now, events)
+  next = runAutobuyers(decayBuffs(addStat(applyRegen(next, deltaMs / 1000), 'timeMs', deltaMs), deltaMs))
 
   if (next.descendCooldownMs > 0) {
     // Cooldown between floors: extra regen, no monster, nothing attacks
@@ -979,7 +1283,8 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
   if (next.fainted) {
     const hpCap = computeHpCap(next)
     if (next.playerHp.current >= hpCap * FAINT_RECOVERY_THRESHOLD_PCT) {
-      next = { ...next, fainted: false }
+      // Fresh swing timer: rejoining at low HP must never hand the monster an instant first hit
+      next = { ...next, fainted: false, monsterActionTimerMs: 0 }
       events.push({ kind: 'recovered', timestamp: now })
     }
     return { state: { ...next, lastTickTimestamp: now }, events }
@@ -989,7 +1294,10 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
   const monster = next.currentMonster!
   const attackIntervalMs = computeMonsterAttackIntervalMs(zone, monster.isBoss)
   let monsterTimer = next.monsterActionTimerMs + deltaMs
-  if (monsterTimer >= attackIntervalMs) {
+  // A long tick (throttled background tab, offline step) can owe several attacks. Resolve each one
+  // here rather than leaving the surplus in the timer — a banked surplus used to survive a faint
+  // and fire on every tick after recovery, before any ability, pinning the player in a faint loop.
+  while (monsterTimer >= attackIntervalMs) {
     monsterTimer -= attackIntervalMs
     const raw = computeMonsterDamage(zone, monster.depth, monster.isBoss)
     const dmg = computeIncomingDamage(next, raw)
@@ -1008,6 +1316,8 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
       }
       events.push({ kind: 'faint', checkpointDepth, timestamp: now })
       next = addStat(next, 'faints', 1)
+      monsterTimer = 0
+      break
     }
   }
   next = { ...next, monsterActionTimerMs: monsterTimer }
@@ -1056,6 +1366,7 @@ export function createInitialState(): SimState {
   const zoneId = getDefaultZoneId()
   const zone = getZoneDef(zoneId)
   const stats = Object.fromEntries(STATS.map((s) => [s.id, 0])) as Record<StatId, number>
+  const statLevels = { ...stats }
   const abilities = Object.fromEntries(ABILITIES.map((a) => [a.id, { rank: a.id === 'strike' || a.id === 'bolt' ? 1 : 0 }]))
   const gear = {
     weapon: null,
@@ -1077,6 +1388,7 @@ export function createInitialState(): SimState {
     fainted: false,
     focus: 0,
     stats,
+    statLevels,
     abilities,
     abilityCooldowns: {},
     currentZoneId: zoneId,
@@ -1105,6 +1417,9 @@ export function createInitialState(): SimState {
     bestRecallDepth: 0,
     bestAscendEchoes: 0,
     bestBossPowerDefeated: 0,
+    automation: defaultAutomation(),
+    augmentRanks: {},
+    milestonesReached: [],
     ...resetMonsterEncounter(zone, zone.minDepth),
   }
 }
@@ -1118,6 +1433,7 @@ function resetRun(state: SimState): SimState {
   return {
     ...state,
     stats: Object.fromEntries(Object.keys(state.stats).map((id) => [id, 0])) as Record<StatId, number>,
+    statLevels: Object.fromEntries(Object.keys(state.stats).map((id) => [id, 0])) as Record<StatId, number>,
     abilities: resetAbilities,
     abilityCooldowns: {},
     focus: 0,
@@ -1228,16 +1544,135 @@ export function buyPerk(state: SimState, perkId: string, count: number = 1): Sim
   }
 }
 
+/**
+ * Cost scales with times trained (statLevels), not the stat's value — otherwise every trainGain
+ * bonus would raise the next cost exactly as much as the stat, and cancel itself out.
+ */
 export function trainStat(state: SimState, statId: StatId, count: number = 1): SimState {
-  const actual = Math.min(count, computeMaxTrainCount(statId, state.stats[statId], state.focus))
+  const level = state.statLevels[statId] ?? 0
+  const actual = Math.min(count, computeMaxTrainCount(statId, level, state.focus))
   if (actual <= 0) return state
-  const cost = computeTrainCostN(statId, state.stats[statId], actual)
+  const cost = computeTrainCostN(statId, level, actual)
   const gain = computeStatGainPerTrain(state) * actual
   return addStat({
     ...state,
     focus: state.focus - cost,
     stats: { ...state.stats, [statId]: state.stats[statId] + gain },
+    statLevels: { ...state.statLevels, [statId]: level + actual },
   }, 'focusSpent', cost)
+}
+
+/**
+ * Fills fields added after a save was written. Saves from before statLevels existed only stored the
+ * trained value, so the level count is estimated from the current stat-gain multiplier. Saves from
+ * before automation get the defaults — auto-fusing (how duplicates always used to work) stays on
+ * only if it would already be unlocked.
+ */
+export function migrateSave<T extends SimState>(state: T): T {
+  let next = state
+  if (!next.statLevels || !STATS.every((s) => typeof next.statLevels[s.id] === 'number')) {
+    const gain = computeStatGainPerTrain(next)
+    const statLevels = Object.fromEntries(
+      STATS.map((s) => [s.id, next.statLevels?.[s.id] ?? Math.round((next.stats[s.id] ?? 0) / gain)]),
+    ) as Record<StatId, number>
+    next = { ...next, statLevels }
+  }
+  if (!next.augmentRanks) next = { ...next, augmentRanks: {} }
+  if (!next.milestonesReached) next = { ...next, milestonesReached: [] }
+  const defaults = defaultAutomation()
+  if (!next.automation) {
+    next = { ...next, automation: { ...defaults, duplicateMode: isAutomationUnlocked(next, 'autoFuse') ? 'fuse' : 'keep' } }
+  } else {
+    // Stats/abilities added to the content files since the save was written
+    const a = next.automation
+    const missing = Object.keys(defaults.statWeights).some((id) => !(id in a.statWeights)) || Object.keys(defaults.abilityWeights).some((id) => !(id in a.abilityWeights))
+    if (missing) {
+      next = { ...next, automation: { ...a, statWeights: { ...defaults.statWeights, ...a.statWeights }, abilityWeights: { ...defaults.abilityWeights, ...a.abilityWeights } } }
+    }
+  }
+  return next
+}
+
+// --- Automation ---------------------------------------------------------------------------------
+
+const AUTOMATION_UNLOCKS = automationData.unlockRecalls as Record<AutomationFeature, number>
+
+export function defaultAutomation(): AutomationSettings {
+  return {
+    duplicateMode: 'keep',
+    autoTrain: false,
+    autoAbilities: false,
+    statWeights: Object.fromEntries(STATS.map((s) => [s.id, 1])) as Record<StatId, number>,
+    abilityWeights: Object.fromEntries(ABILITIES.map((a) => [a.id, 1])),
+    maxCostPct: 100,
+  }
+}
+
+/** Lifetime Recalls needed for an automation feature (lifetime, so an Ascend never re-locks it). */
+export function automationUnlockRecalls(feature: AutomationFeature): number {
+  return AUTOMATION_UNLOCKS[feature]
+}
+
+export function isAutomationUnlocked(state: SimState, feature: AutomationFeature): boolean {
+  return (state.lifetime.recalls ?? 0) >= AUTOMATION_UNLOCKS[feature]
+}
+
+/** Duplicate handling actually in effect: a stored 'fuse' only counts once auto-fuse is unlocked. */
+export function effectiveDuplicateMode(state: SimState): AutomationSettings['duplicateMode'] {
+  const mode = state.automation.duplicateMode
+  return mode === 'fuse' && !isAutomationUnlocked(state, 'autoFuse') ? 'keep' : mode
+}
+
+/** Applies a settings change from the Automation page, refusing to switch on anything still locked. */
+export function setAutomation(state: SimState, patch: Partial<AutomationSettings>): SimState {
+  const automation = { ...state.automation, ...patch }
+  if (patch.duplicateMode === 'fuse' && !isAutomationUnlocked(state, 'autoFuse')) automation.duplicateMode = state.automation.duplicateMode
+  if (patch.autoTrain && !isAutomationUnlocked(state, 'autoTrain')) automation.autoTrain = false
+  if (patch.autoAbilities && !isAutomationUnlocked(state, 'autoAbilities')) automation.autoAbilities = false
+  automation.maxCostPct = Math.min(100, Math.max(1, Number(automation.maxCostPct) || 100))
+  const clampWeights = <K extends string>(w: Record<K, number>) =>
+    Object.fromEntries(Object.entries(w).map(([k, v]) => [k, Math.min(10, Math.max(0, Number(v) || 0))])) as Record<K, number>
+  automation.statWeights = clampWeights(automation.statWeights)
+  automation.abilityWeights = clampWeights(automation.abilityWeights)
+  return { ...state, automation }
+}
+
+/**
+ * Autobuyers: repeatedly buys the single cheapest enabled purchase relative to its weight
+ * (cost / weight, so a weight-2 stat keeps being bought until it costs twice what the weight-1 ones do),
+ * as long as that one purchase costs at most maxCostPct of current Focus.
+ */
+export function runAutobuyers(state: SimState): SimState {
+  const a = state.automation
+  const train = a.autoTrain && isAutomationUnlocked(state, 'autoTrain')
+  const abilities = a.autoAbilities && isAutomationUnlocked(state, 'autoAbilities')
+  if (!train && !abilities) return state
+
+  let next = state
+  for (let i = 0; i < automationData.maxPurchasesPerTick; i++) {
+    const budget = next.focus * (a.maxCostPct / 100)
+    let best: { kind: 'stat' | 'ability'; id: string; score: number } | null = null
+    if (train) {
+      for (const stat of STATS) {
+        const weight = a.statWeights[stat.id] ?? 0
+        if (weight <= 0) continue
+        const cost = computeTrainCost(stat.id, next.statLevels[stat.id] ?? 0)
+        if (cost <= budget && (!best || cost / weight < best.score)) best = { kind: 'stat', id: stat.id, score: cost / weight }
+      }
+    }
+    if (abilities) {
+      for (const ability of ABILITIES) {
+        const weight = a.abilityWeights[ability.id] ?? 0
+        const rank = next.abilities[ability.id]?.rank ?? 0
+        if (weight <= 0 || rank >= ability.maxRank) continue
+        const cost = computeAbilityRankCost(ability.id, rank)
+        if (cost <= budget && (!best || cost / weight < best.score)) best = { kind: 'ability', id: ability.id, score: cost / weight }
+      }
+    }
+    if (!best) break
+    next = best.kind === 'stat' ? trainStat(next, best.id as StatId, 1) : upgradeAbility(next, best.id, 1)
+  }
+  return next
 }
 
 export function upgradeAbility(state: SimState, abilityId: string, count: number = 1): SimState {
@@ -1312,6 +1747,32 @@ export function setDepthMode(state: SimState, depthMode: DepthMode): SimState {
     depthMode: clampedMode,
     currentDepth: depth,
     ...resetMonsterEncounter(zone, depth),
+  }
+}
+
+/** Compares the state before and after offline catch-up, for the "While you were away" card. */
+export function summarizeOffline(before: SimState, after: SimState, elapsedMs: number, capped: boolean): OfflineSummary {
+  const gained = (key: string) => Math.max(0, (after.lifetime[key] ?? 0) - (before.lifetime[key] ?? 0))
+  const sum = (record: Record<string, number>) => Object.values(record).reduce((a, b) => a + b, 0)
+  const zone = getZoneDef(after.currentZoneId)
+  return {
+    elapsedMs,
+    capped,
+    kills: gained('kills'),
+    bossKills: gained('bossKills'),
+    focusEarned: gained('focusEarned'),
+    itemsFound: gained('itemsFound'),
+    duplicates: gained('itemsFused'),
+    itemsSalvaged: gained('itemsSalvaged'),
+    materialsGathered: MATERIALS.reduce((total, m) => total + gained(`material_${m.id}_gathered`), 0),
+    faints: gained('faints'),
+    depthBefore: before.currentDepth,
+    depthAfter: after.currentDepth,
+    deepestBefore: before.currentZoneId === after.currentZoneId ? getMaxDepthReached(before, zone) : 0,
+    deepestAfter: getMaxDepthReached(after, zone),
+    statLevelsGained: Math.max(0, sum(after.statLevels) - sum(before.statLevels)),
+    abilityRanksGained: Math.max(0, sum(Object.fromEntries(Object.entries(after.abilities).map(([id, a]) => [id, a.rank]))) - sum(Object.fromEntries(Object.entries(before.abilities).map(([id, a]) => [id, a.rank])))),
+    milestonesReached: after.milestonesReached.filter((id) => !before.milestonesReached.includes(id)),
   }
 }
 

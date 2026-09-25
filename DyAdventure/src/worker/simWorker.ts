@@ -1,5 +1,5 @@
 import { TICK_MS, STATE_SYNC_MS, MAX_OFFLINE_SIMULATED_MS } from '../constants'
-import type { MainToWorkerMessage, SimState, WorkerToMainMessage } from '../types'
+import type { CombatEvent, MainToWorkerMessage, SimState, WorkerToMainMessage } from '../types'
 import {
   advanceTick,
   ascend,
@@ -7,9 +7,15 @@ import {
   craftItem,
   createInitialState,
   equipItem,
+  fuseAll,
+  fuseItem,
+  imbueAugment,
+  summarizeOffline,
   recall,
   reforgeItem,
   salvageItem,
+  salvageItems,
+  setAutomation,
   selectZone,
   setDepthMode,
   simulateOfflineElapsed,
@@ -20,6 +26,10 @@ import {
 } from './simLogic'
 
 const ctx = self as unknown as DedicatedWorkerGlobalScope
+const MAX_STEP_MS = 1000
+const MAX_EVENTS_PER_TICK = 50
+// Shorter absences (a quick reload) aren't worth interrupting the player with a summary
+const OFFLINE_SUMMARY_MIN_MS = 60_000
 
 let state: SimState = createInitialState()
 let initialized = false
@@ -38,12 +48,20 @@ ctx.setInterval(() => {
   // Never sync before the saved state has been loaded, or the default state would overwrite the save
   if (!initialized) return
   const now = Date.now()
-  const deltaMs = now - lastTickAt
+  const deltaMs = Math.min(now - lastTickAt, MAX_OFFLINE_SIMULATED_MS)
   lastTickAt = now
 
-  const result = advanceTick(state, deltaMs, now)
-  state = result.state
-  for (const event of result.events) post({ type: 'EVENT', event })
+  // Browsers throttle timers in background tabs, so one tick can cover seconds or minutes.
+  // Step through it like offline catch-up does, so abilities get their turns in between
+  // monster attacks, and only forward the newest events (the combat log keeps ~50 anyway).
+  const events: CombatEvent[] = []
+  for (let remaining = deltaMs; remaining > 0; remaining -= MAX_STEP_MS) {
+    const result = advanceTick(state, Math.min(MAX_STEP_MS, remaining), now)
+    state = result.state
+    events.push(...result.events)
+    if (events.length > MAX_EVENTS_PER_TICK * 2) events.splice(0, events.length - MAX_EVENTS_PER_TICK)
+  }
+  for (const event of events.slice(-MAX_EVENTS_PER_TICK)) post({ type: 'EVENT', event })
 
   msSinceLastSync += deltaMs
   if (msSinceLastSync >= STATE_SYNC_MS) {
@@ -58,9 +76,13 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
 
   switch (msg.type) {
     case 'INIT': {
-      const elapsed = Math.min(now - msg.state.lastTickTimestamp, MAX_OFFLINE_SIMULATED_MS)
+      const away = now - msg.state.lastTickTimestamp
+      const elapsed = Math.min(away, MAX_OFFLINE_SIMULATED_MS)
       try {
         state = elapsed > 1000 ? simulateOfflineElapsed(msg.state, elapsed) : msg.state
+        if (elapsed >= OFFLINE_SUMMARY_MIN_MS) {
+          post({ type: 'OFFLINE_SUMMARY', summary: summarizeOffline(msg.state, state, elapsed, away > MAX_OFFLINE_SIMULATED_MS) })
+        }
       } catch (err) {
         console.error('Offline simulation failed, loading save without catch-up', err)
         state = msg.state
@@ -93,6 +115,33 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       break
     case 'SALVAGE_ITEM': {
       const result = salvageItem(state, msg.instanceId)
+      state = result.state
+      if (result.event) post({ type: 'EVENT', event: result.event })
+      break
+    }
+    case 'SALVAGE_ITEMS': {
+      const result = salvageItems(state, msg.instanceIds)
+      state = result.state
+      for (const event of result.events) post({ type: 'EVENT', event })
+      break
+    }
+    case 'FUSE_ITEM': {
+      const result = fuseItem(state, msg.instanceId, now)
+      state = result.state
+      if (result.event) post({ type: 'EVENT', event: result.event })
+      break
+    }
+    case 'FUSE_ALL': {
+      const result = fuseAll(state, now)
+      state = result.state
+      for (const event of result.events) post({ type: 'EVENT', event })
+      break
+    }
+    case 'SET_AUTOMATION':
+      state = setAutomation(state, msg.automation)
+      break
+    case 'IMBUE_AUGMENT': {
+      const result = imbueAugment(state, msg.augmentId, now, msg.count)
       state = result.state
       if (result.event) post({ type: 'EVENT', event: result.event })
       break

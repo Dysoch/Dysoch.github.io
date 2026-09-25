@@ -1,8 +1,8 @@
 [
-  { "id": "aug_might", "name": "Augment: Might", "icon": "sword", "description": "Permanently increases Might gained from gear by 50%.", "statId": "might", "magnitude": 0.5 },
-  { "id": "aug_grit", "name": "Augment: Grit", "icon": "shield", "description": "Permanently increases Grit gained from gear by 50%.", "statId": "grit", "magnitude": 0.5 },
-  { "id": "aug_arcana", "name": "Augment: Arcana", "icon": "wand", "description": "Permanently increases Arcana gained from gear by 50%.", "statId": "arcana", "magnitude": 0.5 },
-  { "id": "aug_willpower", "name": "Augment: Willpower", "icon": "sparkles", "description": "Permanently increases Willpower gained from gear by 50%.", "statId": "willpower", "magnitude": 0.5 },
-  { "id": "aug_focus_gain", "name": "Augment: Focus Gain", "icon": "flame", "description": "Permanently increases Focus earned from kills by 10%.", "statId": "focusGain", "magnitude": 0.1 },
-  { "id": "aug_speed", "name": "Augment: Speed", "icon": "sparkles", "description": "Permanently increases Speed gained from gear by 25%.", "statId": "speed", "magnitude": 0.25 }
+  { "id": "aug_might", "name": "Augment: Might", "icon": "sword", "description": "Permanently increases Might gained from gear by 50%.", "statId": "might", "magnitude": 0.5, "imbueMaterials": ["stone", "leather"] },
+  { "id": "aug_grit", "name": "Augment: Grit", "icon": "shield", "description": "Permanently increases Grit gained from gear by 50%.", "statId": "grit", "magnitude": 0.5, "imbueMaterials": ["leather", "stone"] },
+  { "id": "aug_arcana", "name": "Augment: Arcana", "icon": "wand", "description": "Permanently increases Arcana gained from gear by 50%.", "statId": "arcana", "magnitude": 0.5, "imbueMaterials": ["crystals", "wood"] },
+  { "id": "aug_willpower", "name": "Augment: Willpower", "icon": "sparkles", "description": "Permanently increases Willpower gained from gear by 50%.", "statId": "willpower", "magnitude": 0.5, "imbueMaterials": ["crystals", "leather"] },
+  { "id": "aug_focus_gain", "name": "Augment: Focus Gain", "icon": "flame", "description": "Permanently increases Focus earned from kills by 10%.", "statId": "focusGain", "magnitude": 0.1, "imbueMaterials": ["wood", "crystals"] },
+  { "id": "aug_speed", "name": "Augment: Speed", "icon": "sparkles", "description": "Permanently increases Speed gained from gear by 25%.", "statId": "speed", "magnitude": 0.25, "imbueMaterials": ["wood", "leather"] }
 ]

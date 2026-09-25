@@ -42,6 +42,31 @@ import {
   computeBossPowerMultiplier,
   zoneGateDepth,
   getZoneDef,
+  trainStat,
+  migrateSave,
+  computeFuseRate,
+  getTierChain,
+  fuseAll,
+  salvageItem,
+  setAutomation,
+  runAutobuyers,
+  defaultAutomation,
+  listWorseItems,
+  automationUnlockRecalls,
+  computeFuseRoomCopies,
+  perkBonus,
+  listMilestoneTracks,
+  milestoneId,
+  imbueAugment,
+  computeImbueCostN,
+  computeMaxImbueCount,
+  computeAugmentMagnitude,
+  gearBonusForStat,
+  summarizeOffline,
+  simulateOfflineElapsed,
+  computeEchoRatePerHour,
+  overflowSalvagedKey,
+  getGearCatalogItem,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
@@ -659,5 +684,397 @@ describe('Overkill chain cap (regression: a chain could recurse once per kill wi
     const killsThisHit = (result.state.lifetime.kills ?? 0) - before
     expect(killsThisHit).toBeGreaterThan(0)
     expect(killsThisHit).toBeLessThan(1000)
+  })
+})
+
+describe('faint loop (regression: a banked monster swing timer survived fainting and fired every tick after recovery, before any ability)', () => {
+  test('fainting resets the monster swing timer, even when a long tick banked several attacks', () => {
+    const base = createInitialState()
+    const state: SimState = {
+      ...base,
+      playerHp: { current: 1, max: base.playerHp.max },
+      monsterActionTimerMs: 60_000, // e.g. a throttled background-tab tick
+    }
+    const result = advanceTick(state, 100, Date.now()).state
+    expect(result.fainted).toBe(true)
+    expect(result.monsterActionTimerMs).toBe(0)
+  })
+
+  test('recovering from a faint starts the monster swing timer from zero', () => {
+    const base = createInitialState()
+    const state: SimState = {
+      ...base,
+      fainted: true,
+      playerHp: { current: base.playerHp.max, max: base.playerHp.max },
+      monsterActionTimerMs: 999_999,
+    }
+    const result = advanceTick(state, 100, Date.now()).state
+    expect(result.fainted).toBe(false)
+    expect(result.monsterActionTimerMs).toBe(0)
+  })
+
+  test('a surviving player never carries a full attack interval in the timer into the next tick', () => {
+    const base = createInitialState()
+    const zone = getZoneDef(base.currentZoneId)
+    const state: SimState = { ...base, playerHp: { current: 1e9, max: 1e9 }, monsterActionTimerMs: 60_000 }
+    const result = advanceTick(state, 100, Date.now()).state
+    expect(result.monsterActionTimerMs).toBeLessThan(zone.baseMonsterAttackIntervalMs)
+  })
+})
+
+describe('training cost (regression: cost was driven by the stat value, so every trainGain bonus raised the cost as much as the stat and cancelled out)', () => {
+  test('cost follows times trained (statLevels); the stat value grows by the gain multiplier', () => {
+    const base = createInitialState()
+    const state: SimState = { ...base, focus: 1e9, bestRecallDepth: 200 } // trainGain ×3
+    const gain = computeStatGainPerTrain(state)
+    expect(gain).toBeGreaterThan(2)
+    const after = trainStat(state, 'might', 10)
+    expect(after.statLevels.might).toBe(10)
+    expect(after.stats.might).toBeCloseTo(10 * gain, 5)
+    expect(state.focus - after.focus).toBe(computeTrainCostN('might', 0, 10))
+  })
+
+  test('a higher trainGain gives more stat for the same Focus', () => {
+    const base = createInitialState()
+    const plain = trainStat({ ...base, focus: 5000 }, 'might', 1000)
+    const boosted = trainStat({ ...base, focus: 5000, bestRecallDepth: 200 }, 'might', 1000)
+    expect(boosted.statLevels.might).toBe(plain.statLevels.might)
+    expect(boosted.stats.might).toBeGreaterThan(plain.stats.might * 2)
+  })
+
+  test('migrateSave estimates statLevels for saves written before they existed', () => {
+    const base = createInitialState()
+    const legacy = { ...base, bestRecallDepth: 100, stats: { ...base.stats, might: 40 } } as SimState
+    delete (legacy as Partial<SimState>).statLevels
+    const migrated = migrateSave(legacy)
+    expect(migrated.statLevels.might).toBe(20) // 40 value / ×2 gain
+    expect(migrated.statLevels.grit).toBe(0)
+    expect(migrateSave(migrated)).toBe(migrated)
+  })
+})
+
+describe('lower-tier merge (regression: once reforged, an item could only level by crafting its new tier — lower-tier drops piled up as useless inventory)', () => {
+  function stocked(overrides: Partial<SimState>): SimState {
+    return { ...createInitialState(), focus: 1e9, materials: { wood: 1e9, stone: 1e9, crystals: 1e9, leather: 1e9 }, ...overrides }
+  }
+
+  test('a lower-tier copy fuses into the owned higher tier instead of creating a new item', () => {
+    const owned = { instanceId: 'u1', catalogId: 'vanguard_sword_uncommon', level: 3, augmentIds: [] }
+    const state = stocked({ discoveredItemIds: ['vanguard_sword', 'vanguard_sword_uncommon'], gear: { ...createInitialState().gear, weapon: owned } })
+    const after = craftItem(state, 'vanguard_sword', Date.now(), 4).state
+    expect(after.inventory).toHaveLength(0)
+    expect(after.gear.weapon!.level).toBeCloseTo(3 + 4 * computeFuseRate('vanguard_sword', 'vanguard_sword_uncommon'), 5)
+  })
+
+  test('merges go to the highest owned tier of the line', () => {
+    const state = stocked({
+      discoveredItemIds: ['vanguard_sword', 'vanguard_sword_uncommon', 'vanguard_sword_rare'],
+      inventory: [
+        { instanceId: 'u1', catalogId: 'vanguard_sword_uncommon', level: 1, augmentIds: [] },
+        { instanceId: 'r1', catalogId: 'vanguard_sword_rare', level: 1, augmentIds: [] },
+      ],
+    })
+    const after = craftItem(state, 'vanguard_sword', Date.now(), 1).state
+    expect(after.inventory.find((i) => i.instanceId === 'u1')!.level).toBe(1)
+    expect(after.inventory.find((i) => i.instanceId === 'r1')!.level).toBeGreaterThan(1)
+  })
+
+  test('a higher-tier copy never fuses down into a lower tier', () => {
+    const state = stocked({
+      discoveredItemIds: ['vanguard_sword', 'vanguard_sword_uncommon'],
+      inventory: [{ instanceId: 'c1', catalogId: 'vanguard_sword', level: 5, augmentIds: [] }],
+    })
+    const after = craftItem(state, 'vanguard_sword_uncommon', Date.now(), 1).state
+    expect(after.inventory).toHaveLength(2)
+  })
+
+  test('crafting a lower tier to feed a higher one is never cheaper per level than crafting the higher tier', () => {
+    for (const chainRoot of ['vanguard_sword', 'adept_ring']) {
+      const chain = getTierChain(chainRoot)
+      for (let lo = 0; lo < chain.length; lo++) {
+        for (let hi = lo + 1; hi < chain.length; hi++) {
+          const viaLower = computeCraftCost(chain[lo]).focus / computeFuseRate(chain[lo], chain[hi])
+          const direct = computeCraftCost(chain[hi]).focus / computeFuseRate(chain[hi], chain[hi])
+          expect(viaLower, `${chain[lo]} -> ${chain[hi]}`).toBeGreaterThanOrEqual(direct - 1e-6)
+        }
+      }
+    }
+  })
+})
+
+describe('duplicate handling (keep / auto-salvage / gated auto-fuse)', () => {
+  const sword = () => ({ instanceId: 's1', catalogId: 'vanguard_sword', level: 1, augmentIds: [] as string[] })
+  /** Rolls kills with a guaranteed drop until at least one vanguard_sword duplicate lands. */
+  function dropDuplicates(state: SimState): SimState {
+    // Only the sword is eligible, with a 100% drop chance, so every kill drops it
+    const zone = getZoneDef(state.currentZoneId)
+    const original = zone.gearItemIds
+    zone.gearItemIds = ['vanguard_sword']
+    try {
+      let next: SimState = { ...state, perkLevels: { lucky_find: 100 }, playerHp: { current: 1e12, max: 1e12 }, abilities: { ...zeroedAbilities(state), strike: { rank: 200 } } }
+      let now = Date.now()
+      for (let i = 0; i < 50; i++) {
+        next = advanceTick(next, 100, now).state
+        now += 100
+      }
+      return next
+    } finally {
+      zone.gearItemIds = original
+    }
+  }
+
+  test('keep: duplicates become pending levels on the owned item, and Fuse all applies them', () => {
+    const state = dropDuplicates({ ...createInitialState(), inventory: [sword()], discoveredItemIds: ['vanguard_sword'] })
+    const item = state.inventory.find((i) => i.instanceId === 's1')!
+    expect(state.inventory).toHaveLength(1)
+    expect(item.level).toBe(1)
+    expect(item.pendingLevels ?? 0).toBeGreaterThan(0)
+    const fused = fuseAll(state, Date.now()).state.inventory[0]
+    expect(fused.level).toBeCloseTo(1 + item.pendingLevels!, 5)
+    expect(fused.pendingLevels).toBe(0)
+  })
+
+  test('auto-salvage: duplicates turn into Focus and materials, the owned item is untouched', () => {
+    const base = createInitialState()
+    const state = dropDuplicates({ ...base, inventory: [sword()], discoveredItemIds: ['vanguard_sword'], automation: { ...defaultAutomation(), duplicateMode: 'salvage' } })
+    expect(state.inventory[0].level).toBe(1)
+    expect(state.inventory[0].pendingLevels ?? 0).toBe(0)
+    expect(state.lifetime.itemsSalvaged ?? 0).toBeGreaterThan(0)
+  })
+
+  test('auto-fuse is refused before its Recall unlock, and works after it', () => {
+    const locked = setAutomation(createInitialState(), { duplicateMode: 'fuse' })
+    expect(locked.automation.duplicateMode).toBe('keep')
+    const unlocked = setAutomation({ ...createInitialState(), lifetime: { recalls: automationUnlockRecalls('autoFuse') } }, { duplicateMode: 'fuse' })
+    expect(unlocked.automation.duplicateMode).toBe('fuse')
+    const state = dropDuplicates({ ...unlocked, inventory: [sword()], discoveredItemIds: ['vanguard_sword'] })
+    expect(state.inventory[0].level).toBeGreaterThan(1)
+  })
+
+  test('pending levels never exceed what the item can still absorb before its level cap', () => {
+    const cap = (gearData.rarities as RarityDef[]).find((r) => r.id === 'common')!.maxLevel!
+    const state = dropDuplicates({ ...createInitialState(), inventory: [{ ...sword(), level: cap - 0.5 }], discoveredItemIds: ['vanguard_sword'] })
+    expect(state.inventory[0].pendingLevels).toBeCloseTo(0.5, 5)
+  })
+
+  test('salvaging an item also pays for its pending levels', () => {
+    const base = createInitialState()
+    const plain = salvageItem({ ...base, inventory: [sword()] }, 's1').state.focus
+    const withPending = salvageItem({ ...base, inventory: [{ ...sword(), pendingLevels: 3 }] }, 's1').state.focus
+    expect(withPending).toBeGreaterThan(plain)
+  })
+
+  test('migrateSave keeps auto-fuse on for pre-automation saves that already unlocked it', () => {
+    const legacy = { ...createInitialState(), lifetime: { recalls: automationUnlockRecalls('autoFuse') } } as SimState
+    delete (legacy as Partial<SimState>).automation
+    expect(migrateSave(legacy).automation.duplicateMode).toBe('fuse')
+    const fresh = { ...createInitialState() } as SimState
+    delete (fresh as Partial<SimState>).automation
+    expect(migrateSave(fresh).automation.duplicateMode).toBe('keep')
+  })
+})
+
+describe('bulk salvage', () => {
+  test('only strictly-worse, un-augmented items are listed', () => {
+    const base = createInitialState()
+    const state: SimState = {
+      ...base,
+      gear: { ...base.gear, weapon: { instanceId: 'eq', catalogId: 'vanguard_sword', level: 50, augmentIds: [] } },
+      inventory: [
+        { instanceId: 'worse', catalogId: 'vanguard_sword', level: 1, augmentIds: [] },
+        { instanceId: 'augmented', catalogId: 'vanguard_sword', level: 1, augmentIds: ['x'] },
+        { instanceId: 'otherSlot', catalogId: 'vanguard_boots', level: 1, augmentIds: [] },
+      ],
+    }
+    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse'])
+  })
+})
+
+describe('autobuyers', () => {
+  const unlocked = (overrides: Partial<SimState['automation']>): SimState => {
+    const base = createInitialState()
+    // Small enough that one call (capped at maxPurchasesPerTick) can spend it all
+    return { ...base, lifetime: { recalls: 100 }, focus: 5_000, automation: { ...defaultAutomation(), ...overrides } }
+  }
+
+  test('do nothing while locked, even if the setting is on', () => {
+    const base = createInitialState()
+    const state = { ...base, focus: 100_000, automation: { ...defaultAutomation(), autoTrain: true } }
+    expect(runAutobuyers(state)).toBe(state)
+  })
+
+  test('auto-train spends Focus and respects weights (weight 0 is skipped, higher weight gets more levels)', () => {
+    const weights = { might: 3, grit: 1, arcana: 0, willpower: 1, fortune: 1, speed: 1 }
+    const after = runAutobuyers(unlocked({ autoTrain: true, statWeights: weights }))
+    expect(after.focus).toBeLessThan(5_000)
+    expect(after.statLevels.arcana).toBe(0)
+    expect(after.statLevels.might).toBeGreaterThan(after.statLevels.grit)
+  })
+
+  test('maxCostPct keeps a share of Focus unspent', () => {
+    const after = runAutobuyers(unlocked({ autoTrain: true, maxCostPct: 10 }))
+    // Every purchase cost at most 10% of the Focus held at the time, so a lot must be left over
+    expect(after.focus).toBeGreaterThan(5_000 * 0.05)
+    const free = runAutobuyers(unlocked({ autoTrain: true, maxCostPct: 100 }))
+    expect(free.focus).toBeLessThan(after.focus)
+  })
+
+  test('auto-abilities never exceeds max rank', () => {
+    const after = runAutobuyers({ ...unlocked({ autoAbilities: true }), focus: 1e30 })
+    for (const def of ABILITIES) expect(after.abilities[def.id].rank).toBeLessThanOrEqual(def.maxRank)
+  })
+})
+
+describe('level-capped items (regression: duplicates of a maxed item vanished without a trace, and crafting one wasted the cost)', () => {
+  const cap = () => (gearData.rarities as RarityDef[]).find((r) => r.id === 'common')!.maxLevel!
+  const stocked = (level: number): SimState => ({
+    ...createInitialState(),
+    focus: 1e9,
+    materials: { wood: 1e9, stone: 1e9, crystals: 1e9, leather: 1e9 },
+    discoveredItemIds: ['vanguard_sword'],
+    inventory: [{ instanceId: 's1', catalogId: 'vanguard_sword', level, augmentIds: [] }],
+  })
+
+  test('crafting stops at the level cap instead of charging for copies that add nothing', () => {
+    const state = stocked(cap() - 2)
+    expect(computeFuseRoomCopies(state, 'vanguard_sword')).toBe(2)
+    const after = craftItem(state, 'vanguard_sword', Date.now(), 25).state
+    expect(after.inventory[0].level).toBe(cap())
+    expect(after.lifetime.itemsCrafted).toBe(2)
+    expect(computeMaxCraftCount(after, 'vanguard_sword')).toBe(0)
+  })
+
+  test('dropped duplicates past the cap are salvaged and counted per item, in every duplicate mode', () => {
+    for (const duplicateMode of ['keep', 'fuse'] as const) {
+      const base = stocked(cap())
+      const state = { ...base, lifetime: { recalls: 100 }, automation: { ...defaultAutomation(), duplicateMode } }
+      const zone = getZoneDef(state.currentZoneId)
+      const original = zone.gearItemIds
+      zone.gearItemIds = ['vanguard_sword']
+      let next: SimState = { ...state, perkLevels: { lucky_find: 100 }, playerHp: { current: 1e12, max: 1e12 }, abilities: { ...zeroedAbilities(state), strike: { rank: 200 } } }
+      try {
+        let now = Date.now()
+        for (let i = 0; i < 50; i++) {
+          next = advanceTick(next, 100, now).state
+          now += 100
+        }
+      } finally {
+        zone.gearItemIds = original
+      }
+      expect(next.inventory[0].level).toBe(cap())
+      expect(next.inventory[0].pendingLevels ?? 0).toBe(0)
+      expect(next.lifetime[overflowSalvagedKey('vanguard_sword')] ?? 0, duplicateMode).toBeGreaterThan(0)
+      expect(next.focus).toBeGreaterThan(state.focus)
+    }
+  })
+})
+
+describe('reforge depth requirement uses the all-time deepest depth (regression: it locked again after every Recall)', () => {
+  test('a depth reached in an earlier run still allows the reforge after a Recall wiped maxDepthByZone', () => {
+    const target = getGearCatalogItem('vanguard_sword_uncommon')
+    const cost = computeReforgeCost('vanguard_sword')!
+    const state: SimState = {
+      ...createInitialState(),
+      maxDepthByZone: {},
+      lifetime: { [`deepest_${target.zoneId}`]: target.minDepth },
+      focus: cost.focus,
+      materials: Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])),
+      inventory: [{ instanceId: 'i1', catalogId: 'vanguard_sword', level: 5, augmentIds: [] }],
+    }
+    expect(reforgeItem(state, 'i1', Date.now()).state.inventory[0].catalogId).toBe('vanguard_sword_uncommon')
+  })
+})
+
+describe('milestones', () => {
+  test('crossing a lifetime threshold reaches the milestone once, logs it, and adds its reward to perkBonus', () => {
+    const track = listMilestoneTracks().find((t) => t.id === 'kills')!
+    const base = createInitialState()
+    const before = perkBonus(base, track.effect)
+    const state: SimState = { ...base, lifetime: { kills: track.tiers[1].threshold } }
+    const result = advanceTick(state, 100, Date.now())
+    expect(result.state.milestonesReached).toEqual([milestoneId(track, 0), milestoneId(track, 1)])
+    expect(result.events.filter((e) => e.kind === 'milestone')).toHaveLength(2)
+    expect(perkBonus(result.state, track.effect)).toBeCloseTo(before + track.tiers[0].value + track.tiers[1].value, 9)
+    // Already reached: no duplicate events on later ticks
+    const again = advanceTick(result.state, 100, Date.now())
+    expect(again.events.filter((e) => e.kind === 'milestone')).toHaveLength(0)
+  })
+
+  test('every track uses a perk effect that some formula reads (reuses the perk wiring)', () => {
+    const effects = new Set(listPerks().map((p) => p.effect))
+    for (const track of listMilestoneTracks()) expect(effects.has(track.effect), track.id).toBe(true)
+  })
+
+  test('tiers are in ascending threshold order', () => {
+    for (const track of listMilestoneTracks()) {
+      for (let i = 1; i < track.tiers.length; i++) expect(track.tiers[i].threshold, track.id).toBeGreaterThan(track.tiers[i - 1].threshold)
+    }
+  })
+})
+
+describe('imbue (materials sink)', () => {
+  const learned = (materials: Record<string, number>): SimState => ({ ...createInitialState(), learnedAugmentIds: ['aug_might'], materials })
+
+  test('spends materials, raises the rank, and strengthens the augment on socketed gear', () => {
+    const cost = computeImbueCostN('aug_might', 0, 3)
+    const state = learned(Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])))
+    const withGear: SimState = { ...state, gear: { ...state.gear, weapon: { instanceId: 'w', catalogId: 'vanguard_sword', level: 1, augmentIds: ['aug_might'] } } }
+    const after = imbueAugment(withGear, 'aug_might', Date.now(), 25).state
+    expect(after.augmentRanks.aug_might).toBe(3)
+    for (const m of cost.materials) expect(after.materials[m.materialId]).toBe(0)
+    expect(computeAugmentMagnitude(after, 'aug_might')).toBeGreaterThan(computeAugmentMagnitude(withGear, 'aug_might'))
+    expect(gearBonusForStat(after, 'might')).toBeGreaterThan(gearBonusForStat(withGear, 'might'))
+  })
+
+  test('computeMaxImbueCount never suggests an unaffordable count', () => {
+    const state = learned({ stone: 50_000, leather: 50_000 })
+    const count = computeMaxImbueCount(state, 'aug_might')
+    const cost = computeImbueCostN('aug_might', 0, count)
+    for (const m of cost.materials) expect(m.amount).toBeLessThanOrEqual(state.materials[m.materialId])
+    const tooMuch = computeImbueCostN('aug_might', 0, count + 1)
+    expect(tooMuch.materials.some((m) => m.amount > state.materials[m.materialId])).toBe(true)
+  })
+
+  test('an augment that has not been learned cannot be imbued', () => {
+    const state = { ...createInitialState(), materials: { stone: 1e9, leather: 1e9 } }
+    expect(imbueAugment(state, 'aug_might', Date.now(), 1).state).toBe(state)
+  })
+})
+
+describe('offline summary and Echo rate', () => {
+  test('summarizes what happened during catch-up', () => {
+    const base = createInitialState()
+    const before: SimState = { ...base, abilities: { ...zeroedAbilities(base), strike: { rank: 50 } } }
+    const after = simulateOfflineElapsed(before, 5 * 60_000)
+    const summary = summarizeOffline(before, after, 5 * 60_000, false)
+    expect(summary.kills).toBeGreaterThan(0)
+    expect(summary.focusEarned).toBeGreaterThan(0)
+    expect(summary.deepestAfter).toBeGreaterThanOrEqual(summary.deepestBefore)
+    expect(summary.capped).toBe(false)
+  })
+
+  test('Echo rate is Echoes-if-Recalled-now per hour of run time, and descending records the peak', () => {
+    const base = createInitialState()
+    const state: SimState = { ...base, currentDepth: 100, maxDepthByZone: { [base.currentZoneId]: 100 }, runStats: { timeMs: 3_600_000 } }
+    expect(computeEchoRatePerHour(state)).toBeCloseTo(computeRecallEchoes(state), 6)
+    expect(computeEchoRatePerHour({ ...state, runStats: { timeMs: 7_200_000 } })).toBeCloseTo(computeRecallEchoes(state) / 2, 6)
+  })
+})
+
+describe('zone set reforge chains', () => {
+  test('every set piece in zones 2-4 chains up to a boss-only legendary gated inside its own zone', () => {
+    const items = gearData.items as GearCatalogItemDef[]
+    for (const setId of ['crypt_warden', 'ember_zealot', 'frost_sentinel']) {
+      const set = (gearData.sets as { id: string; itemIds: string[] }[]).find((s) => s.id === setId)!
+      for (const baseId of set.itemIds) {
+        const chain = getTierChain(baseId)
+        const top = items.find((i) => i.id === chain[chain.length - 1])!
+        expect(top.rarity, baseId).toBe('legendary')
+        expect(top.bossOnly, baseId).toBe(true)
+        const zone = getZoneDef(top.zoneId!)
+        expect(zone.gearItemIds, baseId).toContain(top.id)
+        expect(top.minDepth, baseId).toBeLessThanOrEqual(zone.maxDepth)
+      }
+    }
   })
 })

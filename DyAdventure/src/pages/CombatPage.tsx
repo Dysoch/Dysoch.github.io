@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { computeMonsterAttackIntervalMs, getStatLabel, listMaterials, getCheckpointDepth, getGearCatalogItem, getMaxDepthReached, getZoneDef } from '../worker/simLogic'
+import { computeMonsterAttackIntervalMs, describeMilestoneReward, getAugmentDef, getMilestone, getStatLabel, listMaterials, getCheckpointDepth, getGearCatalogItem, getMaxDepthReached, getZoneDef } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import AbilityBar from '../components/AbilityBar'
 import { Icon } from '../components/icons'
@@ -29,6 +29,14 @@ function describeEvent(event: CombatEvent): string {
       return event.count && event.count > 1
         ? `Crafted ${event.count}× ${getGearCatalogItem(event.catalogId).name}`
         : `Crafted ${getGearCatalogItem(event.catalogId).name}`
+    case 'duplicateKept':
+      return `Duplicate ${getGearCatalogItem(event.catalogId).name} stored — ${formatNumber(event.pendingLevels)} levels ready to fuse`
+    case 'milestone': {
+      const { track, tierIndex } = getMilestone(event.milestoneId)
+      return `🏆 Milestone reached: ${track.tiers[tierIndex].name} — ${describeMilestoneReward(track, tierIndex)}`
+    }
+    case 'imbued':
+      return `Imbued ${getAugmentDef(event.augmentId).name} to rank ${event.newRank}`
     case 'reforge':
       return `✨ Reforged into ${getGearCatalogItem(event.toCatalogId).name}!`
     case 'levelUp':

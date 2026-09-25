@@ -58,7 +58,7 @@
     "title": "Gear, Sets & Augments",
     "paragraphs": [
       "Monsters drop gear from the current zone's loot pool. Some items only drop from bosses or below a certain depth. There are 10 equipment slots.",
-      "Finding a duplicate automatically fuses it into your existing copy, raising its level by 1 (each level adds 1% to its stat). Salvaging an item gives Focus instead.",
+      "Finding a duplicate adds levels to the copy you own (each level adds 1% to its stats). At first they wait as pending levels until you press Fuse on the Inventory page. You can also have duplicates salvaged automatically, and after a few Recalls unlock auto-fusing (see Automation). A lower-rarity copy of an item you've reforged feeds the higher-rarity version, at a reduced rate. Once an item hits its rarity's level cap, further duplicates are salvaged automatically — reforge it to keep leveling. Salvaging an item gives Focus and materials instead.",
       "Sets: wearing several pieces of the same set grants bonuses at 2, 4, 6 and 8 pieces. Sets appear in Set Progress once you have found at least one piece. You cannot complete two sets at once — pick one and build around it.",
       "Higher rarity items have augment slots. Augments are learned from boss kills and socketed into gear to permanently boost a stat or Focus gain."
     ],
@@ -83,7 +83,26 @@
     "paragraphs": [
       "Monsters drop four materials — Wood, Stone, Crystals and Leather — and each zone favors different ones. Bosses and deeper floors drop more. Salvaging gear also yields materials, matching the type of item (for example armor gives Leather).",
       "On the Crafting page you can craft any gear piece you have already discovered. Each piece costs Focus plus two materials, and the price rises with rarity. Crafting a piece you already own fuses it into a level, exactly like a duplicate drop.",
-      "Crafting is how you finish a set when luck runs out — but you still have to find a piece once to unlock its recipe. Boss-only uniques cannot be crafted."
+      "Each item has one card with a rarity picker for every rarity you've discovered.",
+      "Crafting is how you finish a set when luck runs out — but you still have to find a piece once to unlock its recipe. Boss-only uniques cannot be crafted.",
+      "Once you've learned augments, the Crafting page also lets you Imbue them: spend surplus materials to permanently strengthen an augment everywhere it's socketed. Imbue ranks are never reset, and each rank costs more than the last."
+    ]
+  },
+  {
+    "id": "automation",
+    "title": "Automation",
+    "paragraphs": [
+      "The Automation page controls what happens to duplicate gear: keep them for fusing by hand, auto-salvage them, or (after {autoFuseRecalls} Recalls) auto-fuse them.",
+      "After {autoTrainRecalls} Recalls you unlock Auto-train, and after {autoAbilitiesRecalls} Recalls Auto-upgrade for abilities. Each stat and ability gets a weight: the autobuyer always buys whatever is cheapest compared to its weight, and a weight of 0 skips it. A spending limit keeps some Focus free for crafting.",
+      "Unlocks count every Recall you have ever made, so an Ascend never locks them again."
+    ]
+  },
+  {
+    "id": "milestones",
+    "title": "Milestones",
+    "paragraphs": [
+      "Milestones reward long-term play: reaching lifetime totals (monsters defeated, Focus earned, bosses beaten and more) grants small permanent bonuses that survive Recall and Ascend.",
+      "The Statistics page shows your progress toward each one. The next milestone's name and reward stay hidden until you reach it."
     ]
   },
   {
@@ -93,7 +112,8 @@
       "Recall resets your stats, ability ranks, Focus and depth, but keeps your gear, discoveries and zone unlocks. It is available once you reach depth {recallDepth} in any zone, and rewards Echoes — the deeper you went, the more you earn (and deeper zones multiply it).",
       "Echoes buy Echo perks: faster training, more Focus, extra HP and better drop chance. Each Recall also permanently gives a small stat-gain bonus for the current Ascension.",
       "Ascend is the next layer. After earning {ascendEchoes} Echoes in total, you can Ascend to earn Sigils — the more Echoes you earned since your last Ascend, the more Sigils you get. Ascending resets your Echoes and Echo perks.",
-      "Sigils buy permanent perks that survive every Ascend, such as bigger Echo rewards and a global damage bonus. Each Ascension also boosts your stat gain."
+      "Sigils buy permanent perks that survive every Ascend, such as bigger Echo rewards and a global damage bonus. Each Ascension also boosts your stat gain.",
+      "The Recall timing panel shows your Echoes per hour if you Recall now. It climbs while you push deeper and sags once progress slows, and that sag is usually a good moment to Recall."
     ]
   },
   {

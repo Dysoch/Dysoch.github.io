@@ -5,6 +5,7 @@ import {
   canAscend,
   canRecall,
   computeAscendSigils,
+  computeEchoRatePerHour,
   computeMaxPerkCount,
   computePerkCostN,
   computeRecallEchoes,
@@ -12,7 +13,7 @@ import {
   listPerks,
   recallRequiredDepth,
 } from '../worker/simLogic'
-import { formatNumber } from '../utils/format'
+import { formatDuration, formatNumber } from '../utils/format'
 import { QtySelector, type BuyQty } from '../components/QtySelector'
 import type { PerkDef } from '../types'
 
@@ -47,6 +48,43 @@ function PerkRow({ perk, qty }: { perk: PerkDef; qty: BuyQty }) {
 }
 
 type PrestigeLayer = 'recall' | 'ascend'
+
+/**
+ * Rates for deciding when to Recall. Echoes only rise when depth does, while run time keeps growing,
+ * so Echoes/hour peaks and then sags once progress slows — that sag is the usual cue to Recall.
+ */
+function RecallTiming() {
+  const state = useGameStore((s) => s)
+  const runMs = state.runStats.timeMs ?? 0
+  const echoRate = computeEchoRatePerHour(state)
+  const peakRate = state.runStats.peakEchoRate ?? 0
+  const peakAtMs = state.runStats.peakEchoRateAtMs ?? 0
+  const focusPerMin = runMs > 0 ? (state.runStats.focusEarned ?? 0) / (runMs / 60_000) : 0
+  const pastPeak = peakRate > 0 && echoRate < peakRate * 0.9
+  const row = (label: string, value: string) => (
+    <div className="d-flex justify-content-between small border-bottom py-1">
+      <span className="text-body-secondary">{label}</span>
+      <span style={{ fontWeight: 600 }}>{value}</span>
+    </div>
+  )
+  return (
+    <div className="panel p-3 mt-3" style={{ height: 'fit-content' }}>
+      <div className="fw-bold mb-1">Recall timing</div>
+      {row('This run', formatDuration(runMs / 1000))}
+      {row('Focus per minute', formatNumber(focusPerMin))}
+      {row('Echoes per hour (if you Recall now)', echoRate > 0 ? formatNumber(echoRate) : '—')}
+      {peakRate > 0 && row('Best this run', `${formatNumber(peakRate)}/h at ${formatDuration(peakAtMs / 1000)}`)}
+      <div className="small mt-2" style={{ color: pastPeak ? 'var(--focus)' : 'var(--text-dim)' }}>
+        {peakRate === 0
+          ? 'Echoes per hour appears once a Recall would pay out.'
+          : pastPeak
+            ? 'Your Echo rate is past its peak — progress has slowed, so Recalling now is efficient.'
+            : 'Your Echo rate is still climbing.'}
+        {' '}A deeper Recall also raises your permanent Recall bonus, so pushing a little further can still be worth it.
+      </div>
+    </div>
+  )
+}
 
 export default function PrestigePage() {
   const state = useGameStore((s) => s)
@@ -93,6 +131,7 @@ export default function PrestigePage() {
       <div className="inventory-split">
         {activeLayer === 'recall' ? (
           <>
+            <div>
             <div className="panel p-3" style={{ height: 'fit-content' }}>
               <div className="fw-bold">Recall</div>
               <div className="small text-body-secondary">Recalls this Ascension: {state.recallCount} · Stat gain per train: ×{gain.toFixed(2)}</div>
@@ -111,6 +150,8 @@ export default function PrestigePage() {
               >
                 Recall
               </button>
+            </div>
+            <RecallTiming />
             </div>
 
             <div>

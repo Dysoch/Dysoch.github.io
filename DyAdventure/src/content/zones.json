@@ -119,7 +119,15 @@
       "wardens_lantern",
       "wardens_ward",
       "lucky_charm",
-      "tattered_pouch"
+      "tattered_pouch",
+      "wardens_mace_legendary",
+      "wardens_plate_legendary",
+      "wardens_greaves_legendary",
+      "wardens_gauntlets_legendary",
+      "wardens_sigil_legendary",
+      "wardens_band_legendary",
+      "wardens_lantern_legendary",
+      "wardens_ward_legendary"
     ],
     "echoMultiplier": 2,
     "unlocksZoneId": "ember_caverns",
@@ -174,7 +182,15 @@
       "zealot_ember",
       "zealot_censer",
       "lucky_charm",
-      "tattered_pouch"
+      "tattered_pouch",
+      "zealot_blade_legendary",
+      "zealot_staff_legendary",
+      "zealot_cuirass_legendary",
+      "zealot_vestments_legendary",
+      "zealot_brand_legendary",
+      "zealot_ring_legendary",
+      "zealot_ember_legendary",
+      "zealot_censer_legendary"
     ],
     "echoMultiplier": 3.5,
     "unlocksZoneId": "frostbound_peaks",
@@ -229,7 +245,15 @@
       "sentinel_rime",
       "sentinel_shard",
       "lucky_charm",
-      "tattered_pouch"
+      "tattered_pouch",
+      "sentinel_icicle_legendary",
+      "sentinel_mantle_legendary",
+      "sentinel_treads_legendary",
+      "sentinel_grips_legendary",
+      "sentinel_frostgem_legendary",
+      "sentinel_signet_legendary",
+      "sentinel_rime_legendary",
+      "sentinel_shard_legendary"
     ],
     "echoMultiplier": 5,
     "materialDrops": [

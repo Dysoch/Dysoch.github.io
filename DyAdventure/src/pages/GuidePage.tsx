@@ -1,8 +1,9 @@
 import guideData from '../content/guide.json'
 import prestigeData from '../content/prestige.json'
+import automationData from '../content/automation.json'
 import { DEPTH_CLEARS_MAX, DEPTH_CLEARS_MIN, DESCEND_COOLDOWN_MS } from '../constants'
 import { useGameStore } from '../store/gameStore'
-import { canRecall, getZoneDef, getDefaultZoneId, zoneGateDepth } from '../worker/simLogic'
+import { canRecall, getZoneDef, getDefaultZoneId, isAutomationUnlocked, zoneGateDepth } from '../worker/simLogic'
 import type { SimState } from '../types'
 
 interface GuideSection {
@@ -22,7 +23,10 @@ const SECTIONS = guideData as GuideSection[]
 const SECTION_GATES: Record<string, (state: SimState) => boolean> = {
   gear: (state) => state.discoveredItemIds.length > 0,
   crafting: (state) => state.discoveredItemIds.length > 0,
+  // Names the autobuyers, so it waits until the first of them unlocks (duplicate handling is covered under Gear)
+  automation: (state) => isAutomationUnlocked(state, 'autoTrain'),
   prestige: (state) => canRecall(state) || (state.lifetime.recalls ?? 0) > 0,
+  milestones: (state) => state.milestonesReached.length > 0,
 }
 
 // Numbers in the guide text are filled in from the real game values so they never go stale
@@ -33,6 +37,9 @@ const TOKENS: Record<string, string | number> = {
   gateDepth: zoneGateDepth(getZoneDef(getDefaultZoneId())),
   recallDepth: prestigeData.recall.minDepth,
   ascendEchoes: prestigeData.ascend.minEchoesEarned,
+  autoTrainRecalls: automationData.unlockRecalls.autoTrain,
+  autoAbilitiesRecalls: automationData.unlockRecalls.autoAbilities,
+  autoFuseRecalls: automationData.unlockRecalls.autoFuse,
 }
 
 function fill(text: string): string {

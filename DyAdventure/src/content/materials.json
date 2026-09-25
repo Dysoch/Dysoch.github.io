@@ -85,6 +85,11 @@
       "focus": 40000
     }
   },
+  "imbue": {
+    "baseCost": 1000,
+    "costMultiplier": 1.25,
+    "magnitudePerRank": 0.05
+  },
   "salvageMaterialDivisor": 2,
   "killDropDepthStep": 25,
   "bossDropMultiplier": 3

@@ -16,6 +16,9 @@ import {
   computeMagicPower,
   computeStaminaCap,
   computeStatGainPerTrain,
+  describeMilestoneReward,
+  listMilestoneTracks,
+  milestoneId,
   focusGainMultiplier,
   listMaterials,
 } from '../worker/simLogic'
@@ -59,6 +62,7 @@ function formatDuration(ms: number): string {
 }
 
 function Section({ title, rows, showRuns }: { title: string; rows: DisplayRow[]; showRuns: boolean }) {
+  if (rows.length === 0) return null
   return (
     <div className="panel" style={{ padding: '16px' }}>
       <div style={{ fontFamily: 'Cinzel, serif', fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>{title}</div>
@@ -78,6 +82,53 @@ function Section({ title, rows, showRuns }: { title: string; rows: DisplayRow[];
           <span style={{ fontWeight: 600 }}>{row.total}</span>
         </div>
       ))}
+    </div>
+  )
+}
+
+/**
+ * Milestones: permanent bonuses for lifetime counters. A track only appears once its counter has
+ * started, and the next tier's name and reward stay hidden (?????) until it's reached.
+ */
+function MilestonesPanel({ lifetime, reached }: { lifetime: Record<string, number>; reached: string[] }) {
+  const tracks = listMilestoneTracks().filter((t) => (lifetime[t.statKey] ?? 0) > 0)
+  if (tracks.length === 0) return null
+  const fmt = (n: number, format?: 'time') => (format === 'time' ? formatDuration(n) : formatNumber(n))
+  return (
+    <div className="panel" style={{ padding: '16px', marginBottom: '16px' }}>
+      <div style={{ fontFamily: 'Cinzel, serif', fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>
+        Milestones <span style={{ color: 'var(--text-dim)', fontSize: '12px', fontWeight: 400 }}>· {reached.length} reached · bonuses are permanent</span>
+      </div>
+      <div className="stat-page-grid" style={{ gap: '10px' }}>
+        {tracks.map((track) => {
+          const value = lifetime[track.statKey] ?? 0
+          const nextIndex = track.tiers.findIndex((_, i) => !reached.includes(milestoneId(track, i)))
+          const next = nextIndex >= 0 ? track.tiers[nextIndex] : null
+          const pct = next ? Math.min(100, (value / next.threshold) * 100) : 100
+          return (
+            <div key={track.id} className="inventory-card">
+              <div className="small" style={{ fontWeight: 600 }}>{track.label}</div>
+              {track.tiers.map((tier, i) =>
+                reached.includes(milestoneId(track, i)) ? (
+                  <div key={i} className="small" style={{ color: 'var(--hp)' }}>✓ {tier.name} — {describeMilestoneReward(track, i)}</div>
+                ) : null,
+              )}
+              {next ? (
+                <>
+                  <div className="small" style={{ color: 'var(--text-dim)' }}>
+                    ????? — {fmt(value, track.format)} / {fmt(next.threshold, track.format)}
+                  </div>
+                  <div className="hud-bar-track">
+                    <div className="hud-bar-fill" style={{ width: `${pct}%`, background: 'var(--focus)' }} />
+                  </div>
+                </>
+              ) : (
+                <div className="small" style={{ color: 'var(--focus)' }}>All milestones reached</div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -112,7 +163,11 @@ export default function StatisticsPage() {
     { label: 'Stat gain per train', total: `×${computeStatGainPerTrain(state).toFixed(2)}` },
   ]
 
-  const zoneRows = ZONES.flatMap((zone): DisplayRow[] => {
+  // Nothing that hasn't happened yet is shown (except the General basics), so unreached features
+  // and locked zones/abilities stay hidden until they come up in play.
+  const happened = (key: string) => (lifetime[key] ?? 0) > 0 || (runStats[key] ?? 0) > 0
+
+  const zoneRows = ZONES.filter((zone) => state.unlockedZoneIds.includes(zone.id)).flatMap((zone): DisplayRow[] => {
     const deepestKey = `deepest_${zone.id}`
     const runDeepest = Math.max(runStats[deepestKey] ?? 0, state.maxDepthByZone[zone.id] ?? 0)
     return [
@@ -128,6 +183,7 @@ export default function StatisticsPage() {
 
   return (
     <div style={{ padding: '24px' }}>
+      <MilestonesPanel lifetime={lifetime} reached={state.milestonesReached} />
       <div className="stat-page-grid">
         <Section title="Current" rows={current} showRuns={false} />
 
@@ -136,7 +192,7 @@ export default function StatisticsPage() {
             key={section.title}
             title={section.title}
             showRuns={!section.totalOnly}
-            rows={section.rows.map((row) =>
+            rows={section.rows.filter((row) => section.title === 'General' || happened(row.key)).map((row) =>
               section.totalOnly
                 ? { label: row.label, total: fmt(lifetime[row.key] ?? 0, row.format) }
                 : counterRow(row.label, row.key, row.format),
@@ -147,12 +203,12 @@ export default function StatisticsPage() {
         <Section title="Zones" rows={zoneRows} showRuns />
         <Section
           title="Materials gathered"
-          rows={MATERIALS.map((m) => counterRow(m.name, `material_${m.id}_gathered`))}
+          rows={MATERIALS.filter((m) => happened(`material_${m.id}_gathered`)).map((m) => counterRow(m.name, `material_${m.id}_gathered`))}
           showRuns
         />
         <Section
           title="Ability uses"
-          rows={ABILITIES.map((a) => counterRow(a.name, `ability_${a.id}_uses`))}
+          rows={ABILITIES.filter((a) => happened(`ability_${a.id}_uses`) || (state.abilities[a.id]?.rank ?? 0) > 0).map((a) => counterRow(a.name, `ability_${a.id}_uses`))}
           showRuns
         />
       </div>

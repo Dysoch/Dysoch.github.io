@@ -1,10 +1,12 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 import { SAVE_DEBOUNCE_MS, SAVE_VERSION, STORAGE_KEY } from '../constants'
-import { createInitialState } from '../worker/simLogic'
+import { createInitialState, migrateSave } from '../worker/simLogic'
 import type {
+  AutomationSettings,
   CombatEvent,
   DepthMode,
+  OfflineSummary,
   GearSlot,
   SimState,
   StatId,
@@ -20,6 +22,10 @@ type PersistedSlice = SimState
 interface GameStore extends PersistedSlice {
   activeTab: TabId
   combatLog: CombatEvent[]
+  /** Set after offline catch-up; cleared when the player dismisses the "While you were away" card */
+  offlineSummary: OfflineSummary | null
+  dismissOfflineSummary: () => void
+  imbueAugment: (augmentId: string, count?: number) => void
   setActiveTab: (id: TabId) => void
   setDepthMode: (depthMode: DepthMode) => void
   selectZone: (zoneId: string) => void
@@ -29,6 +35,10 @@ interface GameStore extends PersistedSlice {
   unequipItem: (slot: GearSlot) => void
   socketAugment: (instanceId: string, augmentId: string) => void
   salvageItem: (instanceId: string) => void
+  salvageItems: (instanceIds: string[]) => void
+  fuseItem: (instanceId: string) => void
+  fuseAll: () => void
+  setAutomation: (automation: Partial<AutomationSettings>) => void
   reforgeItem: (instanceId: string) => void
   recall: () => void
   ascend: () => void
@@ -93,7 +103,10 @@ export const useGameStore = create<GameStore>()(
       ...createInitialState(),
       activeTab: 'combat',
       combatLog: [],
+      offlineSummary: null,
 
+      dismissOfflineSummary: () => set({ offlineSummary: null }),
+      imbueAugment: (augmentId, count) => post({ type: 'IMBUE_AUGMENT', augmentId, count }),
       setActiveTab: (id) => set({ activeTab: id }),
 
       setDepthMode: (depthMode) => post({ type: 'SET_DEPTH_MODE', depthMode }),
@@ -104,6 +117,10 @@ export const useGameStore = create<GameStore>()(
       unequipItem: (slot) => post({ type: 'UNEQUIP_ITEM', slot }),
       socketAugment: (instanceId, augmentId) => post({ type: 'SOCKET_AUGMENT', instanceId, augmentId }),
       salvageItem: (instanceId) => post({ type: 'SALVAGE_ITEM', instanceId }),
+      salvageItems: (instanceIds) => post({ type: 'SALVAGE_ITEMS', instanceIds }),
+      fuseItem: (instanceId) => post({ type: 'FUSE_ITEM', instanceId }),
+      fuseAll: () => post({ type: 'FUSE_ALL' }),
+      setAutomation: (automation) => post({ type: 'SET_AUTOMATION', automation }),
       reforgeItem: (instanceId) => post({ type: 'REFORGE_ITEM', instanceId }),
       recall: () => post({ type: 'RECALL' }),
       ascend: () => post({ type: 'ASCEND' }),
@@ -122,7 +139,7 @@ export const useGameStore = create<GameStore>()(
           if (typeof parsed.maxDepthByZone !== 'object' || parsed.maxDepthByZone === null) {
             parsed.maxDepthByZone = { [parsed.currentZoneId]: parsed.currentDepth }
           }
-          const merged = { ...createInitialState(), ...parsed } as SimState
+          const merged = migrateSave({ ...createInitialState(), statLevels: undefined, automation: undefined, ...parsed } as unknown as SimState)
           set(merged)
           post({ type: 'IMPORT_SAVE', state: merged })
           return true
@@ -156,7 +173,7 @@ export const useGameStore = create<GameStore>()(
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<PersistedSlice>
         const fresh = createInitialState()
-        return {
+        const merged = {
           ...current,
           ...saved,
           stats: { ...fresh.stats, ...saved.stats },
@@ -171,7 +188,11 @@ export const useGameStore = create<GameStore>()(
               ...Object.values(saved.gear ?? {}).flatMap((i) => (i ? [i.catalogId] : [])),
             ]),
           ],
+          // Left undefined for older saves, so migrateSave fills them from the save instead of fresh defaults
+          statLevels: saved.statLevels,
+          automation: saved.automation,
         }
+        return migrateSave(merged as typeof current & SimState)
       },
       onRehydrateStorage: () => (state) => {
         // Only the plain sim state can be structured-cloned to the worker; the store also holds action functions
@@ -199,6 +220,8 @@ worker.onmessage = (e: MessageEvent<WorkerToMainMessage>) => {
   const msg = e.data
   if (msg.type === 'STATE_UPDATE') {
     useGameStore.setState(msg.state)
+  } else if (msg.type === 'OFFLINE_SUMMARY') {
+    useGameStore.setState({ offlineSummary: msg.summary })
   } else if (msg.type === 'EVENT') {
     useGameStore.setState((prev) => ({ combatLog: appendCombatEvent(prev.combatLog, msg.event) }))
   }

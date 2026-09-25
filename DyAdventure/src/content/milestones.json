@@ -1,0 +1,156 @@
+{
+  "tracks": [
+    {
+      "id": "kills",
+      "statKey": "kills",
+      "label": "Monsters defeated",
+      "effect": "damage",
+      "rewardLabel": "+{value}% damage",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Blooded", "threshold": 1000, "value": 0.02 },
+        { "name": "Slayer", "threshold": 10000, "value": 0.02 },
+        { "name": "Butcher of the Wilds", "threshold": 100000, "value": 0.03 },
+        { "name": "Legend of the Hunt", "threshold": 1000000, "value": 0.05 }
+      ]
+    },
+    {
+      "id": "bosses",
+      "statKey": "bossKills",
+      "label": "Bosses defeated",
+      "effect": "hpCap",
+      "rewardLabel": "+{value} max HP",
+      "displayScale": 1,
+      "tiers": [
+        { "name": "Giantfeller", "threshold": 1, "value": 10 },
+        { "name": "Warden's Bane", "threshold": 10, "value": 20 },
+        { "name": "Kingslayer", "threshold": 50, "value": 30 },
+        { "name": "Tyrant's End", "threshold": 250, "value": 50 }
+      ]
+    },
+    {
+      "id": "focus",
+      "statKey": "focusEarned",
+      "label": "Focus earned",
+      "effect": "focusGain",
+      "rewardLabel": "+{value}% Focus from kills",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Attentive", "threshold": 10000, "value": 0.02 },
+        { "name": "Clear-Minded", "threshold": 1000000, "value": 0.03 },
+        { "name": "Unshakable", "threshold": 100000000, "value": 0.05 },
+        { "name": "Enlightened", "threshold": 10000000000, "value": 0.1 }
+      ]
+    },
+    {
+      "id": "fused",
+      "statKey": "itemsFused",
+      "label": "Duplicates fused",
+      "effect": "dropChance",
+      "rewardLabel": "+{value}% gear drop chance",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Tinkerer", "threshold": 1000, "value": 0.005 },
+        { "name": "Smith", "threshold": 10000, "value": 0.005 },
+        { "name": "Master Smith", "threshold": 100000, "value": 0.01 },
+        { "name": "Forgelord", "threshold": 1000000, "value": 0.01 }
+      ]
+    },
+    {
+      "id": "salvaged",
+      "statKey": "itemsSalvaged",
+      "label": "Items salvaged",
+      "effect": "materialFind",
+      "rewardLabel": "+{value}% material find",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Scavenger", "threshold": 100, "value": 0.03 },
+        { "name": "Scrapper", "threshold": 1000, "value": 0.03 },
+        { "name": "Reclaimer", "threshold": 10000, "value": 0.05 },
+        { "name": "Salvage King", "threshold": 100000, "value": 0.1 }
+      ]
+    },
+    {
+      "id": "crits",
+      "statKey": "crits",
+      "label": "Critical hits",
+      "effect": "critChance",
+      "rewardLabel": "+{value}% crit chance",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Sharp Eye", "threshold": 1000, "value": 0.005 },
+        { "name": "Precise", "threshold": 10000, "value": 0.005 },
+        { "name": "Surgical", "threshold": 100000, "value": 0.01 },
+        { "name": "Deadeye", "threshold": 1000000, "value": 0.01 }
+      ]
+    },
+    {
+      "id": "faints",
+      "statKey": "faints",
+      "label": "Times fainted",
+      "effect": "resistance",
+      "rewardLabel": "+{value}% damage reduction",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Bruised", "threshold": 10, "value": 0.01 },
+        { "name": "Battle-Scarred", "threshold": 100, "value": 0.01 },
+        { "name": "Unbreakable", "threshold": 500, "value": 0.02 }
+      ]
+    },
+    {
+      "id": "abilities",
+      "statKey": "abilityUses",
+      "label": "Abilities used",
+      "effect": "speed",
+      "rewardLabel": "+{value} Speed",
+      "displayScale": 1,
+      "tiers": [
+        { "name": "Practiced", "threshold": 10000, "value": 1 },
+        { "name": "Fluent", "threshold": 100000, "value": 2 },
+        { "name": "Virtuoso", "threshold": 1000000, "value": 3 }
+      ]
+    },
+    {
+      "id": "time",
+      "statKey": "timeMs",
+      "label": "Time adventuring",
+      "format": "time",
+      "effect": "regen",
+      "rewardLabel": "+{value}% regeneration",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Wanderer", "threshold": 3600000, "value": 0.02 },
+        { "name": "Traveler", "threshold": 36000000, "value": 0.03 },
+        { "name": "Veteran", "threshold": 360000000, "value": 0.05 }
+      ]
+    },
+    {
+      "id": "woods_depth",
+      "statKey": "deepest_whispering_woods",
+      "label": "Deepest depth in Whispering Woods",
+      "effect": "trainGain",
+      "rewardLabel": "+{value}% stat gain per train",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Pathfinder", "threshold": 100, "value": 0.03 },
+        { "name": "Deep Walker", "threshold": 250, "value": 0.03 },
+        { "name": "Heart of the Woods", "threshold": 500, "value": 0.05 },
+        { "name": "Woodland Legend", "threshold": 1000, "value": 0.1 }
+      ]
+    },
+    {
+      "id": "recalls",
+      "statKey": "recalls",
+      "label": "Recalls",
+      "effect": "echoGain",
+      "rewardLabel": "+{value}% Echoes from Recall",
+      "displayScale": 100,
+      "tiers": [
+        { "name": "Returner", "threshold": 1, "value": 0.05 },
+        { "name": "Cycle Walker", "threshold": 5, "value": 0.05 },
+        { "name": "Eternal Return", "threshold": 25, "value": 0.1 },
+        { "name": "Loop Master", "threshold": 100, "value": 0.15 }
+      ]
+    }
+  ]
+}

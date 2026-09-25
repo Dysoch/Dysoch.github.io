@@ -1,0 +1,8 @@
+{
+  "unlockRecalls": {
+    "autoTrain": 2,
+    "autoAbilities": 3,
+    "autoFuse": 5
+  },
+  "maxPurchasesPerTick": 200
+}

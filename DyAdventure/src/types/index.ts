@@ -19,7 +19,7 @@ export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
 
 export type AbilityType = 'physical' | 'spell'
 
-export type TabId = 'combat' | 'training' | 'abilities' | 'inventory' | 'zones' | 'crafting' | 'statistics' | 'prestige' | 'guide' | 'settings'
+export type TabId = 'combat' | 'training' | 'abilities' | 'inventory' | 'zones' | 'crafting' | 'automation' | 'statistics' | 'prestige' | 'guide' | 'settings'
 
 export type ExtraStat = 'critChance' | 'critDamage' | 'regen' | 'resistance' | 'lifeSteal' | 'focusGain' | 'materialFind'
 export type PrimaryStat = StatId | 'staminaCap' | 'manaCap' | 'hpCap' | ExtraStat
@@ -121,6 +121,24 @@ export interface GearItem {
   catalogId: string
   level: number
   augmentIds: string[]
+  /** Levels from duplicate drops held back while duplicate handling is 'keep', applied by fusing. */
+  pendingLevels?: number
+}
+
+/** What a duplicate gear drop does: wait on its item as pending levels, get salvaged, or fuse in right away. */
+export type DuplicateMode = 'keep' | 'salvage' | 'fuse'
+
+export type AutomationFeature = 'autoTrain' | 'autoAbilities' | 'autoFuse'
+
+export interface AutomationSettings {
+  duplicateMode: DuplicateMode
+  autoTrain: boolean
+  autoAbilities: boolean
+  /** Relative priority per stat / ability (0 = never buy). The autobuyer picks the lowest cost ÷ weight. */
+  statWeights: Record<StatId, number>
+  abilityWeights: Record<string, number>
+  /** Only buy while one purchase costs at most this % of current Focus (100 = spend freely). */
+  maxCostPct: number
 }
 
 export interface AugmentDef {
@@ -130,6 +148,50 @@ export interface AugmentDef {
   description: string
   statId: PrimaryStat | 'focusGain'
   magnitude: number
+  /** [primary, secondary] materials spent to Imbue (raise the rank of) this augment */
+  imbueMaterials?: [string, string]
+}
+
+export interface MilestoneTier {
+  name: string
+  threshold: number
+  /** Added to perkBonus(effect) once reached */
+  value: number
+}
+
+export interface MilestoneTrack {
+  id: string
+  /** Lifetime statistics counter this track follows */
+  statKey: string
+  label: string
+  format?: 'time'
+  effect: PerkEffect
+  /** Reward text; {value} is replaced by value × displayScale */
+  rewardLabel: string
+  displayScale: number
+  tiers: MilestoneTier[]
+}
+
+/** What happened during offline catch-up, shown once when the game is reopened. */
+export interface OfflineSummary {
+  elapsedMs: number
+  /** True when the time away exceeded the offline cap and was cut short */
+  capped: boolean
+  kills: number
+  bossKills: number
+  focusEarned: number
+  itemsFound: number
+  duplicates: number
+  itemsSalvaged: number
+  materialsGathered: number
+  faints: number
+  depthBefore: number
+  depthAfter: number
+  deepestBefore: number
+  deepestAfter: number
+  statLevelsGained: number
+  abilityRanksGained: number
+  milestonesReached: string[]
 }
 
 export interface ZoneDef {
@@ -224,6 +286,9 @@ export type CombatEvent =
   | { kind: 'salvage'; catalogId: string; focusGained: number; materialId: string; materialsGained: number; timestamp: number }
   | { kind: 'crafted'; catalogId: string; count?: number; timestamp: number }
   | { kind: 'reforge'; fromCatalogId: string; toCatalogId: string; timestamp: number }
+  | { kind: 'duplicateKept'; catalogId: string; pendingLevels: number; timestamp: number }
+  | { kind: 'milestone'; milestoneId: string; timestamp: number }
+  | { kind: 'imbued'; augmentId: string; newRank: number; timestamp: number }
   | { kind: 'kill'; monsterName: string; depth: number; timestamp: number }
   | { kind: 'levelUp'; statId: StatId; newLevel: number; timestamp: number }
   | { kind: 'bossDefeated'; depth: number; timestamp: number }
@@ -239,7 +304,10 @@ export interface SimState {
   playerHp: ResourcePool
   fainted: boolean
   focus: number
+  /** Trained value of each stat (times trained × the stat gain per train at the time). */
   stats: Record<StatId, number>
+  /** Times each stat has been trained this run; drives the training cost. */
+  statLevels: Record<StatId, number>
   abilities: Record<string, AbilityProgress>
   abilityCooldowns: Record<string, number>
   currentZoneId: string
@@ -280,6 +348,11 @@ export interface SimState {
   bestAscendEchoes: number
   /** Highest boss HP ever defeated (never reset by Recall or Ascend). Drives a permanent, compounding damage bonus that keeps pace with monster scaling at extreme depth. */
   bestBossPowerDefeated: number
+  automation: AutomationSettings
+  /** Imbue rank per augment id (never reset); each rank strengthens that augment everywhere it's socketed */
+  augmentRanks: Record<string, number>
+  /** Milestone ids ("trackId:tierIndex") already reached (never reset) */
+  milestonesReached: string[]
 }
 
 export type MainToWorkerMessage =
@@ -292,6 +365,11 @@ export type MainToWorkerMessage =
   | { type: 'UNEQUIP_ITEM'; slot: GearSlot }
   | { type: 'SOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'SALVAGE_ITEM'; instanceId: string }
+  | { type: 'SALVAGE_ITEMS'; instanceIds: string[] }
+  | { type: 'FUSE_ITEM'; instanceId: string }
+  | { type: 'FUSE_ALL' }
+  | { type: 'SET_AUTOMATION'; automation: Partial<AutomationSettings> }
+  | { type: 'IMBUE_AUGMENT'; augmentId: string; count?: number }
   | { type: 'REFORGE_ITEM'; instanceId: string }
   | { type: 'RECALL' }
   | { type: 'ASCEND' }
@@ -302,3 +380,4 @@ export type MainToWorkerMessage =
 export type WorkerToMainMessage =
   | { type: 'STATE_UPDATE'; state: SimState }
   | { type: 'EVENT'; event: CombatEvent }
+  | { type: 'OFFLINE_SUMMARY'; summary: OfflineSummary }

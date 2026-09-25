@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { computeEffectiveStat, computeMagicPower, computePhysicalPower } from '../worker/simLogic'
+import { computeMagicPower, computePhysicalPower, getZoneDef } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from './icons'
 
@@ -21,7 +21,8 @@ function Bar({ label, current, max, color }: { label: string; current: number; m
 export default function HudHeader() {
   const state = useGameStore((s) => s)
   const combatPower = Math.round((computePhysicalPower(state) + computeMagicPower(state)) * 50)
-  const speed = computeEffectiveStat(state, 'speed')
+  const setActiveTab = useGameStore((s) => s.setActiveTab)
+  const zone = getZoneDef(state.currentZoneId)
 
   return (
     <header className="hud-header">
@@ -46,10 +47,19 @@ export default function HudHeader() {
           <Icon name="flame" size={15} />
           <span style={{ color: 'var(--text)' }}>{formatNumber(state.focus)}</span>
         </div>
-        <div className="hud-chip">
-          <Icon name="lightning" size={15} />
-          <span>{formatNumber(speed)} SPD</span>
-        </div>
+        <button
+          type="button"
+          className="hud-chip"
+          title="Go to Combat"
+          onClick={() => setActiveTab('combat')}
+          style={{ cursor: 'pointer', color: 'var(--text)' }}
+        >
+          <Icon name={state.currentMonster?.isBoss ? 'crown' : 'map'} size={15} />
+          <span>
+            {zone.name} · Depth {formatNumber(state.currentDepth)}
+            {!state.depthMode.auto && <span style={{ color: 'var(--text-dim)' }}> (pinned)</span>}
+          </span>
+        </button>
         {state.fainted && (
           <div className="hud-chip" style={{ color: 'var(--physical)', borderColor: 'var(--physical)' }}>
             Fainted — recovering…

@@ -633,7 +633,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_mace_rare"
     },
     {
       "id": "wardens_plate",
@@ -653,7 +655,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_plate_rare"
     },
     {
       "id": "wardens_greaves",
@@ -673,7 +677,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_greaves_rare"
     },
     {
       "id": "wardens_gauntlets",
@@ -693,7 +699,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_gauntlets_rare"
     },
     {
       "id": "wardens_sigil",
@@ -713,7 +721,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_sigil_rare"
     },
     {
       "id": "wardens_band",
@@ -733,7 +743,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_band_rare"
     },
     {
       "id": "wardens_lantern",
@@ -753,7 +765,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_lantern_rare"
     },
     {
       "id": "wardens_ward",
@@ -773,7 +787,9 @@
       ],
       "rarity": "uncommon",
       "setId": "crypt_warden",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_ward_rare"
     },
     {
       "id": "zealot_blade",
@@ -793,7 +809,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_blade_epic"
     },
     {
       "id": "zealot_staff",
@@ -813,7 +831,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_staff_epic"
     },
     {
       "id": "zealot_cuirass",
@@ -833,7 +853,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_cuirass_epic"
     },
     {
       "id": "zealot_vestments",
@@ -853,7 +875,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_vestments_epic"
     },
     {
       "id": "zealot_brand",
@@ -873,7 +897,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_brand_epic"
     },
     {
       "id": "zealot_ring",
@@ -893,7 +919,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_ring_epic"
     },
     {
       "id": "zealot_ember",
@@ -913,7 +941,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_ember_epic"
     },
     {
       "id": "zealot_censer",
@@ -933,7 +963,9 @@
       ],
       "rarity": "rare",
       "setId": "ember_zealot",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_censer_epic"
     },
     {
       "id": "sentinel_icicle",
@@ -957,7 +989,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_icicle_legendary"
     },
     {
       "id": "sentinel_mantle",
@@ -981,7 +1015,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_mantle_legendary"
     },
     {
       "id": "sentinel_treads",
@@ -1005,7 +1041,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_treads_legendary"
     },
     {
       "id": "sentinel_grips",
@@ -1029,7 +1067,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 1
+      "minDepth": 1,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_grips_legendary"
     },
     {
       "id": "sentinel_frostgem",
@@ -1053,7 +1093,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_frostgem_legendary"
     },
     {
       "id": "sentinel_signet",
@@ -1077,7 +1119,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 10
+      "minDepth": 10,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_signet_legendary"
     },
     {
       "id": "sentinel_rime",
@@ -1101,7 +1145,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_rime_legendary"
     },
     {
       "id": "sentinel_shard",
@@ -1125,7 +1171,9 @@
       ],
       "rarity": "epic",
       "setId": "frost_sentinel",
-      "minDepth": 20
+      "minDepth": 20,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_shard_legendary"
     },
     {
       "id": "vanguard_sword_legendary",
@@ -2661,6 +2709,1222 @@
       "setId": "woodland_adept",
       "minDepth": 950,
       "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_mace_rare",
+      "name": "Hallowed Warden's Mace",
+      "icon": "axe",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 14.0
+        },
+        {
+          "statId": "resistance",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_mace_epic"
+    },
+    {
+      "id": "wardens_mace_epic",
+      "name": "Sepulchral Warden's Mace",
+      "icon": "axe",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 32.6
+        },
+        {
+          "statId": "resistance",
+          "value": 14.7
+        },
+        {
+          "statId": "speed",
+          "value": 9.8
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_mace_legendary"
+    },
+    {
+      "id": "wardens_mace_legendary",
+      "name": "Deathless Warden's Mace",
+      "icon": "axe",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 76.0
+        },
+        {
+          "statId": "resistance",
+          "value": 34.3
+        },
+        {
+          "statId": "speed",
+          "value": 22.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_plate_rare",
+      "name": "Hallowed Warden's Plate",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 14.0
+        },
+        {
+          "statId": "staminaCap",
+          "value": 15.1
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_plate_epic"
+    },
+    {
+      "id": "wardens_plate_epic",
+      "name": "Sepulchral Warden's Plate",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 32.6
+        },
+        {
+          "statId": "staminaCap",
+          "value": 35.2
+        },
+        {
+          "statId": "regen",
+          "value": 9.8
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_plate_legendary"
+    },
+    {
+      "id": "wardens_plate_legendary",
+      "name": "Deathless Warden's Plate",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 76.0
+        },
+        {
+          "statId": "staminaCap",
+          "value": 82.0
+        },
+        {
+          "statId": "regen",
+          "value": 22.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_greaves_rare",
+      "name": "Hallowed Warden's Greaves",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 33.6
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_greaves_epic"
+    },
+    {
+      "id": "wardens_greaves_epic",
+      "name": "Sepulchral Warden's Greaves",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 78.3
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        },
+        {
+          "statId": "regen",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_greaves_legendary"
+    },
+    {
+      "id": "wardens_greaves_legendary",
+      "name": "Deathless Warden's Greaves",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 182.4
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_gauntlets_rare",
+      "name": "Hallowed Warden's Gauntlets",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 10.0
+        },
+        {
+          "statId": "regen",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_gauntlets_epic"
+    },
+    {
+      "id": "wardens_gauntlets_epic",
+      "name": "Sepulchral Warden's Gauntlets",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 23.3
+        },
+        {
+          "statId": "regen",
+          "value": 10.3
+        },
+        {
+          "statId": "critChance",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_gauntlets_legendary"
+    },
+    {
+      "id": "wardens_gauntlets_legendary",
+      "name": "Deathless Warden's Gauntlets",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 54.3
+        },
+        {
+          "statId": "regen",
+          "value": 24.0
+        },
+        {
+          "statId": "critChance",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_sigil_rare",
+      "name": "Hallowed Warden's Sigil",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 33.6
+        },
+        {
+          "statId": "grit",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_sigil_epic"
+    },
+    {
+      "id": "wardens_sigil_epic",
+      "name": "Sepulchral Warden's Sigil",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 78.3
+        },
+        {
+          "statId": "grit",
+          "value": 14.7
+        },
+        {
+          "statId": "critChance",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_sigil_legendary"
+    },
+    {
+      "id": "wardens_sigil_legendary",
+      "name": "Deathless Warden's Sigil",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 182.4
+        },
+        {
+          "statId": "grit",
+          "value": 34.3
+        },
+        {
+          "statId": "critChance",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_band_rare",
+      "name": "Hallowed Warden's Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 10.0
+        },
+        {
+          "statId": "staminaCap",
+          "value": 10.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_band_epic"
+    },
+    {
+      "id": "wardens_band_epic",
+      "name": "Sepulchral Warden's Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 23.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 24.9
+        },
+        {
+          "statId": "critChance",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_band_legendary"
+    },
+    {
+      "id": "wardens_band_legendary",
+      "name": "Deathless Warden's Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 54.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 58.0
+        },
+        {
+          "statId": "critChance",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_lantern_rare",
+      "name": "Hallowed Warden's Lantern",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 33.6
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_lantern_epic"
+    },
+    {
+      "id": "wardens_lantern_epic",
+      "name": "Sepulchral Warden's Lantern",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 78.3
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        },
+        {
+          "statId": "materialFind",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_lantern_legendary"
+    },
+    {
+      "id": "wardens_lantern_legendary",
+      "name": "Deathless Warden's Lantern",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 182.4
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "materialFind",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_ward_rare",
+      "name": "Hallowed Warden's Ward",
+      "icon": "shield",
+      "slot": "trinket2",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 10.0
+        },
+        {
+          "statId": "materialFind",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_ward_epic"
+    },
+    {
+      "id": "wardens_ward_epic",
+      "name": "Sepulchral Warden's Ward",
+      "icon": "shield",
+      "slot": "trinket2",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 23.3
+        },
+        {
+          "statId": "materialFind",
+          "value": 10.3
+        },
+        {
+          "statId": "regen",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_ward_legendary"
+    },
+    {
+      "id": "wardens_ward_legendary",
+      "name": "Deathless Warden's Ward",
+      "icon": "shield",
+      "slot": "trinket2",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 54.3
+        },
+        {
+          "statId": "materialFind",
+          "value": 24.0
+        },
+        {
+          "statId": "regen",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_blade_epic",
+      "name": "Blazing Zealot Blade",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 32.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.7
+        },
+        {
+          "statId": "speed",
+          "value": 9.8
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_blade_legendary"
+    },
+    {
+      "id": "zealot_blade_legendary",
+      "name": "Sunforged Zealot Blade",
+      "icon": "sword",
+      "slot": "weapon",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 76.0
+        },
+        {
+          "statId": "critDamage",
+          "value": 34.3
+        },
+        {
+          "statId": "speed",
+          "value": 22.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_staff_epic",
+      "name": "Blazing Zealot Staff",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 32.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.7
+        },
+        {
+          "statId": "speed",
+          "value": 9.8
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_staff_legendary"
+    },
+    {
+      "id": "zealot_staff_legendary",
+      "name": "Sunforged Zealot Staff",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 76.0
+        },
+        {
+          "statId": "critDamage",
+          "value": 34.3
+        },
+        {
+          "statId": "speed",
+          "value": 22.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_cuirass_epic",
+      "name": "Blazing Zealot Cuirass",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 78.3
+        },
+        {
+          "statId": "resistance",
+          "value": 14.7
+        },
+        {
+          "statId": "regen",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_cuirass_legendary"
+    },
+    {
+      "id": "zealot_cuirass_legendary",
+      "name": "Sunforged Zealot Cuirass",
+      "icon": "armor",
+      "slot": "armor",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 182.4
+        },
+        {
+          "statId": "resistance",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_vestments_epic",
+      "name": "Blazing Zealot Vestments",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 23.5
+        },
+        {
+          "statId": "critChance",
+          "value": 10.5
+        },
+        {
+          "statId": "regen",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_vestments_legendary"
+    },
+    {
+      "id": "zealot_vestments_legendary",
+      "name": "Sunforged Zealot Vestments",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 54.8
+        },
+        {
+          "statId": "critChance",
+          "value": 24.5
+        },
+        {
+          "statId": "regen",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_brand_epic",
+      "name": "Blazing Zealot Brand",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 78.3
+        },
+        {
+          "statId": "focusGain",
+          "value": 14.7
+        },
+        {
+          "statId": "critChance",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_brand_legendary"
+    },
+    {
+      "id": "zealot_brand_legendary",
+      "name": "Sunforged Zealot Brand",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 182.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 34.3
+        },
+        {
+          "statId": "critChance",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_ring_epic",
+      "name": "Blazing Zealot Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 23.5
+        },
+        {
+          "statId": "staminaCap",
+          "value": 25.4
+        },
+        {
+          "statId": "critChance",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_ring_legendary"
+    },
+    {
+      "id": "zealot_ring_legendary",
+      "name": "Sunforged Zealot Ring",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 54.8
+        },
+        {
+          "statId": "staminaCap",
+          "value": 59.2
+        },
+        {
+          "statId": "critChance",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_ember_epic",
+      "name": "Blazing Zealot Ember",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "fortune",
+          "value": 23.5
+        },
+        {
+          "statId": "speed",
+          "value": 10.5
+        },
+        {
+          "statId": "materialFind",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_ember_legendary"
+    },
+    {
+      "id": "zealot_ember_legendary",
+      "name": "Sunforged Zealot Ember",
+      "icon": "flame",
+      "slot": "trinket1",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "fortune",
+          "value": 54.8
+        },
+        {
+          "statId": "speed",
+          "value": 24.5
+        },
+        {
+          "statId": "materialFind",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_censer_epic",
+      "name": "Blazing Zealot Censer",
+      "icon": "sparkles",
+      "slot": "trinket2",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 23.5
+        },
+        {
+          "statId": "willpower",
+          "value": 10.5
+        },
+        {
+          "statId": "materialFind",
+          "value": 7.0
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_censer_legendary"
+    },
+    {
+      "id": "zealot_censer_legendary",
+      "name": "Sunforged Zealot Censer",
+      "icon": "sparkles",
+      "slot": "trinket2",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 54.8
+        },
+        {
+          "statId": "willpower",
+          "value": 24.5
+        },
+        {
+          "statId": "materialFind",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_icicle_legendary",
+      "name": "Everwinter Sentinel Icicle",
+      "icon": "wand",
+      "slot": "focusItem",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 74.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_mantle_legendary",
+      "name": "Everwinter Sentinel Mantle",
+      "icon": "robe",
+      "slot": "robe",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 74.6
+        },
+        {
+          "statId": "speed",
+          "value": 33.6
+        },
+        {
+          "statId": "regen",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_treads_legendary",
+      "name": "Everwinter Sentinel Treads",
+      "icon": "boots",
+      "slot": "boots",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 178.9
+        },
+        {
+          "statId": "speed",
+          "value": 33.6
+        },
+        {
+          "statId": "regen",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_grips_legendary",
+      "name": "Everwinter Sentinel Grips",
+      "icon": "gloves",
+      "slot": "gloves",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 53.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 24.0
+        },
+        {
+          "statId": "manaCap",
+          "value": 38.7
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_frostgem_legendary",
+      "name": "Everwinter Sentinel Frostgem",
+      "icon": "amulet",
+      "slot": "amulet",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 178.9
+        },
+        {
+          "statId": "regen",
+          "value": 33.6
+        },
+        {
+          "statId": "speed",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_signet_legendary",
+      "name": "Everwinter Sentinel Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 53.6
+        },
+        {
+          "statId": "speed",
+          "value": 24.0
+        },
+        {
+          "statId": "critChance",
+          "value": 16.1
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_rime_legendary",
+      "name": "Everwinter Sentinel Rime",
+      "icon": "sparkles",
+      "slot": "trinket1",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 53.6
+        },
+        {
+          "statId": "materialFind",
+          "value": 24.0
+        },
+        {
+          "statId": "fortune",
+          "value": 16.1
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_shard_legendary",
+      "name": "Everwinter Sentinel Shard",
+      "icon": "burst",
+      "slot": "trinket2",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 178.9
+        },
+        {
+          "statId": "regen",
+          "value": 33.6
+        },
+        {
+          "statId": "resistance",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
       "bossOnly": true
     }
   ]
