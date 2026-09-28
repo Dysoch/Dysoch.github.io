@@ -114,8 +114,8 @@ function ComparisonLine({ comparison, owned }: { comparison: GearComparison | 'e
       ? ['would fill an empty slot', 'var(--hp)']
       : comparison.verdict === 'upgrade'
         ? [`would be an upgrade (${pct})`, 'var(--hp)']
-        : comparison.verdict === 'sidegrade'
-          ? [`would be a sidegrade (${pct})`, 'var(--focus)']
+        : comparison.verdict === 'similar'
+          ? [`would be about the same (${pct})`, 'var(--focus)']
           : ['is worse than what you wear', 'var(--physical)']
   return <div className="small" style={{ color }}>{who} {text}</div>
 }

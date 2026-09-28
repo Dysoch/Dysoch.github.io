@@ -27,6 +27,7 @@ import {
   listWorseItems,
   overflowSalvagedKey,
   planSetLoadout,
+  planAllUpgrades,
   getTierChain,
   totalPendingLevels,
   type GearComparison,
@@ -68,7 +69,7 @@ function slotKindLabel(def: GearCatalogItemDef): string {
 const VERDICTS: Record<GearVerdict, { label: string; color: string; order: number }> = {
   emptySlot: { label: '▲ Empty slot', color: 'var(--hp)', order: 0 },
   upgrade: { label: '▲ Upgrade', color: 'var(--hp)', order: 1 },
-  sidegrade: { label: '◆ Sidegrade', color: 'var(--focus)', order: 2 },
+  similar: { label: '≈ About the same', color: 'var(--text-dim)', order: 2 },
   worse: { label: '▼ Worse', color: 'var(--physical)', order: 3 },
 }
 
@@ -90,7 +91,12 @@ type Selection = { kind: 'equipped'; slot: GearSlot } | { kind: 'inventory'; ins
 
 const SLOT_ORDER = Object.keys(SLOT_LABELS) as GearSlot[]
 
+/** Whole levels for lists; the detail panel shows the exact value. */
 function levelText(level: number): string {
+  return `Lv.${Math.floor(level + 1e-9)}`
+}
+
+function exactLevelText(level: number): string {
   return `Lv.${Math.round(level * 100) / 100}`
 }
 
@@ -102,8 +108,49 @@ function pctText(value: number): string {
 
 function verdictText(c: GearComparison): string {
   if (c.verdict === 'emptySlot') return VERDICTS.emptySlot.label
-  if (c.verdict === 'worse') return VERDICTS.worse.label
-  return `${c.verdict === 'upgrade' ? '▲' : '◆'} ${pctText(c.net)}`
+  const mark = c.verdict === 'upgrade' ? '▲' : c.verdict === 'worse' ? '▼' : '≈'
+  return `${mark} ${pctText(c.net)}`
+}
+
+/** For an item that isn't an upgrade overall: the aspect it would still improve most, e.g. "+6% Defense". */
+function upsideHint(c: GearComparison): string | null {
+  if (c.verdict === 'upgrade' || c.verdict === 'emptySlot') return null
+  const best = LOADOUT_ASPECTS.reduce((a, b) => (c.aspects[b] > c.aspects[a] ? b : a))
+  return c.aspects[best] > 0.01 ? `${pctText(c.aspects[best])} ${ASPECT_LABELS[best].label}` : null
+}
+
+function isMaxLevel(item: GearItem): boolean {
+  const maxLevel = getRarityDef(getGearCatalogItem(item.catalogId).rarity).maxLevel
+  return maxLevel != null && item.level >= maxLevel
+}
+
+/** Reforge depth reached and affordable right now. */
+function reforgeReady(item: GearItem, state: SimState): boolean {
+  const cost = computeReforgeCost(item.catalogId)
+  if (!cost) return false
+  const depthReq = computeReforgeDepthRequirement(item.catalogId)
+  if (depthReq && computeAllTimeDepth(state, depthReq.zoneId) < depthReq.depth) return false
+  return state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
+}
+
+/** Small status tags shown on list rows: socketed augments, level cap, pending levels, reforge ready. */
+function RowTags({ item, state }: { item: GearItem; state: SimState }) {
+  return (
+    <>
+      {item.augmentIds.length > 0 && (
+        <span className="row-tag" style={{ color: 'var(--arcane)', borderColor: 'var(--arcane)' }} title={`${item.augmentIds.length} socketed augment${item.augmentIds.length > 1 ? 's' : ''}`}>
+          {item.augmentIds.length} aug
+        </span>
+      )}
+      {isMaxLevel(item) && <span className="row-tag" title="At its rarity's level cap">MAX</span>}
+      {item.pendingLevels ? <span className="row-tag" title="Levels waiting to be fused">+{formatNumber(item.pendingLevels)} lv</span> : null}
+      {reforgeReady(item, state) && (
+        <span className="row-tag" style={{ color: 'var(--hp)', borderColor: 'var(--hp)' }} title="Reforge requirements met">
+          reforge
+        </span>
+      )}
+    </>
+  )
 }
 
 /** Set bonus tiers gained or lost by a change in worn pieces, e.g. "loses +3 Might". */
@@ -130,7 +177,7 @@ function ItemHeader({ item }: { item: GearItem }) {
       <Icon name={def.icon} size={18} />
       <span style={{ color: rarity.color, fontWeight: 600, fontSize: '15px' }}>{def.name}</span>
       <RarityBadge def={def} />
-      <span className="small" style={{ color: 'var(--text-dim)' }}>{levelText(item.level)}</span>
+      <span className="small" style={{ color: 'var(--text-dim)' }}>{exactLevelText(item.level)}</span>
       {rarity.maxLevel != null && item.level >= rarity.maxLevel && (
         <span style={{ fontSize: '10px', color: 'var(--focus)', border: '1px solid var(--focus)', borderRadius: '4px', padding: '0 5px' }} title={`Level cap for ${rarity.name}`}>MAX</span>
       )}
@@ -335,6 +382,7 @@ export default function InventoryPage() {
   const equipItem = useGameStore((s) => s.equipItem)
   const unequipItem = useGameStore((s) => s.unequipItem)
   const equipSet = useGameStore((s) => s.equipSet)
+  const equipAllUpgrades = useGameStore((s) => s.equipAllUpgrades)
   const socketAugment = useGameStore((s) => s.socketAugment)
   const unsocketAugment = useGameStore((s) => s.unsocketAugment)
   const salvageItem = useGameStore((s) => s.salvageItem)
@@ -356,7 +404,7 @@ export default function InventoryPage() {
   // Comparing every inventory item runs the loadout formulas per item; the worker re-sends state several
   // times a second, so only recompute when something that feeds the comparison actually changed.
   const comparisonKey = JSON.stringify([state.gear, state.inventory, state.stats, state.abilities, state.perkLevels, state.augmentRanks, state.milestonesReached])
-  const { rows, worseItems, setPlans } = useMemo(() => {
+  const { rows, worseItems, setPlans, upgradePlan } = useMemo(() => {
     const base = computeLoadoutScore(state)
     return {
       rows: state.inventory.map((item) => {
@@ -366,6 +414,7 @@ export default function InventoryPage() {
       }),
       worseItems: listWorseItems(state, includeSetPieces),
       setPlans: Object.fromEntries(listSets().map((set) => [set.id, planSetLoadout(state, set.id, base)])),
+      upgradePlan: planAllUpgrades(state),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comparisonKey, includeSetPieces])
@@ -532,6 +581,15 @@ export default function InventoryPage() {
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div className="panel d-flex align-items-center gap-3 flex-wrap" style={{ padding: '12px 16px' }}>
+        <button
+          type="button"
+          className="btn btn-sm btn-primary"
+          disabled={upgradePlan.swaps.length === 0}
+          title="Fills empty slots and puts on every item that improves your character overall, counting set bonuses and moved augments."
+          onClick={equipAllUpgrades}
+        >
+          {upgradePlan.swaps.length === 0 ? 'No upgrades to equip' : `Equip all upgrades (${upgradePlan.swaps.length}) → ${pctText(upgradePlan.net)}`}
+        </button>
         <button type="button" className="btn btn-sm btn-outline-warning" disabled={pending <= 0} onClick={fuseAll}>
           Fuse all{pending > 0 ? ` (+${formatNumber(pending)} levels)` : ''}
         </button>
@@ -539,7 +597,7 @@ export default function InventoryPage() {
           type="button"
           className={`btn btn-sm ${confirmSalvage ? 'btn-danger' : 'btn-outline-danger'}`}
           disabled={worseItems.length === 0}
-          title="Salvages every inventory item that would improve nothing if equipped, counting set bonuses and augments."
+          title="Salvages every inventory item marked Worse (worse overall than what you wear, counting set bonuses and augments)."
           onClick={() => {
             if (!confirmSalvage) return setConfirmSalvage(true)
             salvageItems(worseItems.map((i) => i.instanceId))
@@ -579,8 +637,7 @@ export default function InventoryPage() {
                         <Icon name={def.icon} size={14} />
                         <span className="inv-row-name" style={{ color: getRarityDef(def.rarity).color }}>{def.name}</span>
                         <span className="inv-row-meta">{levelText(item.level)}</span>
-                        {item.augmentIds.length > 0 && <span className="inv-row-meta" style={{ color: 'var(--focus)' }} title="Socketed augments">◆{item.augmentIds.length}</span>}
-                        {item.pendingLevels ? <span className="inv-row-meta" style={{ color: 'var(--focus)' }} title="Levels waiting to be fused">+{formatNumber(item.pendingLevels)} lv</span> : null}
+                        <RowTags item={item} state={state} />
                       </>
                     ) : (
                       <span className="inv-row-name" style={{ color: 'var(--text-dim)' }}>Empty</span>
@@ -598,12 +655,20 @@ export default function InventoryPage() {
               <div className="text-body-secondary small">No items yet. Keep fighting for loot.</div>
             ) : (
               <>
-                <div className="d-flex flex-wrap gap-1 mb-2">
+                <div className="d-flex flex-wrap gap-2 mb-2 align-items-center">
                   {chip('all', 'All', rows.length)}
                   {upgradeCount > 0 && chip('upgrades', '▲ Upgrades', upgradeCount)}
-                  {SLOT_ORDER.filter((slot) => slotCounts.has(slot)).map((slot) => chip(slot, slot === 'ring1' ? 'Ring' : SLOT_LABELS[slot], slotCounts.get(slot)!))}
-                </div>
-                <div className="d-flex flex-wrap gap-2 mb-2 align-items-center">
+                  <select
+                    className="form-select form-select-sm"
+                    style={{ width: 'auto' }}
+                    value={activeFilter === 'all' || activeFilter === 'upgrades' ? '' : activeFilter}
+                    onChange={(e) => setFilter((e.target.value || 'all') as Filter)}
+                  >
+                    <option value="">Any slot</option>
+                    {SLOT_ORDER.filter((slot) => slotCounts.has(slot)).map((slot) => (
+                      <option key={slot} value={slot}>{slot === 'ring1' ? 'Ring' : SLOT_LABELS[slot]} ({slotCounts.get(slot)})</option>
+                    ))}
+                  </select>
                   <input type="search" className="form-control form-control-sm" style={{ maxWidth: '180px' }} placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} />
                   <select className="form-select form-select-sm" style={{ width: 'auto' }} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
                     <option value="best">Best first</option>
@@ -629,7 +694,8 @@ export default function InventoryPage() {
                       <Icon name={def.icon} size={14} />
                       <span className="inv-row-name" style={{ color: getRarityDef(def.rarity).color }}>{def.name}</span>
                       <span className="inv-row-meta">{levelText(item.level)}</span>
-                      {item.pendingLevels ? <span className="inv-row-meta" style={{ color: 'var(--focus)' }} title="Levels waiting to be fused">+{formatNumber(item.pendingLevels)} lv</span> : null}
+                      <RowTags item={item} state={state} />
+                      {upsideHint(comparison) && <span className="inv-row-meta" title="What it would still improve">{upsideHint(comparison)}</span>}
                       <span className="inv-row-meta inv-row-kind">{slotKindLabel(def)}</span>
                     </button>
                   ))}
@@ -669,7 +735,7 @@ export default function InventoryPage() {
                   ) : (
                     <>
                       <span style={{ color: verdictColor }} title={LOADOUT_ASPECTS.map((k) => `${ASPECT_LABELS[k].label} ${pctText(plan.aspects[k])}`).join(', ')}>
-                        {plan.net > 1e-4 ? '▲' : plan.net < -1e-4 ? '▼' : '◆'} {pctText(plan.net)} overall
+                        {plan.net > 1e-4 ? '▲' : plan.net < -1e-4 ? '▼' : '≈'} {pctText(plan.net)} overall
                       </span>
                       <span style={{ color: 'var(--text-dim)' }}>· {plan.swaps.length} swap{plan.swaps.length > 1 ? 's' : ''} → {wornAfter}/{plan.total} worn</span>
                       <button type="button" className="btn btn-sm btn-outline-primary ms-auto" style={{ padding: '0 8px' }} onClick={() => equipSet(set.id)}>

@@ -8,6 +8,7 @@ import {
   createInitialState,
   equipItem,
   equipSet,
+  equipAllUpgrades,
   fuseAll,
   fuseItem,
   imbueAugment,
@@ -124,6 +125,9 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       break
     case 'EQUIP_ITEM':
       state = equipItem(state, msg.instanceId, msg.slot)
+      break
+    case 'EQUIP_ALL_UPGRADES':
+      state = equipAllUpgrades(state)
       break
     case 'EQUIP_SET':
       state = equipSet(state, msg.setId)

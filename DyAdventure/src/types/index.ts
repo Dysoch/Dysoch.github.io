@@ -383,6 +383,7 @@ export type MainToWorkerMessage =
   | { type: 'EQUIP_ITEM'; instanceId: string; slot?: GearSlot }
   | { type: 'UNEQUIP_ITEM'; slot: GearSlot }
   | { type: 'EQUIP_SET'; setId: string }
+  | { type: 'EQUIP_ALL_UPGRADES' }
   | { type: 'SOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'UNSOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'SALVAGE_ITEM'; instanceId: string }

@@ -380,10 +380,22 @@ a {
 }
 
 .inv-lists {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* Equipped and Inventory side by side when there's room, so rows don't stretch across wide screens */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
   gap: 16px;
+  align-items: start;
   min-width: 0;
+}
+
+.row-tag {
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--focus);
+  border: 1px solid var(--focus);
+  border-radius: 4px;
+  padding: 0 4px;
+  white-space: nowrap;
 }
 
 .inv-list {

@@ -75,6 +75,8 @@ import {
   unsocketAugment,
   planSetLoadout,
   equipSet,
+  planAllUpgrades,
+  SIMILAR_BAND,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
@@ -920,9 +922,11 @@ describe('bulk salvage', () => {
     ],
   }
 
-  test('lists items that would improve nothing, keeping set pieces unless asked', () => {
-    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'neckPiece'])
-    expect(listWorseItems(state, true).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'setPiece', 'neckPiece'])
+  test('lists items that are worse overall, keeping set pieces unless asked', () => {
+    // The Lv1 Lucky Charm is only a hair worse than the Lv50 one worn: "about the same", so it's kept
+    expect(compareToEquipped(state, state.inventory[3]).verdict).toBe('similar')
+    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse', 'augmented'])
+    expect(listWorseItems(state, true).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'setPiece'])
   })
 
   test('the salvage preview matches what salvaging pays', () => {
@@ -1265,5 +1269,26 @@ describe('wearing a whole set', () => {
     const plan = planSetLoadout(state, 'woodland_vanguard')
     expect(plan.swaps).toEqual([])
     expect(plan.net).toBe(0)
+  })
+})
+
+describe('equip all upgrades', () => {
+  const item = (instanceId: string, catalogId: string, level = 1): GearItem => ({ instanceId, catalogId, level, augmentIds: [] })
+  const base = createInitialState()
+
+  test('fills empty slots and takes every overall upgrade, then stops', () => {
+    const state: SimState = {
+      ...base,
+      gear: { ...base.gear, mainHand: item('oldSword', 'vanguard_sword', 1) },
+      inventory: [item('betterSword', 'vanguard_sword_uncommon', 50), item('helm', 'vanguard_helm'), item('ring', 'vanguard_ring'), item('worseSword', 'vanguard_sword', 1)],
+    }
+    const plan = planAllUpgrades(state)
+    expect(plan.state.gear.mainHand?.instanceId).toBe('betterSword')
+    expect(plan.state.gear.head?.instanceId).toBe('helm')
+    expect(plan.state.gear.ring1?.instanceId ?? plan.state.gear.ring2?.instanceId).toBe('ring')
+    expect(plan.swaps).toHaveLength(3)
+    expect(plan.net).toBeGreaterThan(SIMILAR_BAND)
+    // Nothing left to improve afterwards
+    expect(planAllUpgrades(plan.state).swaps).toEqual([])
   })
 })

@@ -467,7 +467,7 @@ export function compareGear(item: GearItem, other: GearItem | null): GearStatDef
   return ids.map((id) => ({ statId: id, value: valueOf(mine, id) - valueOf(theirs, id) })).filter((d) => Math.abs(d.value) > 0.005)
 }
 
-export type GearVerdict = 'upgrade' | 'sidegrade' | 'worse' | 'emptySlot'
+export type GearVerdict = 'upgrade' | 'similar' | 'worse' | 'emptySlot'
 
 const RING_SLOTS: GearSlot[] = ['ring1', 'ring2']
 
@@ -544,7 +544,8 @@ export interface GearComparison {
   setChanges: { setId: string; before: number; after: number }[]
 }
 
-const VERDICT_EPSILON = 1e-4
+/** Overall changes within this band (±0.25%) count as "about the same" rather than an upgrade or worse. */
+export const SIMILAR_BAND = 0.0025
 
 /** How a changed loadout (`after`) compares with the current one (`state`, scored as `base`). */
 function diffLoadouts(state: SimState, after: SimState, base: Record<LoadoutAspect, number>): Pick<GearComparison, 'aspects' | 'net' | 'setChanges'> {
@@ -562,13 +563,8 @@ function diffLoadouts(state: SimState, after: SimState, base: Record<LoadoutAspe
 
 function compareInSlot(state: SimState, item: GearItem, slot: GearSlot, base: Record<LoadoutAspect, number>): GearComparison {
   const { aspects, net, setChanges } = diffLoadouts(state, withItemEquipped(state, item, slot), base)
-  const verdict: GearVerdict = !state.gear[slot]
-    ? 'emptySlot'
-    : net > VERDICT_EPSILON
-      ? 'upgrade'
-      : LOADOUT_ASPECTS.some((k) => aspects[k] > VERDICT_EPSILON)
-        ? 'sidegrade'
-        : 'worse'
+  // Judged on the overall change only; the per-aspect changes stay available as a hint (e.g. worse overall, better Defense)
+  const verdict: GearVerdict = !state.gear[slot] ? 'emptySlot' : net > SIMILAR_BAND ? 'upgrade' : net < -SIMILAR_BAND ? 'worse' : 'similar'
   return { slot, verdict, aspects, net, setChanges }
 }
 
@@ -648,14 +644,48 @@ export function gearVerdict(state: SimState, item: GearItem): GearVerdict {
 }
 
 /**
- * Inventory items safe to bulk-salvage: equipping them would improve nothing. Set pieces are kept unless
- * asked for — one that's worse today can complete a set bonus later.
+ * Inventory items to bulk-salvage: worse overall than what's worn. Set pieces are kept unless asked for —
+ * one that's worse today can complete a set bonus later.
  */
 export function listWorseItems(state: SimState, includeSetPieces: boolean = false): GearItem[] {
   const base = computeLoadoutScore(state)
   return state.inventory.filter(
     (i) => (includeSetPieces || !getGearCatalogItem(i.catalogId).setId) && compareToEquipped(state, i, base).verdict === 'worse',
   )
+}
+
+export interface UpgradePlan {
+  state: SimState
+  swaps: { slot: GearSlot; instanceId: string; replacedInstanceId: string | null }[]
+  net: number
+}
+
+/**
+ * Every upgrade at once: repeatedly equips the inventory item with the biggest overall gain (an empty slot
+ * counts as a gain) until nothing improves the loadout any more. Re-evaluates after each swap, so set bonuses
+ * and moved augments from earlier swaps are taken into account.
+ */
+export function planAllUpgrades(state: SimState): UpgradePlan {
+  const base = computeLoadoutScore(state)
+  let next = state
+  const swaps: UpgradePlan['swaps'] = []
+  for (let guard = 0; guard < 40; guard++) {
+    const nextBase = computeLoadoutScore(next)
+    let best: { item: GearItem; comparison: GearComparison } | null = null
+    for (const item of next.inventory) {
+      const comparison = compareToEquipped(next, item, nextBase)
+      if (comparison.verdict !== 'upgrade' && comparison.verdict !== 'emptySlot') continue
+      if (!best || comparison.net > best.comparison.net) best = { item, comparison }
+    }
+    if (!best) break
+    swaps.push({ slot: best.comparison.slot, instanceId: best.item.instanceId, replacedInstanceId: next.gear[best.comparison.slot]?.instanceId ?? null })
+    next = withItemEquipped(next, best.item, best.comparison.slot)
+  }
+  return { state: next, swaps, net: diffLoadouts(state, next, base).net }
+}
+
+export function equipAllUpgrades(state: SimState): SimState {
+  return planAllUpgrades(state).state
 }
 
 const CAP_LABELS: Record<string, string> = {
