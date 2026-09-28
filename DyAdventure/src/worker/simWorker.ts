@@ -36,6 +36,8 @@ let state: SimState = createInitialState()
 let initialized = false
 let msSinceLastSync = 0
 let lastTickAt = Date.now()
+// Paused from Settings: time stops, but player actions still apply. Not saved, so a reload resumes.
+let paused = false
 
 function post(message: WorkerToMainMessage) {
   ctx.postMessage(message)
@@ -51,6 +53,17 @@ ctx.setInterval(() => {
   const now = Date.now()
   const deltaMs = Math.min(now - lastTickAt, MAX_OFFLINE_SIMULATED_MS)
   lastTickAt = now
+
+  if (paused) {
+    // Keep the save's timestamp current so paused time isn't handed back as offline progress on reload
+    state = { ...state, lastTickTimestamp: now }
+    msSinceLastSync += deltaMs
+    if (msSinceLastSync >= STATE_SYNC_MS) {
+      msSinceLastSync = 0
+      syncState()
+    }
+    return
+  }
 
   // Browsers throttle timers in background tabs, so one tick can cover seconds or minutes.
   // Step through it like offline catch-up does, so abilities get their turns in between
@@ -76,6 +89,9 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
   const now = Date.now()
 
   switch (msg.type) {
+    case 'SET_PAUSED':
+      paused = msg.paused
+      break
     case 'INIT': {
       const away = now - msg.state.lastTickTimestamp
       const elapsed = Math.min(away, MAX_OFFLINE_SIMULATED_MS)

@@ -22,6 +22,7 @@ export default function HudHeader() {
   const state = useGameStore((s) => s)
   const combatPower = Math.round((computePhysicalPower(state) + computeMagicPower(state)) * 50)
   const setActiveTab = useGameStore((s) => s.setActiveTab)
+  const setPaused = useGameStore((s) => s.setPaused)
   const zone = getZoneDef(state.currentZoneId)
 
   return (
@@ -60,6 +61,17 @@ export default function HudHeader() {
             {!state.depthMode.auto && <span style={{ color: 'var(--text-dim)' }}> (pinned)</span>}
           </span>
         </button>
+        {state.paused && (
+          <button
+            type="button"
+            className="hud-chip"
+            title="Time is stopped. Click to resume."
+            onClick={() => setPaused(false)}
+            style={{ cursor: 'pointer', color: 'var(--focus)', borderColor: 'var(--focus)' }}
+          >
+            ⏸ Paused · Resume
+          </button>
+        )}
         {state.fainted && (
           <div className="hud-chip" style={{ color: 'var(--physical)', borderColor: 'var(--physical)' }}>
             Fainted — recovering…

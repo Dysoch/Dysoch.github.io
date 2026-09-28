@@ -377,6 +377,7 @@ export type MainToWorkerMessage =
   | { type: 'BUY_PERK'; perkId: string; count?: number }
   | { type: 'CRAFT_ITEM'; catalogId: string; count?: number }
   | { type: 'IMPORT_SAVE'; state: SimState }
+  | { type: 'SET_PAUSED'; paused: boolean }
 
 export type WorkerToMainMessage =
   | { type: 'STATE_UPDATE'; state: SimState }

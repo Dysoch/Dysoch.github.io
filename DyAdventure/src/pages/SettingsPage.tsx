@@ -11,6 +11,8 @@ export default function SettingsPage() {
   const importSave = useGameStore((s) => s.importSave)
   const resetGame = useGameStore((s) => s.resetGame)
   const saveNow = useGameStore((s) => s.saveNow)
+  const paused = useGameStore((s) => s.paused)
+  const setPaused = useGameStore((s) => s.setPaused)
   const [importText, setImportText] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [savedAt, setSavedAt] = useState<string | null>(null)
@@ -23,6 +25,17 @@ export default function SettingsPage() {
 
       <div className="inventory-split">
         <div>
+          <div className="mb-4" style={{ maxWidth: '480px' }}>
+            <h6>Pause</h6>
+            <p className="text-body-secondary small mb-2">
+              Stops time so you can look around: no combat, regeneration or Focus while paused. You can still train,
+              equip and craft. Paused time is not counted as offline time, and reloading the page resumes the game.
+            </p>
+            <button type="button" className={`btn btn-sm ${paused ? 'btn-warning' : 'btn-outline-warning'}`} onClick={() => setPaused(!paused)}>
+              {paused ? '▶ Resume' : '⏸ Pause'}
+            </button>
+          </div>
+
           <div className="mb-4" style={{ maxWidth: '480px' }}>
             <h6>Save</h6>
             <p className="text-body-secondary small mb-2">

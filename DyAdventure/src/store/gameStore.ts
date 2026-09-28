@@ -24,6 +24,9 @@ interface GameStore extends PersistedSlice {
   combatLog: CombatEvent[]
   /** Set after offline catch-up; cleared when the player dismisses the "While you were away" card */
   offlineSummary: OfflineSummary | null
+  /** Time stopped from Settings (not saved: a reload resumes) */
+  paused: boolean
+  setPaused: (paused: boolean) => void
   dismissOfflineSummary: () => void
   imbueAugment: (augmentId: string, count?: number) => void
   setActiveTab: (id: TabId) => void
@@ -105,6 +108,12 @@ export const useGameStore = create<GameStore>()(
       activeTab: 'combat',
       combatLog: [],
       offlineSummary: null,
+      paused: false,
+
+      setPaused: (paused) => {
+        set({ paused })
+        post({ type: 'SET_PAUSED', paused })
+      },
 
       dismissOfflineSummary: () => set({ offlineSummary: null }),
       imbueAugment: (augmentId, count) => post({ type: 'IMBUE_AUGMENT', augmentId, count }),

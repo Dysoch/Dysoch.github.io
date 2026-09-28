@@ -10,7 +10,8 @@
       "Augments can be removed for free, and equipping a replacement moves the old item's augments over automatically.",
       "Salvage buttons now show what you'll get, and single salvage asks for confirmation. Salvage all worse keeps set pieces unless you tick include set pieces.",
       "Inventory can be searched, sorted (best first, rarity, level, name) and filtered to hide worse items.",
-      "Crafting cards say whether the piece would be an upgrade over what you wear, and Imbue has moved to its own tab on the Crafting page."
+      "Crafting cards say whether the piece would be an upgrade over what you wear, and Imbue has moved to its own tab on the Crafting page.",
+      "New: Pause in Settings. Time stops (no combat, regeneration or Focus) while you can still train, equip and craft. A Paused chip in the top bar resumes the game, paused time does not count as offline time, and reloading resumes."
     ]
   },
   {
