@@ -30,6 +30,7 @@ import type {
   GearItem,
   GearSlot,
   GearStatDef,
+  ItemSlot,
   MaterialDef,
   MilestoneTrack,
   OfflineSummary,
@@ -54,7 +55,7 @@ const AUGMENTS = augmentsData as AugmentDef[]
 const ZONES = zonesData as ZoneDef[]
 const PERKS = prestigeData.perks as PerkDef[]
 const MATERIALS = materialsData.materials as MaterialDef[]
-const SLOT_MATERIALS = materialsData.slotMaterials as Record<GearSlot, [string, string]>
+const SLOT_MATERIALS = materialsData.slotMaterials as Record<ItemSlot, [string, string]>
 const CRAFT_COSTS = materialsData.craftCostByRarity as Record<string, { materials: number; focus: number }>
 const IMBUE_CONFIG = materialsData.imbue
 const MILESTONE_TRACKS = milestonesData.tracks as MilestoneTrack[]
@@ -134,7 +135,7 @@ export interface CraftCost {
   materials: { materialId: string; amount: number }[]
 }
 
-function costForRaritySlot(rarity: Rarity, slot: GearSlot): CraftCost {
+function costForRaritySlot(rarity: Rarity, slot: ItemSlot): CraftCost {
   const cost = CRAFT_COSTS[rarity] ?? CRAFT_COSTS.common
   const [primary, secondary] = SLOT_MATERIALS[slot]
   return {
@@ -468,12 +469,12 @@ export function compareGear(item: GearItem, other: GearItem | null): GearStatDef
 
 export type GearVerdict = 'upgrade' | 'sidegrade' | 'worse' | 'emptySlot'
 
-const TRINKET_SLOTS: GearSlot[] = ['trinket1', 'trinket2']
+const RING_SLOTS: GearSlot[] = ['ring1', 'ring2']
 
-/** Equip slots an item fits: a trinket goes in either trinket slot, everything else only in its own. */
+/** Equip slots an item fits: a ring goes in either ring slot, everything else only in its own. */
 export function equipSlotsFor(catalogId: string): GearSlot[] {
   const slot = getGearCatalogItem(catalogId).slot
-  return TRINKET_SLOTS.includes(slot) ? TRINKET_SLOTS : [slot]
+  return slot === 'ring' ? RING_SLOTS : [slot]
 }
 
 /**
@@ -532,7 +533,7 @@ export function computeLoadoutScore(state: SimState): Record<LoadoutAspect, numb
 }
 
 export interface GearComparison {
-  /** The slot this comparison is for (the better trinket slot, for a trinket). */
+  /** The slot this comparison is for (the better ring slot, for a ring). */
   slot: GearSlot
   verdict: GearVerdict
   /** Relative change per aspect if equipped (0.05 = +5%). */
@@ -545,12 +546,22 @@ export interface GearComparison {
 
 const VERDICT_EPSILON = 1e-4
 
-function compareInSlot(state: SimState, item: GearItem, slot: GearSlot, base: Record<LoadoutAspect, number>): GearComparison {
-  const swapped = withItemEquipped(state, item, slot)
-  const after = computeLoadoutScore(swapped)
-  const aspects = Object.fromEntries(LOADOUT_ASPECTS.map((k) => [k, base[k] > 0 ? after[k] / base[k] - 1 : 0])) as Record<LoadoutAspect, number>
+/** How a changed loadout (`after`) compares with the current one (`state`, scored as `base`). */
+function diffLoadouts(state: SimState, after: SimState, base: Record<LoadoutAspect, number>): Pick<GearComparison, 'aspects' | 'net' | 'setChanges'> {
+  const score = computeLoadoutScore(after)
+  const aspects = Object.fromEntries(LOADOUT_ASPECTS.map((k) => [k, base[k] > 0 ? score[k] / base[k] - 1 : 0])) as Record<LoadoutAspect, number>
   // Geometric weighting, so a +10% / -10% trade doesn't read as a wash
   const net = Math.exp(LOADOUT_ASPECTS.reduce((sum, k) => sum + LOADOUT_WEIGHTS[k] * Math.log(1 + aspects[k]), 0)) - 1
+  const countsBefore = computeEquippedSetCounts(state)
+  const countsAfter = computeEquippedSetCounts(after)
+  const setChanges = [...new Set([...Object.keys(countsBefore), ...Object.keys(countsAfter)])]
+    .filter((id) => (countsBefore[id] ?? 0) !== (countsAfter[id] ?? 0))
+    .map((setId) => ({ setId, before: countsBefore[setId] ?? 0, after: countsAfter[setId] ?? 0 }))
+  return { aspects, net, setChanges }
+}
+
+function compareInSlot(state: SimState, item: GearItem, slot: GearSlot, base: Record<LoadoutAspect, number>): GearComparison {
+  const { aspects, net, setChanges } = diffLoadouts(state, withItemEquipped(state, item, slot), base)
   const verdict: GearVerdict = !state.gear[slot]
     ? 'emptySlot'
     : net > VERDICT_EPSILON
@@ -558,18 +569,73 @@ function compareInSlot(state: SimState, item: GearItem, slot: GearSlot, base: Re
       : LOADOUT_ASPECTS.some((k) => aspects[k] > VERDICT_EPSILON)
         ? 'sidegrade'
         : 'worse'
-  const countsBefore = computeEquippedSetCounts(state)
-  const countsAfter = computeEquippedSetCounts(swapped)
-  const setChanges = [...new Set([...Object.keys(countsBefore), ...Object.keys(countsAfter)])]
-    .filter((id) => (countsBefore[id] ?? 0) !== (countsAfter[id] ?? 0))
-    .map((setId) => ({ setId, before: countsBefore[setId] ?? 0, after: countsAfter[setId] ?? 0 }))
   return { slot, verdict, aspects, net, setChanges }
+}
+
+export interface SetLoadoutPlan {
+  /** The loadout with the set worn. */
+  state: SimState
+  /** Pieces that would be put on, and what each replaces. */
+  swaps: { slot: GearSlot; instanceId: string; replacedInstanceId: string | null }[]
+  /** Set pieces owned (best tier of each piece's line) and the set's size. */
+  owned: number
+  total: number
+  aspects: Record<LoadoutAspect, number>
+  net: number
+  setChanges: GearComparison['setChanges']
+}
+
+/**
+ * What wearing a whole set would look like: the best owned copy of each set piece (highest tier of its
+ * reforge line) goes on. Where a set offers two pieces for one slot (e.g. a blade and a staff), the one
+ * scoring higher wins; a ring takes whichever ring slot it improves most. Slots without an owned set
+ * piece keep what's worn.
+ */
+export function planSetLoadout(state: SimState, setId: string, base: Record<LoadoutAspect, number> = computeLoadoutScore(state)): SetLoadoutPlan {
+  const set = getSetDef(setId)
+  const pieces = set.itemIds
+    .map((root) => {
+      const chain = getTierChain(root)
+      for (let i = chain.length - 1; i >= 0; i--) {
+        const owned = getOwnedItem(state, chain[i])
+        if (owned) return owned
+      }
+      return null
+    })
+    .filter((item): item is GearItem => !!item)
+
+  let next = state
+  const worn = () => new Set(Object.values(next.gear).map((g) => g?.instanceId))
+  // Group by slot kind so alternatives for one slot compete instead of replacing each other in turn
+  const byKind = new Map<string, GearItem[]>()
+  for (const piece of pieces) {
+    const kind = getGearCatalogItem(piece.catalogId).slot
+    byKind.set(kind, [...(byKind.get(kind) ?? []), piece])
+  }
+  const swaps: SetLoadoutPlan['swaps'] = []
+  for (const candidates of byKind.values()) {
+    if (candidates.some((c) => worn().has(c.instanceId))) continue
+    const nextBase = computeLoadoutScore(next)
+    const best = candidates
+      .map((c) => ({ item: c, comparison: compareToEquipped(next, c, nextBase) }))
+      .reduce((a, b) => (b.comparison.net > a.comparison.net ? b : a))
+    // An empty slot first (a ring into a free ring slot), else the slot the piece improves most
+    const slot = equipSlotsFor(best.item.catalogId).find((s) => !next.gear[s]) ?? best.comparison.slot
+    swaps.push({ slot, instanceId: best.item.instanceId, replacedInstanceId: next.gear[slot]?.instanceId ?? null })
+    next = withItemEquipped(next, best.item, slot)
+  }
+  return { state: next, swaps, owned: byKind.size, total: new Set(set.itemIds.map((id) => getGearCatalogItem(id).slot)).size, ...diffLoadouts(state, next, base) }
+}
+
+/** Puts on every owned piece of a set (see planSetLoadout). */
+export function equipSet(state: SimState, setId: string): SimState {
+  return planSetLoadout(state, setId).state
 }
 
 /**
  * How equipping an item would change the whole loadout — set bonuses gained or broken, and augments moved
- * over, included. Without `slot`, uses the slot it fits best (an empty trinket slot first, else whichever
- * trinket it improves most). Pass `base` (computeLoadoutScore) when comparing many items at once.
+ * over, included. Without `slot`, uses the slot it fits best (an empty ring slot first, else whichever
+ * ring it improves most). Pass `base` (computeLoadoutScore) when comparing many items at once.
  */
 export function compareToEquipped(state: SimState, item: GearItem, base: Record<LoadoutAspect, number> = computeLoadoutScore(state), slot?: GearSlot): GearComparison {
   const slots = slot ? [slot] : equipSlotsFor(item.catalogId)
@@ -1479,16 +1545,17 @@ export function createInitialState(): SimState {
   const statLevels = { ...stats }
   const abilities = Object.fromEntries(ABILITIES.map((a) => [a.id, { rank: a.id === 'strike' || a.id === 'bolt' ? 1 : 0 }]))
   const gear = {
-    weapon: null,
-    armor: null,
-    boots: null,
-    gloves: null,
-    focusItem: null,
-    robe: null,
-    amulet: null,
-    ring: null,
-    trinket1: null,
-    trinket2: null,
+    head: null,
+    body: null,
+    legs: null,
+    feet: null,
+    hands: null,
+    mainHand: null,
+    offHand: null,
+    neck: null,
+    back: null,
+    ring1: null,
+    ring2: null,
   }
   return {
     saveVersion: 1,
@@ -1678,8 +1745,78 @@ export function trainStat(state: SimState, statId: StatId, count: number = 1): S
  * before automation get the defaults — auto-fusing (how duplicates always used to work) stays on
  * only if it would already be unlocked.
  */
+/** Slot names from before the 0.1.5 gear rework (weapon/armor/robe/trinkets and so on). */
+const LEGACY_SLOTS = ['weapon', 'armor', 'boots', 'gloves', 'focusItem', 'robe', 'amulet', 'ring', 'trinket1', 'trinket2']
+
+/** Catalog ids renamed by the 0.1.5 gear rework, where an item's role changed (e.g. a trinket that became a hood). */
+const RENAMED_ITEM_IDS: Record<string, string> = {
+  vanguard_charm: 'vanguard_buckler',
+  vanguard_charm_uncommon: 'vanguard_buckler_uncommon',
+  vanguard_charm_rare: 'vanguard_buckler_rare',
+  vanguard_charm_epic: 'vanguard_buckler_epic',
+  vanguard_charm_legendary: 'vanguard_buckler_legendary',
+  adept_tome: 'adept_hood',
+  adept_tome_uncommon: 'adept_hood_uncommon',
+  adept_tome_rare: 'adept_hood_rare',
+  adept_tome_epic: 'adept_hood_epic',
+  adept_tome_legendary: 'adept_hood_legendary',
+  wardens_ward: 'wardens_shroud',
+  wardens_ward_rare: 'wardens_shroud_rare',
+  wardens_ward_epic: 'wardens_shroud_epic',
+  wardens_ward_legendary: 'wardens_shroud_legendary',
+  zealot_ember: 'zealot_circlet',
+  zealot_ember_epic: 'zealot_circlet_epic',
+  zealot_ember_legendary: 'zealot_circlet_legendary',
+  sentinel_rime: 'sentinel_crown',
+  sentinel_rime_legendary: 'sentinel_crown_legendary',
+  tattered_pouch: 'tattered_cloak',
+}
+
+/**
+ * Moves a save from the old 10 slots to the new ones: renamed items get their new ids everywhere, and
+ * worn items go to the slot their kind now uses. Where two old items now share a slot (a sword and a
+ * wand both want Main Hand), the one matching the player's main ability type stays equipped and the
+ * other goes to the inventory.
+ */
+function migrateLegacySlots<T extends SimState>(state: T): T {
+  const legacyGear = state.gear as unknown as Record<string, GearItem | null>
+  if (!LEGACY_SLOTS.some((slot) => slot in legacyGear)) return state
+  const rename = (item: GearItem): GearItem => (RENAMED_ITEM_IDS[item.catalogId] ? { ...item, catalogId: RENAMED_ITEM_IDS[item.catalogId] } : item)
+  const lifetime = Object.fromEntries(
+    Object.entries(state.lifetime).map(([key, value]) => {
+      const oldId = key.startsWith('overflowSalvaged_') ? key.slice('overflowSalvaged_'.length) : null
+      return [oldId && RENAMED_ITEM_IDS[oldId] ? overflowSalvagedKey(RENAMED_ITEM_IDS[oldId]) : key, value]
+    }),
+  )
+  let physicalRanks = 0
+  let spellRanks = 0
+  for (const def of ABILITIES) {
+    if (def.type === 'physical') physicalRanks += state.abilities[def.id]?.rank ?? 0
+    else spellRanks += state.abilities[def.id]?.rank ?? 0
+  }
+  const mainTrack = spellRanks > physicalRanks ? 'arcane' : 'physical'
+  const worn = Object.values(legacyGear)
+    .filter((item): item is GearItem => !!item)
+    .map(rename)
+    .sort((a, b) => Number(getGearCatalogItem(b.catalogId).track === mainTrack) - Number(getGearCatalogItem(a.catalogId).track === mainTrack))
+  const gear = createInitialState().gear
+  const displaced: GearItem[] = []
+  for (const item of worn) {
+    const slot = equipSlotsFor(item.catalogId).find((s) => !gear[s])
+    if (slot) gear[slot] = item
+    else displaced.push(item)
+  }
+  return {
+    ...state,
+    gear,
+    inventory: [...state.inventory.map(rename), ...displaced],
+    discoveredItemIds: [...new Set(state.discoveredItemIds.map((id) => RENAMED_ITEM_IDS[id] ?? id))],
+    lifetime,
+  }
+}
+
 export function migrateSave<T extends SimState>(state: T): T {
-  let next = state
+  let next = migrateLegacySlots(state)
   if (!next.statLevels || !STATS.every((s) => typeof next.statLevels[s.id] === 'number')) {
     const gain = computeStatGainPerTrain(next)
     const statLevels = Object.fromEntries(

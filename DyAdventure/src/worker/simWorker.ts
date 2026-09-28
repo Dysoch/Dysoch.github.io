@@ -7,6 +7,7 @@ import {
   craftItem,
   createInitialState,
   equipItem,
+  equipSet,
   fuseAll,
   fuseItem,
   imbueAugment,
@@ -123,6 +124,9 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       break
     case 'EQUIP_ITEM':
       state = equipItem(state, msg.instanceId, msg.slot)
+      break
+    case 'EQUIP_SET':
+      state = equipSet(state, msg.setId)
       break
     case 'UNEQUIP_ITEM':
       state = unequipItem(state, msg.slot)

@@ -73,6 +73,8 @@ import {
   equipItem,
   equipSlotsFor,
   unsocketAugment,
+  planSetLoadout,
+  equipSet,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
@@ -346,10 +348,10 @@ describe('reforge: jumping an owned item to its next rarity tier', () => {
       focus: cost.focus,
       materials: Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])),
       maxDepthByZone: { [depthReq.zoneId]: depthReq.depth },
-      gear: { ...createInitialState().gear, weapon: item },
+      gear: { ...createInitialState().gear, mainHand: item },
     }
     const { state: next } = reforgeItem(state, 'test_eq', Date.now())
-    expect(next.gear.weapon).toEqual({ instanceId: 'test_eq', catalogId: uncommonId, level: 1, augmentIds: [] })
+    expect(next.gear.mainHand).toEqual({ instanceId: 'test_eq', catalogId: uncommonId, level: 1, augmentIds: [] })
   })
 
   test('reforge is a no-op when materials or focus are short', () => {
@@ -398,9 +400,11 @@ describe('reforge: jumping an owned item to its next rarity tier', () => {
 
   const CHAIN_BASE_IDS = [
     'vanguard_sword', 'vanguard_armor', 'vanguard_boots', 'vanguard_gloves',
-    'vanguard_amulet', 'vanguard_ring', 'vanguard_charm', 'vanguard_banner',
+    'vanguard_amulet', 'vanguard_ring', 'vanguard_buckler', 'vanguard_banner',
+    'vanguard_helm', 'vanguard_greaves',
     'adept_wand', 'adept_robe', 'adept_amulet', 'adept_ring',
-    'adept_boots', 'adept_gloves', 'adept_tome', 'adept_orb',
+    'adept_boots', 'adept_gloves', 'adept_hood', 'adept_orb',
+    'adept_leggings', 'adept_cloak',
   ]
   const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary']
 
@@ -785,10 +789,10 @@ describe('lower-tier merge (regression: once reforged, an item could only level 
 
   test('a lower-tier copy fuses into the owned higher tier instead of creating a new item', () => {
     const owned = { instanceId: 'u1', catalogId: 'vanguard_sword_uncommon', level: 3, augmentIds: [] }
-    const state = stocked({ discoveredItemIds: ['vanguard_sword', 'vanguard_sword_uncommon'], gear: { ...createInitialState().gear, weapon: owned } })
+    const state = stocked({ discoveredItemIds: ['vanguard_sword', 'vanguard_sword_uncommon'], gear: { ...createInitialState().gear, mainHand: owned } })
     const after = craftItem(state, 'vanguard_sword', Date.now(), 4).state
     expect(after.inventory).toHaveLength(0)
-    expect(after.gear.weapon!.level).toBeCloseTo(3 + 4 * computeFuseRate('vanguard_sword', 'vanguard_sword_uncommon'), 5)
+    expect(after.gear.mainHand!.level).toBeCloseTo(3 + 4 * computeFuseRate('vanguard_sword', 'vanguard_sword_uncommon'), 5)
   })
 
   test('merges go to the highest owned tier of the line', () => {
@@ -905,20 +909,20 @@ describe('bulk salvage', () => {
   const state: SimState = {
     ...base,
     learnedAugmentIds: ['aug_might'],
-    gear: { ...base.gear, weapon: item('eq', 'woods_warden_fang', 100), trinket1: item('t1', 'lucky_charm', 50), trinket2: item('t2', 'tattered_pouch', 50) },
+    gear: { ...base.gear, mainHand: item('eq', 'woods_warden_fang', 100), neck: item('n', 'lucky_charm', 50), back: item('b', 'tattered_cloak', 50) },
     inventory: [
       item('worse', 'woods_warden_fang', 1),
       // Augments are learned, not lost on salvage, so they no longer protect an item
       item('augmented', 'woods_warden_fang', 1, ['aug_might']),
       item('setPiece', 'vanguard_sword', 1),
-      item('trinket', 'lucky_charm', 1),
+      item('neckPiece', 'lucky_charm', 1),
       item('otherSlot', 'vanguard_boots', 1),
     ],
   }
 
   test('lists items that would improve nothing, keeping set pieces unless asked', () => {
-    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'trinket'])
-    expect(listWorseItems(state, true).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'setPiece', 'trinket'])
+    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'neckPiece'])
+    expect(listWorseItems(state, true).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'setPiece', 'neckPiece'])
   })
 
   test('the salvage preview matches what salvaging pays', () => {
@@ -929,30 +933,30 @@ describe('bulk salvage', () => {
   })
 })
 
-describe('loadout-aware gear comparison (regression: the Upgrade badge ignored set bonuses and augments, and trinkets were locked to one of the two trinket slots)', () => {
+describe('loadout-aware gear comparison (regression: the Upgrade badge ignored set bonuses and augments)', () => {
   const item = (instanceId: string, catalogId: string, level: number, augmentIds: string[] = []): GearItem => ({ instanceId, catalogId, level, augmentIds })
   const base = createInitialState()
 
-  test('a trinket fits either trinket slot, preferring an empty one', () => {
-    const state: SimState = { ...base, gear: { ...base.gear, trinket1: item('t1', 'lucky_charm', 50) }, inventory: [item('charm', 'vanguard_charm', 1)] }
-    expect(equipSlotsFor('vanguard_charm')).toEqual(['trinket1', 'trinket2'])
-    expect(compareToEquipped(state, state.inventory[0])).toMatchObject({ slot: 'trinket2', verdict: 'emptySlot' })
-    const auto = equipItem(state, 'charm')
-    expect(auto.gear.trinket2?.instanceId).toBe('charm')
-    expect(auto.gear.trinket1?.instanceId).toBe('t1')
-    const chosen = equipItem(state, 'charm', 'trinket1')
-    expect(chosen.gear.trinket1?.instanceId).toBe('charm')
-    expect(chosen.inventory.map((i) => i.instanceId)).toEqual(['t1'])
+  test('a ring fits either ring slot, preferring an empty one', () => {
+    const state: SimState = { ...base, gear: { ...base.gear, ring1: item('r1', 'vanguard_ring', 50) }, inventory: [item('ring', 'adept_ring', 1)] }
+    expect(equipSlotsFor('adept_ring')).toEqual(['ring1', 'ring2'])
+    expect(compareToEquipped(state, state.inventory[0])).toMatchObject({ slot: 'ring2', verdict: 'emptySlot' })
+    const auto = equipItem(state, 'ring')
+    expect(auto.gear.ring2?.instanceId).toBe('ring')
+    expect(auto.gear.ring1?.instanceId).toBe('r1')
+    const chosen = equipItem(state, 'ring', 'ring1')
+    expect(chosen.gear.ring1?.instanceId).toBe('ring')
+    expect(chosen.inventory.map((i) => i.instanceId)).toEqual(['r1'])
     // A slot the item doesn't fit is ignored
-    expect(equipItem(state, 'charm', 'weapon').gear.weapon).toBeNull()
+    expect(equipItem(state, 'ring', 'mainHand').gear.mainHand).toBeNull()
   })
 
   test('breaking a set bonus counts against an item', () => {
-    // Two Vanguard pieces give +3 Might; the pouch has no Might itself, so only the lost set bonus can cost offense
+    // Two Vanguard pieces give +3 Might; the cloak has no Might itself, so only the lost set bonus can cost offense
     const state: SimState = {
       ...base,
-      gear: { ...base.gear, trinket1: item('charm', 'vanguard_charm', 1), trinket2: item('banner', 'vanguard_banner', 1) },
-      inventory: [item('pouch', 'tattered_pouch', 1)],
+      gear: { ...base.gear, offHand: item('buckler', 'vanguard_buckler', 1), back: item('banner', 'vanguard_banner', 1) },
+      inventory: [item('cloak', 'tattered_cloak', 1)],
     }
     const comparison = compareToEquipped(state, state.inventory[0])
     expect(comparison.setChanges).toEqual([{ setId: 'woodland_vanguard', before: 2, after: 1 }])
@@ -965,21 +969,21 @@ describe('loadout-aware gear comparison (regression: the Upgrade badge ignored s
       ...base,
       learnedAugmentIds: ['aug_might'],
       augmentRanks: {},
-      gear: { ...base.gear, weapon: item('old', 'woods_warden_fang', 1, ['aug_might']) },
+      gear: { ...base.gear, mainHand: item('old', 'woods_warden_fang', 1, ['aug_might']) },
       inventory: [item('new', 'zealot_blade', 1)],
     }
     const after = equipItem(state, 'new')
-    expect(after.gear.weapon?.augmentIds).toEqual(['aug_might'])
+    expect(after.gear.mainHand?.augmentIds).toEqual(['aug_might'])
     expect(after.inventory.find((i) => i.instanceId === 'old')?.augmentIds).toEqual([])
     // Same new weapon, but with nowhere to move the augment from: the gain is smaller
-    const withoutAugment = { ...state, gear: { ...state.gear, weapon: item('old', 'woods_warden_fang', 1) } }
+    const withoutAugment = { ...state, gear: { ...state.gear, mainHand: item('old', 'woods_warden_fang', 1) } }
     expect(compareToEquipped(state, state.inventory[0]).aspects.offense).toBeGreaterThan(compareToEquipped(withoutAugment, state.inventory[0]).aspects.offense)
   })
 
   test('augments can be removed for free', () => {
-    const state: SimState = { ...base, learnedAugmentIds: ['aug_might'], gear: { ...base.gear, weapon: item('w', 'woods_warden_fang', 1, ['aug_might']) } }
+    const state: SimState = { ...base, learnedAugmentIds: ['aug_might'], gear: { ...base.gear, mainHand: item('w', 'woods_warden_fang', 1, ['aug_might']) } }
     const after = unsocketAugment(state, 'w', 'aug_might')
-    expect(after.gear.weapon?.augmentIds).toEqual([])
+    expect(after.gear.mainHand?.augmentIds).toEqual([])
     expect(after.learnedAugmentIds).toEqual(['aug_might'])
   })
 })
@@ -1112,7 +1116,7 @@ describe('imbue (materials sink)', () => {
   test('spends materials, raises the rank, and strengthens the augment on socketed gear', () => {
     const cost = computeImbueCostN('aug_might', 0, 3)
     const state = learned(Object.fromEntries(cost.materials.map((m) => [m.materialId, m.amount])))
-    const withGear: SimState = { ...state, gear: { ...state.gear, weapon: { instanceId: 'w', catalogId: 'vanguard_sword', level: 1, augmentIds: ['aug_might'] } } }
+    const withGear: SimState = { ...state, gear: { ...state.gear, mainHand: { instanceId: 'w', catalogId: 'vanguard_sword', level: 1, augmentIds: ['aug_might'] } } }
     const after = imbueAugment(withGear, 'aug_might', Date.now(), 25).state
     expect(after.augmentRanks.aug_might).toBe(3)
     for (const m of cost.materials) expect(after.materials[m.materialId]).toBe(0)
@@ -1170,5 +1174,96 @@ describe('zone set reforge chains', () => {
         expect(top.minDepth, baseId).toBeLessThanOrEqual(zone.maxDepth)
       }
     }
+  })
+})
+
+describe('0.1.5 slot rework migration', () => {
+  const item = (instanceId: string, catalogId: string): GearItem => ({ instanceId, catalogId, level: 3, augmentIds: [] })
+  const legacy = (abilityRanks: Record<string, number>): SimState => {
+    const base = createInitialState()
+    return {
+      ...base,
+      abilities: Object.fromEntries(Object.entries(abilityRanks).map(([id, rank]) => [id, { rank }])),
+      gear: {
+        weapon: item('sword', 'vanguard_sword'),
+        focusItem: item('wand', 'adept_wand'),
+        armor: item('armor', 'vanguard_armor'),
+        robe: item('robe', 'adept_robe'),
+        trinket1: item('charm', 'vanguard_charm'),
+        trinket2: item('tome', 'adept_tome'),
+        boots: null,
+      } as unknown as SimState['gear'],
+      inventory: [item('pouch', 'tattered_pouch')],
+      discoveredItemIds: ['vanguard_charm', 'adept_tome', 'tattered_pouch', 'vanguard_sword'],
+      lifetime: { overflowSalvaged_vanguard_charm: 4, kills: 10 },
+    }
+  }
+
+  test('old slots move to the new ones, renamed items get their new ids, and conflicts go to the inventory', () => {
+    const migrated = migrateSave(legacy({ strike: 10, bolt: 1 }))
+    expect(Object.keys(migrated.gear).sort()).toEqual(Object.keys(createInitialState().gear).sort())
+    // A physical player keeps the sword and armor; the wand and robe wanted the same slots
+    expect(migrated.gear.mainHand?.instanceId).toBe('sword')
+    expect(migrated.gear.body?.instanceId).toBe('armor')
+    expect(migrated.gear.offHand).toMatchObject({ instanceId: 'charm', catalogId: 'vanguard_buckler', level: 3 })
+    expect(migrated.gear.head).toMatchObject({ instanceId: 'tome', catalogId: 'adept_hood' })
+    expect(migrated.inventory.map((i) => i.catalogId).sort()).toEqual(['adept_robe', 'adept_wand', 'tattered_cloak'])
+    expect(migrated.discoveredItemIds).toEqual(['vanguard_buckler', 'adept_hood', 'tattered_cloak', 'vanguard_sword'])
+    expect(migrated.lifetime).toEqual({ overflowSalvaged_vanguard_buckler: 4, kills: 10 })
+    expect(migrateSave(migrated)).toBe(migrated)
+  })
+
+  test('a caster keeps the arcane pieces where two items compete for a slot', () => {
+    const migrated = migrateSave(legacy({ strike: 1, bolt: 10, arcane_burst: 5 }))
+    expect(migrated.gear.mainHand?.instanceId).toBe('wand')
+    expect(migrated.gear.body?.instanceId).toBe('robe')
+  })
+
+  test('every item a set lists exists, and every set covers each slot kind at least once', () => {
+    const items = gearData.items as GearCatalogItemDef[]
+    const byId = new Map(items.map((i) => [i.id, i]))
+    const kinds = new Set(items.map((i) => i.slot))
+    for (const set of gearData.sets as { id: string; itemIds: string[] }[]) {
+      for (const id of set.itemIds) expect(byId.has(id), id).toBe(true)
+      expect(new Set(set.itemIds.map((id) => byId.get(id)!.slot)), set.id).toEqual(kinds)
+    }
+  })
+})
+
+describe('wearing a whole set', () => {
+  const item = (instanceId: string, catalogId: string, level = 1): GearItem => ({ instanceId, catalogId, level, augmentIds: [] })
+  const base = createInitialState()
+
+  test('puts on the best owned tier of each piece and reports the set change', () => {
+    const state: SimState = {
+      ...base,
+      gear: { ...base.gear, mainHand: item('wand', 'adept_wand'), body: item('robe', 'adept_robe') },
+      inventory: [item('sword', 'vanguard_sword', 40), item('sword2', 'vanguard_sword_uncommon'), item('armor', 'vanguard_armor'), item('helm', 'vanguard_helm'), item('ring', 'vanguard_ring')],
+    }
+    const plan = planSetLoadout(state, 'woodland_vanguard')
+    expect(plan.owned).toBe(4)
+    expect(plan.total).toBe(10)
+    expect(plan.state.gear.mainHand?.instanceId).toBe('sword2')
+    expect(plan.state.gear.body?.instanceId).toBe('armor')
+    expect(plan.state.gear.head?.instanceId).toBe('helm')
+    expect(plan.state.gear.ring1?.instanceId).toBe('ring')
+    expect(plan.swaps.find((s) => s.slot === 'mainHand')?.replacedInstanceId).toBe('wand')
+    expect(plan.setChanges).toEqual(expect.arrayContaining([{ setId: 'woodland_adept', before: 2, after: 0 }, { setId: 'woodland_vanguard', before: 0, after: 4 }]))
+    expect(equipSet(state, 'woodland_vanguard').gear).toEqual(plan.state.gear)
+  })
+
+  test('where a set offers two pieces for one slot, the one that suits the build wins', () => {
+    const inventory = [item('blade', 'zealot_blade'), item('staff', 'zealot_staff')]
+    const fighter = { ...base, abilities: { ...base.abilities, strike: { rank: 20 }, bolt: { rank: 0 } }, inventory }
+    const caster = { ...base, abilities: { ...base.abilities, strike: { rank: 0 }, bolt: { rank: 20 } }, inventory }
+    expect(planSetLoadout(fighter, 'ember_zealot').state.gear.mainHand?.instanceId).toBe('blade')
+    expect(planSetLoadout(caster, 'ember_zealot').state.gear.mainHand?.instanceId).toBe('staff')
+  })
+
+  test('a set that is already fully worn changes nothing', () => {
+    const state: SimState = { ...base, gear: { ...base.gear, mainHand: item('sword', 'vanguard_sword') } }
+    const plan = planSetLoadout(state, 'woodland_vanguard')
+    expect(plan.swaps).toEqual([])
+    expect(plan.net).toBe(0)
   })
 })

@@ -26,6 +26,8 @@ import {
   listSets,
   listWorseItems,
   overflowSalvagedKey,
+  planSetLoadout,
+  getTierChain,
   totalPendingLevels,
   type GearComparison,
   type GearVerdict,
@@ -45,21 +47,22 @@ function materialName(id: string): string {
 }
 
 const SLOT_LABELS: Record<GearSlot, string> = {
-  weapon: 'Weapon',
-  armor: 'Armor',
-  boots: 'Boots',
-  gloves: 'Gloves',
-  focusItem: 'Focus Item',
-  robe: 'Robe',
-  amulet: 'Amulet',
-  ring: 'Ring',
-  trinket1: 'Trinket 1',
-  trinket2: 'Trinket 2',
+  head: 'Head',
+  body: 'Body',
+  legs: 'Legs',
+  feet: 'Feet',
+  hands: 'Hands',
+  mainHand: 'Main Hand',
+  offHand: 'Off Hand',
+  neck: 'Neck',
+  back: 'Back',
+  ring1: 'Ring 1',
+  ring2: 'Ring 2',
 }
 
-/** Slot label for an item's kind rather than a specific equip slot (a trinket fits either trinket slot). */
+/** Slot label for an item's kind rather than a specific equip slot (a ring fits either ring slot). */
 function slotKindLabel(def: GearCatalogItemDef): string {
-  return equipSlotsFor(def.id).length > 1 ? 'Trinket' : SLOT_LABELS[def.slot]
+  return def.slot === 'ring' ? 'Ring' : SLOT_LABELS[def.slot]
 }
 
 const VERDICTS: Record<GearVerdict, { label: string; color: string; order: number }> = {
@@ -331,6 +334,7 @@ export default function InventoryPage() {
   const state = useGameStore((s) => s)
   const equipItem = useGameStore((s) => s.equipItem)
   const unequipItem = useGameStore((s) => s.unequipItem)
+  const equipSet = useGameStore((s) => s.equipSet)
   const socketAugment = useGameStore((s) => s.socketAugment)
   const unsocketAugment = useGameStore((s) => s.unsocketAugment)
   const salvageItem = useGameStore((s) => s.salvageItem)
@@ -352,15 +356,16 @@ export default function InventoryPage() {
   // Comparing every inventory item runs the loadout formulas per item; the worker re-sends state several
   // times a second, so only recompute when something that feeds the comparison actually changed.
   const comparisonKey = JSON.stringify([state.gear, state.inventory, state.stats, state.abilities, state.perkLevels, state.augmentRanks, state.milestonesReached])
-  const { rows, worseItems } = useMemo(() => {
+  const { rows, worseItems, setPlans } = useMemo(() => {
     const base = computeLoadoutScore(state)
     return {
       rows: state.inventory.map((item) => {
-        // One comparison per slot it fits (two for a trinket); the headline one is the best of them
+        // One comparison per slot it fits (two for a ring); the headline one is the best of them
         const bySlot = Object.fromEntries(equipSlotsFor(item.catalogId).map((slot) => [slot, compareToEquipped(state, item, base, slot)])) as Partial<Record<GearSlot, GearComparison>>
         return { item, def: getGearCatalogItem(item.catalogId), bySlot, comparison: compareToEquipped(state, item, base) }
       }),
       worseItems: listWorseItems(state, includeSetPieces),
+      setPlans: Object.fromEntries(listSets().map((set) => [set.id, planSetLoadout(state, set.id, base)])),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comparisonKey, includeSetPieces])
@@ -596,7 +601,7 @@ export default function InventoryPage() {
                 <div className="d-flex flex-wrap gap-1 mb-2">
                   {chip('all', 'All', rows.length)}
                   {upgradeCount > 0 && chip('upgrades', '▲ Upgrades', upgradeCount)}
-                  {SLOT_ORDER.filter((slot) => slotCounts.has(slot)).map((slot) => chip(slot, slot === 'trinket1' ? 'Trinket' : SLOT_LABELS[slot], slotCounts.get(slot)!))}
+                  {SLOT_ORDER.filter((slot) => slotCounts.has(slot)).map((slot) => chip(slot, slot === 'ring1' ? 'Ring' : SLOT_LABELS[slot], slotCounts.get(slot)!))}
                 </div>
                 <div className="d-flex flex-wrap gap-2 mb-2 align-items-center">
                   <input type="search" className="form-control form-control-sm" style={{ maxWidth: '180px' }} placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -641,6 +646,90 @@ export default function InventoryPage() {
       </div>
 
       <div className="panel" style={{ padding: '16px' }}>
+        <div style={{ fontFamily: 'Cinzel, serif', fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>
+          Sets <span style={{ color: 'var(--text-dim)', fontSize: '12px', fontWeight: 400 }}>· {discoveredSets.length}/{allSets.length} discovered · what wearing each one would do for you</span>
+        </div>
+        {discoveredSets.length === 0 && <div className="text-body-secondary small">No set pieces found yet.</div>}
+        <div className="set-grid">
+          {discoveredSets.map((set) => {
+            const equipped = setCounts[set.id] ?? 0
+            const plan = setPlans[set.id]
+            const wornAfter = plan.setChanges.find((c) => c.setId === set.id)?.after ?? equipped
+            const open = expandedSets[set.id] ?? false
+            const verdictColor = plan.net > 1e-4 ? 'var(--hp)' : plan.net < -1e-4 ? 'var(--physical)' : 'var(--text-dim)'
+            return (
+              <div key={set.id} className="set-card">
+                <button type="button" className="set-card-header" onClick={() => setExpandedSets((prev) => ({ ...prev, [set.id]: !open }))}>
+                  <span style={{ fontWeight: 600 }}>{set.name}</span>
+                  <span style={{ color: 'var(--text-dim)' }}>{equipped}/{plan.total} worn · {plan.owned} owned {open ? '▴' : '▾'}</span>
+                </button>
+                <div className="d-flex align-items-center flex-wrap gap-2 mt-1" style={{ whiteSpace: 'nowrap' }}>
+                  {plan.swaps.length === 0 ? (
+                    <span style={{ color: 'var(--text-dim)' }}>{plan.owned === 0 ? 'No pieces owned yet.' : 'Wearing every piece you own.'}</span>
+                  ) : (
+                    <>
+                      <span style={{ color: verdictColor }} title={LOADOUT_ASPECTS.map((k) => `${ASPECT_LABELS[k].label} ${pctText(plan.aspects[k])}`).join(', ')}>
+                        {plan.net > 1e-4 ? '▲' : plan.net < -1e-4 ? '▼' : '◆'} {pctText(plan.net)} overall
+                      </span>
+                      <span style={{ color: 'var(--text-dim)' }}>· {plan.swaps.length} swap{plan.swaps.length > 1 ? 's' : ''} → {wornAfter}/{plan.total} worn</span>
+                      <button type="button" className="btn btn-sm btn-outline-primary ms-auto" style={{ padding: '0 8px' }} onClick={() => equipSet(set.id)}>
+                        Equip set
+                      </button>
+                    </>
+                  )}
+                </div>
+                {open && (
+                  <div style={{ marginTop: '6px', fontSize: '12px' }}>
+                    {plan.swaps.length > 0 && (
+                      <div className="aspect-grid mb-1">
+                        {LOADOUT_ASPECTS.map((k) => {
+                          const v = plan.aspects[k]
+                          const flat = Math.abs(v) < 1e-4
+                          return (
+                            <div key={k} title={ASPECT_LABELS[k].title}>
+                              <span style={{ color: 'var(--text-dim)' }}>{ASPECT_LABELS[k].label} </span>
+                              <span style={{ color: flat ? 'var(--text-dim)' : v > 0 ? 'var(--hp)' : 'var(--physical)' }}>{flat ? '—' : pctText(v)}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                    {set.bonuses.map((tier, i) => {
+                      const active = equipped >= tier.pieces
+                      const gained = !active && wornAfter >= tier.pieces
+                      return (
+                        <div key={i} style={{ color: active ? 'var(--hp)' : gained ? 'var(--focus)' : 'var(--text-dim)' }}>
+                          {tier.pieces}pc: {tier.description}{active ? ' ✓' : gained ? ' (with this set)' : ''}
+                        </div>
+                      )
+                    })}
+                    <div className="set-pieces">
+                      {[...set.itemIds].sort((a, b) => SLOT_ORDER.indexOf(equipSlotsFor(a)[0]) - SLOT_ORDER.indexOf(equipSlotsFor(b)[0])).map((root) => {
+                        const chain = getTierChain(root)
+                        const def = getGearCatalogItem(root)
+                        const discovered = [...chain].reverse().find((id) => state.discoveredItemIds.includes(id))
+                        const owned = [...chain].reverse().map((id) => rows.find((r) => r.item.catalogId === id)?.item ?? Object.values(state.gear).find((g) => g?.catalogId === id)).find((i) => !!i)
+                        const worn = owned && Object.values(state.gear).some((g) => g?.instanceId === owned.instanceId)
+                        return (
+                          <div key={root} className="d-flex gap-2">
+                            <span style={{ color: 'var(--text-dim)', flex: '0 0 72px' }}>{slotKindLabel(def)}</span>
+                            <span style={{ flex: 1, color: owned ? getRarityDef(getGearCatalogItem(owned.catalogId).rarity).color : 'var(--text-dim)' }}>
+                              {owned ? getGearCatalogItem(owned.catalogId).name : discovered ? getGearCatalogItem(discovered).name : '???'}
+                            </span>
+                            <span style={{ color: worn ? 'var(--hp)' : 'var(--text-dim)' }}>{worn ? 'worn' : owned ? levelText(owned.level) : 'not owned'}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="panel" style={{ padding: '16px' }}>
         <div style={{ fontFamily: 'Cinzel, serif', fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>Gear Stats Overview <span style={{ color: 'var(--text-dim)', fontSize: '12px', fontWeight: 400 }}>· includes set bonuses</span></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
           {OVERVIEW_STATS.map((statId) => (
@@ -652,43 +741,6 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <div className="panel" style={{ padding: '16px' }}>
-        <div style={{ fontFamily: 'Cinzel, serif', fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>
-          Set Progress <span style={{ color: 'var(--text-dim)', fontSize: '12px', fontWeight: 400 }}>· {discoveredSets.length}/{allSets.length} discovered</span>
-        </div>
-        {discoveredSets.length === 0 && <div className="text-body-secondary small">No set pieces found yet.</div>}
-        <div className="set-grid">
-          {discoveredSets.map((set) => {
-            const equipped = setCounts[set.id] ?? 0
-            const found = set.itemIds.filter((id) => state.discoveredItemIds.includes(id)).length
-            const open = expandedSets[set.id] ?? false
-            return (
-              <div key={set.id} className="set-card">
-                <button
-                  type="button"
-                  className="set-card-header"
-                  onClick={() => setExpandedSets((prev) => ({ ...prev, [set.id]: !open }))}
-                >
-                  <span style={{ fontWeight: 600 }}>{set.name}</span>
-                  <span style={{ color: 'var(--text-dim)' }}>{equipped}/{set.itemIds.length} worn · {found} found {open ? '▴' : '▾'}</span>
-                </button>
-                {open && (
-                  <div style={{ marginTop: '6px', fontSize: '12px' }}>
-                    {set.bonuses.map((tier, i) => (
-                      <div key={i} style={{ color: equipped >= tier.pieces ? 'var(--hp)' : 'var(--text-dim)' }}>
-                        {tier.pieces}pc: {tier.description}{equipped >= tier.pieces ? ' ✓' : ''}
-                      </div>
-                    ))}
-                    <div style={{ color: 'var(--text-dim)', marginTop: '4px' }}>
-                      {set.itemIds.map((id) => (state.discoveredItemIds.includes(id) ? getGearCatalogItem(id).name : '???')).join(' · ')}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
     </div>
   )
 }

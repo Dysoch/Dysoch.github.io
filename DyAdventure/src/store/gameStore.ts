@@ -36,6 +36,7 @@ interface GameStore extends PersistedSlice {
   upgradeAbility: (abilityId: string, count?: number) => void
   equipItem: (instanceId: string, slot?: GearSlot) => void
   unequipItem: (slot: GearSlot) => void
+  equipSet: (setId: string) => void
   socketAugment: (instanceId: string, augmentId: string) => void
   unsocketAugment: (instanceId: string, augmentId: string) => void
   salvageItem: (instanceId: string) => void
@@ -125,6 +126,7 @@ export const useGameStore = create<GameStore>()(
       upgradeAbility: (abilityId, count) => post({ type: 'UPGRADE_ABILITY', abilityId, count }),
       equipItem: (instanceId, slot) => post({ type: 'EQUIP_ITEM', instanceId, slot }),
       unequipItem: (slot) => post({ type: 'UNEQUIP_ITEM', slot }),
+      equipSet: (setId) => post({ type: 'EQUIP_SET', setId }),
       socketAugment: (instanceId, augmentId) => post({ type: 'SOCKET_AUGMENT', instanceId, augmentId }),
       unsocketAugment: (instanceId, augmentId) => post({ type: 'UNSOCKET_AUGMENT', instanceId, augmentId }),
       salvageItem: (instanceId) => post({ type: 'SALVAGE_ITEM', instanceId }),

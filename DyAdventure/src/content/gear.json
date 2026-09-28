@@ -57,8 +57,10 @@
         "vanguard_gloves",
         "vanguard_amulet",
         "vanguard_ring",
-        "vanguard_charm",
-        "vanguard_banner"
+        "vanguard_buckler",
+        "vanguard_banner",
+        "vanguard_helm",
+        "vanguard_greaves"
       ],
       "bonuses": [
         {
@@ -84,6 +86,12 @@
           "statId": "might",
           "magnitude": 10,
           "description": "+10 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "grit",
+          "magnitude": 15,
+          "description": "+15 Grit"
         }
       ]
     },
@@ -98,8 +106,10 @@
         "adept_ring",
         "adept_boots",
         "adept_gloves",
-        "adept_tome",
-        "adept_orb"
+        "adept_hood",
+        "adept_orb",
+        "adept_leggings",
+        "adept_cloak"
       ],
       "bonuses": [
         {
@@ -125,6 +135,12 @@
           "statId": "arcana",
           "magnitude": 10,
           "description": "+10 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "willpower",
+          "magnitude": 15,
+          "description": "+15 Willpower"
         }
       ]
     },
@@ -140,7 +156,9 @@
         "wardens_sigil",
         "wardens_band",
         "wardens_lantern",
-        "wardens_ward"
+        "wardens_shroud",
+        "wardens_helm",
+        "wardens_sabatons"
       ],
       "bonuses": [
         {
@@ -166,6 +184,12 @@
           "statId": "hpCap",
           "magnitude": 100,
           "description": "+100 HP Cap"
+        },
+        {
+          "pieces": 10,
+          "statId": "grit",
+          "magnitude": 25,
+          "description": "+25 Grit"
         }
       ]
     },
@@ -180,8 +204,12 @@
         "zealot_vestments",
         "zealot_brand",
         "zealot_ring",
-        "zealot_ember",
-        "zealot_censer"
+        "zealot_circlet",
+        "zealot_censer",
+        "zealot_legguards",
+        "zealot_treads",
+        "zealot_wraps",
+        "zealot_mantle"
       ],
       "bonuses": [
         {
@@ -207,6 +235,12 @@
           "statId": "might",
           "magnitude": 20,
           "description": "+20 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "arcana",
+          "magnitude": 20,
+          "description": "+20 Arcana"
         }
       ]
     },
@@ -221,8 +255,10 @@
         "sentinel_grips",
         "sentinel_frostgem",
         "sentinel_signet",
-        "sentinel_rime",
-        "sentinel_shard"
+        "sentinel_crown",
+        "sentinel_shard",
+        "sentinel_legwraps",
+        "sentinel_cloak"
       ],
       "bonuses": [
         {
@@ -248,6 +284,12 @@
           "statId": "arcana",
           "magnitude": 20,
           "description": "+20 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "arcana",
+          "magnitude": 30,
+          "description": "+30 Arcana"
         }
       ]
     }
@@ -257,7 +299,7 @@
       "id": "vanguard_sword",
       "name": "Vanguard Sword",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -275,7 +317,7 @@
       "id": "vanguard_armor",
       "name": "Vanguard Armor",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -293,7 +335,7 @@
       "id": "vanguard_boots",
       "name": "Vanguard Boots",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "physical",
       "stats": [
         {
@@ -311,7 +353,7 @@
       "id": "vanguard_gloves",
       "name": "Vanguard Gloves",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -329,7 +371,7 @@
       "id": "adept_wand",
       "name": "Adept Wand",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -347,7 +389,7 @@
       "id": "adept_robe",
       "name": "Adept Robe",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -365,7 +407,7 @@
       "id": "adept_amulet",
       "name": "Adept Amulet",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -401,7 +443,7 @@
       "id": "vanguard_amulet",
       "name": "Vanguard Pendant",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -434,10 +476,10 @@
       "nextTierId": "vanguard_ring_uncommon"
     },
     {
-      "id": "vanguard_charm",
-      "name": "Vanguard Charm",
+      "id": "vanguard_buckler",
+      "name": "Vanguard Buckler",
       "icon": "shield",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "physical",
       "stats": [
         {
@@ -449,13 +491,13 @@
       "setId": "woodland_vanguard",
       "minDepth": 20,
       "zoneId": "whispering_woods",
-      "nextTierId": "vanguard_charm_uncommon"
+      "nextTierId": "vanguard_buckler_uncommon"
     },
     {
       "id": "vanguard_banner",
       "name": "Vanguard Banner",
-      "icon": "flame",
-      "slot": "trinket2",
+      "icon": "cloak",
+      "slot": "back",
       "track": "physical",
       "stats": [
         {
@@ -473,7 +515,7 @@
       "id": "adept_boots",
       "name": "Adept Sandals",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "arcane",
       "stats": [
         {
@@ -491,7 +533,7 @@
       "id": "adept_gloves",
       "name": "Adept Mitts",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -506,10 +548,10 @@
       "nextTierId": "adept_gloves_uncommon"
     },
     {
-      "id": "adept_tome",
-      "name": "Adept Tome",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "adept_hood",
+      "name": "Adept Hood",
+      "icon": "helm",
+      "slot": "head",
       "track": "arcane",
       "stats": [
         {
@@ -521,13 +563,13 @@
       "setId": "woodland_adept",
       "minDepth": 20,
       "zoneId": "whispering_woods",
-      "nextTierId": "adept_tome_uncommon"
+      "nextTierId": "adept_hood_uncommon"
     },
     {
       "id": "adept_orb",
       "name": "Adept Orb",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -545,7 +587,7 @@
       "id": "lucky_charm",
       "name": "Lucky Charm",
       "icon": "clover",
-      "slot": "trinket1",
+      "slot": "neck",
       "track": "universal",
       "stats": [
         {
@@ -558,10 +600,10 @@
       "minDepth": 1
     },
     {
-      "id": "tattered_pouch",
-      "name": "Tattered Pouch",
-      "icon": "backpack",
-      "slot": "trinket2",
+      "id": "tattered_cloak",
+      "name": "Tattered Cloak",
+      "icon": "cloak",
+      "slot": "back",
       "track": "universal",
       "stats": [
         {
@@ -577,7 +619,7 @@
       "id": "woods_warden_fang",
       "name": "Woods Warden's Fang",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -598,7 +640,7 @@
       "id": "spider_silk_cloak",
       "name": "Spider Silk Cloak",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "back",
       "track": "arcane",
       "stats": [
         {
@@ -619,7 +661,7 @@
       "id": "wardens_mace",
       "name": "Warden's Mace",
       "icon": "axe",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -641,7 +683,7 @@
       "id": "wardens_plate",
       "name": "Warden's Plate",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -662,8 +704,8 @@
     {
       "id": "wardens_greaves",
       "name": "Warden's Greaves",
-      "icon": "boots",
-      "slot": "boots",
+      "icon": "legs",
+      "slot": "legs",
       "track": "physical",
       "stats": [
         {
@@ -685,7 +727,7 @@
       "id": "wardens_gauntlets",
       "name": "Warden's Gauntlets",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -707,7 +749,7 @@
       "id": "wardens_sigil",
       "name": "Warden's Sigil",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -751,7 +793,7 @@
       "id": "wardens_lantern",
       "name": "Warden's Lantern",
       "icon": "flame",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "universal",
       "stats": [
         {
@@ -770,10 +812,10 @@
       "nextTierId": "wardens_lantern_rare"
     },
     {
-      "id": "wardens_ward",
-      "name": "Warden's Ward",
-      "icon": "shield",
-      "slot": "trinket2",
+      "id": "wardens_shroud",
+      "name": "Warden's Shroud",
+      "icon": "cloak",
+      "slot": "back",
       "track": "universal",
       "stats": [
         {
@@ -789,13 +831,13 @@
       "setId": "crypt_warden",
       "minDepth": 20,
       "zoneId": "sunken_crypt",
-      "nextTierId": "wardens_ward_rare"
+      "nextTierId": "wardens_shroud_rare"
     },
     {
       "id": "zealot_blade",
       "name": "Zealot Blade",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -817,7 +859,7 @@
       "id": "zealot_staff",
       "name": "Zealot Staff",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -839,7 +881,7 @@
       "id": "zealot_cuirass",
       "name": "Zealot Cuirass",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -861,7 +903,7 @@
       "id": "zealot_vestments",
       "name": "Zealot Vestments",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -883,7 +925,7 @@
       "id": "zealot_brand",
       "name": "Zealot Brand",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -924,10 +966,10 @@
       "nextTierId": "zealot_ring_epic"
     },
     {
-      "id": "zealot_ember",
-      "name": "Zealot Ember",
-      "icon": "flame",
-      "slot": "trinket1",
+      "id": "zealot_circlet",
+      "name": "Zealot Circlet",
+      "icon": "crown",
+      "slot": "head",
       "track": "universal",
       "stats": [
         {
@@ -943,13 +985,13 @@
       "setId": "ember_zealot",
       "minDepth": 20,
       "zoneId": "ember_caverns",
-      "nextTierId": "zealot_ember_epic"
+      "nextTierId": "zealot_circlet_epic"
     },
     {
       "id": "zealot_censer",
       "name": "Zealot Censer",
       "icon": "sparkles",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -971,7 +1013,7 @@
       "id": "sentinel_icicle",
       "name": "Sentinel Icicle",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -997,7 +1039,7 @@
       "id": "sentinel_mantle",
       "name": "Sentinel Mantle",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -1023,7 +1065,7 @@
       "id": "sentinel_treads",
       "name": "Sentinel Treads",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "universal",
       "stats": [
         {
@@ -1049,7 +1091,7 @@
       "id": "sentinel_grips",
       "name": "Sentinel Grips",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -1075,7 +1117,7 @@
       "id": "sentinel_frostgem",
       "name": "Sentinel Frostgem",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -1124,10 +1166,10 @@
       "nextTierId": "sentinel_signet_legendary"
     },
     {
-      "id": "sentinel_rime",
-      "name": "Sentinel Rime",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "sentinel_crown",
+      "name": "Sentinel Crown",
+      "icon": "crown",
+      "slot": "head",
       "track": "universal",
       "stats": [
         {
@@ -1147,13 +1189,13 @@
       "setId": "frost_sentinel",
       "minDepth": 20,
       "zoneId": "frostbound_peaks",
-      "nextTierId": "sentinel_rime_legendary"
+      "nextTierId": "sentinel_crown_legendary"
     },
     {
       "id": "sentinel_shard",
       "name": "Sentinel Shard",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "universal",
       "stats": [
         {
@@ -1179,7 +1221,7 @@
       "id": "vanguard_sword_legendary",
       "name": "Elderheart Blade",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -1205,7 +1247,7 @@
       "id": "adept_wand_legendary",
       "name": "Elderheart Wand",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -1231,7 +1273,7 @@
       "id": "vanguard_sword_uncommon",
       "name": "Honed Vanguard Sword",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -1253,7 +1295,7 @@
       "id": "vanguard_sword_rare",
       "name": "Warforged Vanguard Sword",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -1275,7 +1317,7 @@
       "id": "vanguard_sword_epic",
       "name": "Ancient Vanguard Sword",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -1301,7 +1343,7 @@
       "id": "vanguard_armor_uncommon",
       "name": "Honed Vanguard Armor",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -1323,7 +1365,7 @@
       "id": "vanguard_armor_rare",
       "name": "Warforged Vanguard Armor",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -1345,7 +1387,7 @@
       "id": "vanguard_armor_epic",
       "name": "Ancient Vanguard Armor",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -1371,7 +1413,7 @@
       "id": "vanguard_armor_legendary",
       "name": "Elderheart Plate",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -1397,7 +1439,7 @@
       "id": "vanguard_boots_uncommon",
       "name": "Honed Vanguard Boots",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "physical",
       "stats": [
         {
@@ -1419,7 +1461,7 @@
       "id": "vanguard_boots_rare",
       "name": "Warforged Vanguard Boots",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "physical",
       "stats": [
         {
@@ -1441,7 +1483,7 @@
       "id": "vanguard_boots_epic",
       "name": "Ancient Vanguard Boots",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "physical",
       "stats": [
         {
@@ -1467,7 +1509,7 @@
       "id": "vanguard_boots_legendary",
       "name": "Elderheart Treads",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "physical",
       "stats": [
         {
@@ -1493,7 +1535,7 @@
       "id": "vanguard_gloves_uncommon",
       "name": "Honed Vanguard Gloves",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -1515,7 +1557,7 @@
       "id": "vanguard_gloves_rare",
       "name": "Warforged Vanguard Gloves",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -1537,7 +1579,7 @@
       "id": "vanguard_gloves_epic",
       "name": "Ancient Vanguard Gloves",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -1563,7 +1605,7 @@
       "id": "vanguard_gloves_legendary",
       "name": "Elderheart Gauntlets",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -1589,7 +1631,7 @@
       "id": "vanguard_amulet_uncommon",
       "name": "Honed Vanguard Pendant",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -1611,7 +1653,7 @@
       "id": "vanguard_amulet_rare",
       "name": "Warforged Vanguard Pendant",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -1633,7 +1675,7 @@
       "id": "vanguard_amulet_epic",
       "name": "Ancient Vanguard Pendant",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -1659,7 +1701,7 @@
       "id": "vanguard_amulet_legendary",
       "name": "Elderheart Pendant",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -1778,10 +1820,10 @@
       "bossOnly": true
     },
     {
-      "id": "vanguard_charm_uncommon",
-      "name": "Honed Vanguard Charm",
+      "id": "vanguard_buckler_uncommon",
+      "name": "Honed Vanguard Buckler",
       "icon": "shield",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "physical",
       "stats": [
         {
@@ -1797,13 +1839,13 @@
       "setId": "woodland_vanguard",
       "minDepth": 150,
       "zoneId": "whispering_woods",
-      "nextTierId": "vanguard_charm_rare"
+      "nextTierId": "vanguard_buckler_rare"
     },
     {
-      "id": "vanguard_charm_rare",
-      "name": "Warforged Vanguard Charm",
+      "id": "vanguard_buckler_rare",
+      "name": "Warforged Vanguard Buckler",
       "icon": "shield",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "physical",
       "stats": [
         {
@@ -1819,13 +1861,13 @@
       "setId": "woodland_vanguard",
       "minDepth": 400,
       "zoneId": "whispering_woods",
-      "nextTierId": "vanguard_charm_epic"
+      "nextTierId": "vanguard_buckler_epic"
     },
     {
-      "id": "vanguard_charm_epic",
-      "name": "Ancient Vanguard Charm",
+      "id": "vanguard_buckler_epic",
+      "name": "Ancient Vanguard Buckler",
       "icon": "shield",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "physical",
       "stats": [
         {
@@ -1845,13 +1887,13 @@
       "setId": "woodland_vanguard",
       "minDepth": 700,
       "zoneId": "whispering_woods",
-      "nextTierId": "vanguard_charm_legendary"
+      "nextTierId": "vanguard_buckler_legendary"
     },
     {
-      "id": "vanguard_charm_legendary",
-      "name": "Elderheart Charm",
+      "id": "vanguard_buckler_legendary",
+      "name": "Elderheart Buckler",
       "icon": "shield",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "physical",
       "stats": [
         {
@@ -1876,8 +1918,8 @@
     {
       "id": "vanguard_banner_uncommon",
       "name": "Honed Vanguard Banner",
-      "icon": "flame",
-      "slot": "trinket2",
+      "icon": "cloak",
+      "slot": "back",
       "track": "physical",
       "stats": [
         {
@@ -1898,8 +1940,8 @@
     {
       "id": "vanguard_banner_rare",
       "name": "Warforged Vanguard Banner",
-      "icon": "flame",
-      "slot": "trinket2",
+      "icon": "cloak",
+      "slot": "back",
       "track": "physical",
       "stats": [
         {
@@ -1920,8 +1962,8 @@
     {
       "id": "vanguard_banner_epic",
       "name": "Ancient Vanguard Banner",
-      "icon": "flame",
-      "slot": "trinket2",
+      "icon": "cloak",
+      "slot": "back",
       "track": "physical",
       "stats": [
         {
@@ -1946,8 +1988,8 @@
     {
       "id": "vanguard_banner_legendary",
       "name": "Elderheart Banner",
-      "icon": "flame",
-      "slot": "trinket2",
+      "icon": "cloak",
+      "slot": "back",
       "track": "physical",
       "stats": [
         {
@@ -1973,7 +2015,7 @@
       "id": "adept_wand_uncommon",
       "name": "Honed Adept Wand",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -1995,7 +2037,7 @@
       "id": "adept_wand_rare",
       "name": "Warforged Adept Wand",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -2017,7 +2059,7 @@
       "id": "adept_wand_epic",
       "name": "Ancient Adept Wand",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -2043,7 +2085,7 @@
       "id": "adept_robe_uncommon",
       "name": "Honed Adept Robe",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -2065,7 +2107,7 @@
       "id": "adept_robe_rare",
       "name": "Warforged Adept Robe",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -2087,7 +2129,7 @@
       "id": "adept_robe_epic",
       "name": "Ancient Adept Robe",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -2113,7 +2155,7 @@
       "id": "adept_robe_legendary",
       "name": "Elderheart Vestments",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -2139,7 +2181,7 @@
       "id": "adept_amulet_uncommon",
       "name": "Honed Adept Amulet",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -2161,7 +2203,7 @@
       "id": "adept_amulet_rare",
       "name": "Warforged Adept Amulet",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -2183,7 +2225,7 @@
       "id": "adept_amulet_epic",
       "name": "Ancient Adept Amulet",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -2209,7 +2251,7 @@
       "id": "adept_amulet_legendary",
       "name": "Elderheart Amulet",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -2331,7 +2373,7 @@
       "id": "adept_boots_uncommon",
       "name": "Honed Adept Sandals",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "arcane",
       "stats": [
         {
@@ -2353,7 +2395,7 @@
       "id": "adept_boots_rare",
       "name": "Warforged Adept Sandals",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "arcane",
       "stats": [
         {
@@ -2375,7 +2417,7 @@
       "id": "adept_boots_epic",
       "name": "Ancient Adept Sandals",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "arcane",
       "stats": [
         {
@@ -2401,7 +2443,7 @@
       "id": "adept_boots_legendary",
       "name": "Elderheart Sandals",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "arcane",
       "stats": [
         {
@@ -2427,7 +2469,7 @@
       "id": "adept_gloves_uncommon",
       "name": "Honed Adept Mitts",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -2449,7 +2491,7 @@
       "id": "adept_gloves_rare",
       "name": "Warforged Adept Mitts",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -2471,7 +2513,7 @@
       "id": "adept_gloves_epic",
       "name": "Ancient Adept Mitts",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -2497,7 +2539,7 @@
       "id": "adept_gloves_legendary",
       "name": "Elderheart Mitts",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -2520,10 +2562,10 @@
       "bossOnly": true
     },
     {
-      "id": "adept_tome_uncommon",
-      "name": "Honed Adept Tome",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "adept_hood_uncommon",
+      "name": "Honed Adept Hood",
+      "icon": "helm",
+      "slot": "head",
       "track": "arcane",
       "stats": [
         {
@@ -2539,13 +2581,13 @@
       "setId": "woodland_adept",
       "minDepth": 150,
       "zoneId": "whispering_woods",
-      "nextTierId": "adept_tome_rare"
+      "nextTierId": "adept_hood_rare"
     },
     {
-      "id": "adept_tome_rare",
-      "name": "Warforged Adept Tome",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "adept_hood_rare",
+      "name": "Warforged Adept Hood",
+      "icon": "helm",
+      "slot": "head",
       "track": "arcane",
       "stats": [
         {
@@ -2561,13 +2603,13 @@
       "setId": "woodland_adept",
       "minDepth": 400,
       "zoneId": "whispering_woods",
-      "nextTierId": "adept_tome_epic"
+      "nextTierId": "adept_hood_epic"
     },
     {
-      "id": "adept_tome_epic",
-      "name": "Ancient Adept Tome",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "adept_hood_epic",
+      "name": "Ancient Adept Hood",
+      "icon": "helm",
+      "slot": "head",
       "track": "arcane",
       "stats": [
         {
@@ -2587,13 +2629,13 @@
       "setId": "woodland_adept",
       "minDepth": 700,
       "zoneId": "whispering_woods",
-      "nextTierId": "adept_tome_legendary"
+      "nextTierId": "adept_hood_legendary"
     },
     {
-      "id": "adept_tome_legendary",
-      "name": "Elderheart Tome",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "adept_hood_legendary",
+      "name": "Elderheart Hood",
+      "icon": "helm",
+      "slot": "head",
       "track": "arcane",
       "stats": [
         {
@@ -2619,7 +2661,7 @@
       "id": "adept_orb_uncommon",
       "name": "Honed Adept Orb",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -2641,7 +2683,7 @@
       "id": "adept_orb_rare",
       "name": "Warforged Adept Orb",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -2663,7 +2705,7 @@
       "id": "adept_orb_epic",
       "name": "Ancient Adept Orb",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -2689,7 +2731,7 @@
       "id": "adept_orb_legendary",
       "name": "Elderheart Orb",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -2715,12 +2757,12 @@
       "id": "wardens_mace_rare",
       "name": "Hallowed Warden's Mace",
       "icon": "axe",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
           "statId": "might",
-          "value": 14.0
+          "value": 14
         },
         {
           "statId": "resistance",
@@ -2737,7 +2779,7 @@
       "id": "wardens_mace_epic",
       "name": "Sepulchral Warden's Mace",
       "icon": "axe",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -2763,12 +2805,12 @@
       "id": "wardens_mace_legendary",
       "name": "Deathless Warden's Mace",
       "icon": "axe",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
           "statId": "might",
-          "value": 76.0
+          "value": 76
         },
         {
           "statId": "resistance",
@@ -2789,12 +2831,12 @@
       "id": "wardens_plate_rare",
       "name": "Hallowed Warden's Plate",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
           "statId": "grit",
-          "value": 14.0
+          "value": 14
         },
         {
           "statId": "staminaCap",
@@ -2811,7 +2853,7 @@
       "id": "wardens_plate_epic",
       "name": "Sepulchral Warden's Plate",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -2837,16 +2879,16 @@
       "id": "wardens_plate_legendary",
       "name": "Deathless Warden's Plate",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
           "statId": "grit",
-          "value": 76.0
+          "value": 76
         },
         {
           "statId": "staminaCap",
-          "value": 82.0
+          "value": 82
         },
         {
           "statId": "regen",
@@ -2862,8 +2904,8 @@
     {
       "id": "wardens_greaves_rare",
       "name": "Hallowed Warden's Greaves",
-      "icon": "boots",
-      "slot": "boots",
+      "icon": "legs",
+      "slot": "legs",
       "track": "physical",
       "stats": [
         {
@@ -2884,8 +2926,8 @@
     {
       "id": "wardens_greaves_epic",
       "name": "Sepulchral Warden's Greaves",
-      "icon": "boots",
-      "slot": "boots",
+      "icon": "legs",
+      "slot": "legs",
       "track": "physical",
       "stats": [
         {
@@ -2910,8 +2952,8 @@
     {
       "id": "wardens_greaves_legendary",
       "name": "Deathless Warden's Greaves",
-      "icon": "boots",
-      "slot": "boots",
+      "icon": "legs",
+      "slot": "legs",
       "track": "physical",
       "stats": [
         {
@@ -2937,12 +2979,12 @@
       "id": "wardens_gauntlets_rare",
       "name": "Hallowed Warden's Gauntlets",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
           "statId": "grit",
-          "value": 10.0
+          "value": 10
         },
         {
           "statId": "regen",
@@ -2959,7 +3001,7 @@
       "id": "wardens_gauntlets_epic",
       "name": "Sepulchral Warden's Gauntlets",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -2972,7 +3014,7 @@
         },
         {
           "statId": "critChance",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
@@ -2985,7 +3027,7 @@
       "id": "wardens_gauntlets_legendary",
       "name": "Deathless Warden's Gauntlets",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "physical",
       "stats": [
         {
@@ -2994,7 +3036,7 @@
         },
         {
           "statId": "regen",
-          "value": 24.0
+          "value": 24
         },
         {
           "statId": "critChance",
@@ -3011,7 +3053,7 @@
       "id": "wardens_sigil_rare",
       "name": "Hallowed Warden's Sigil",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -3033,7 +3075,7 @@
       "id": "wardens_sigil_epic",
       "name": "Sepulchral Warden's Sigil",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -3059,7 +3101,7 @@
       "id": "wardens_sigil_legendary",
       "name": "Deathless Warden's Sigil",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "physical",
       "stats": [
         {
@@ -3090,7 +3132,7 @@
       "stats": [
         {
           "statId": "grit",
-          "value": 10.0
+          "value": 10
         },
         {
           "statId": "staminaCap",
@@ -3120,7 +3162,7 @@
         },
         {
           "statId": "critChance",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
@@ -3142,7 +3184,7 @@
         },
         {
           "statId": "staminaCap",
-          "value": 58.0
+          "value": 58
         },
         {
           "statId": "critChance",
@@ -3159,7 +3201,7 @@
       "id": "wardens_lantern_rare",
       "name": "Hallowed Warden's Lantern",
       "icon": "flame",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "universal",
       "stats": [
         {
@@ -3181,7 +3223,7 @@
       "id": "wardens_lantern_epic",
       "name": "Sepulchral Warden's Lantern",
       "icon": "flame",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "universal",
       "stats": [
         {
@@ -3207,7 +3249,7 @@
       "id": "wardens_lantern_legendary",
       "name": "Deathless Warden's Lantern",
       "icon": "flame",
-      "slot": "trinket1",
+      "slot": "offHand",
       "track": "universal",
       "stats": [
         {
@@ -3230,15 +3272,15 @@
       "bossOnly": true
     },
     {
-      "id": "wardens_ward_rare",
-      "name": "Hallowed Warden's Ward",
-      "icon": "shield",
-      "slot": "trinket2",
+      "id": "wardens_shroud_rare",
+      "name": "Hallowed Warden's Shroud",
+      "icon": "cloak",
+      "slot": "back",
       "track": "universal",
       "stats": [
         {
           "statId": "grit",
-          "value": 10.0
+          "value": 10
         },
         {
           "statId": "materialFind",
@@ -3249,13 +3291,13 @@
       "setId": "crypt_warden",
       "minDepth": 300,
       "zoneId": "sunken_crypt",
-      "nextTierId": "wardens_ward_epic"
+      "nextTierId": "wardens_shroud_epic"
     },
     {
-      "id": "wardens_ward_epic",
-      "name": "Sepulchral Warden's Ward",
-      "icon": "shield",
-      "slot": "trinket2",
+      "id": "wardens_shroud_epic",
+      "name": "Sepulchral Warden's Shroud",
+      "icon": "cloak",
+      "slot": "back",
       "track": "universal",
       "stats": [
         {
@@ -3268,20 +3310,20 @@
         },
         {
           "statId": "regen",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
       "setId": "crypt_warden",
       "minDepth": 525,
       "zoneId": "sunken_crypt",
-      "nextTierId": "wardens_ward_legendary"
+      "nextTierId": "wardens_shroud_legendary"
     },
     {
-      "id": "wardens_ward_legendary",
-      "name": "Deathless Warden's Ward",
-      "icon": "shield",
-      "slot": "trinket2",
+      "id": "wardens_shroud_legendary",
+      "name": "Deathless Warden's Shroud",
+      "icon": "cloak",
+      "slot": "back",
       "track": "universal",
       "stats": [
         {
@@ -3290,7 +3332,7 @@
         },
         {
           "statId": "materialFind",
-          "value": 24.0
+          "value": 24
         },
         {
           "statId": "regen",
@@ -3307,7 +3349,7 @@
       "id": "zealot_blade_epic",
       "name": "Blazing Zealot Blade",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
@@ -3333,12 +3375,12 @@
       "id": "zealot_blade_legendary",
       "name": "Sunforged Zealot Blade",
       "icon": "sword",
-      "slot": "weapon",
+      "slot": "mainHand",
       "track": "physical",
       "stats": [
         {
           "statId": "might",
-          "value": 76.0
+          "value": 76
         },
         {
           "statId": "critDamage",
@@ -3359,7 +3401,7 @@
       "id": "zealot_staff_epic",
       "name": "Blazing Zealot Staff",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -3385,12 +3427,12 @@
       "id": "zealot_staff_legendary",
       "name": "Sunforged Zealot Staff",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
           "statId": "arcana",
-          "value": 76.0
+          "value": 76
         },
         {
           "statId": "critDamage",
@@ -3411,7 +3453,7 @@
       "id": "zealot_cuirass_epic",
       "name": "Blazing Zealot Cuirass",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -3437,7 +3479,7 @@
       "id": "zealot_cuirass_legendary",
       "name": "Sunforged Zealot Cuirass",
       "icon": "armor",
-      "slot": "armor",
+      "slot": "body",
       "track": "physical",
       "stats": [
         {
@@ -3463,7 +3505,7 @@
       "id": "zealot_vestments_epic",
       "name": "Blazing Zealot Vestments",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -3476,7 +3518,7 @@
         },
         {
           "statId": "regen",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
@@ -3489,7 +3531,7 @@
       "id": "zealot_vestments_legendary",
       "name": "Sunforged Zealot Vestments",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -3515,7 +3557,7 @@
       "id": "zealot_brand_epic",
       "name": "Blazing Zealot Brand",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -3541,7 +3583,7 @@
       "id": "zealot_brand_legendary",
       "name": "Sunforged Zealot Brand",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -3580,7 +3622,7 @@
         },
         {
           "statId": "critChance",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
@@ -3616,10 +3658,10 @@
       "bossOnly": true
     },
     {
-      "id": "zealot_ember_epic",
-      "name": "Blazing Zealot Ember",
-      "icon": "flame",
-      "slot": "trinket1",
+      "id": "zealot_circlet_epic",
+      "name": "Blazing Zealot Circlet",
+      "icon": "crown",
+      "slot": "head",
       "track": "universal",
       "stats": [
         {
@@ -3632,20 +3674,20 @@
         },
         {
           "statId": "materialFind",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
       "setId": "ember_zealot",
       "minDepth": 350,
       "zoneId": "ember_caverns",
-      "nextTierId": "zealot_ember_legendary"
+      "nextTierId": "zealot_circlet_legendary"
     },
     {
-      "id": "zealot_ember_legendary",
-      "name": "Sunforged Zealot Ember",
-      "icon": "flame",
-      "slot": "trinket1",
+      "id": "zealot_circlet_legendary",
+      "name": "Sunforged Zealot Circlet",
+      "icon": "crown",
+      "slot": "head",
       "track": "universal",
       "stats": [
         {
@@ -3671,7 +3713,7 @@
       "id": "zealot_censer_epic",
       "name": "Blazing Zealot Censer",
       "icon": "sparkles",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -3684,7 +3726,7 @@
         },
         {
           "statId": "materialFind",
-          "value": 7.0
+          "value": 7
         }
       ],
       "rarity": "epic",
@@ -3697,7 +3739,7 @@
       "id": "zealot_censer_legendary",
       "name": "Sunforged Zealot Censer",
       "icon": "sparkles",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "arcane",
       "stats": [
         {
@@ -3723,7 +3765,7 @@
       "id": "sentinel_icicle_legendary",
       "name": "Everwinter Sentinel Icicle",
       "icon": "wand",
-      "slot": "focusItem",
+      "slot": "mainHand",
       "track": "arcane",
       "stats": [
         {
@@ -3749,7 +3791,7 @@
       "id": "sentinel_mantle_legendary",
       "name": "Everwinter Sentinel Mantle",
       "icon": "robe",
-      "slot": "robe",
+      "slot": "body",
       "track": "arcane",
       "stats": [
         {
@@ -3775,7 +3817,7 @@
       "id": "sentinel_treads_legendary",
       "name": "Everwinter Sentinel Treads",
       "icon": "boots",
-      "slot": "boots",
+      "slot": "feet",
       "track": "universal",
       "stats": [
         {
@@ -3801,7 +3843,7 @@
       "id": "sentinel_grips_legendary",
       "name": "Everwinter Sentinel Grips",
       "icon": "gloves",
-      "slot": "gloves",
+      "slot": "hands",
       "track": "arcane",
       "stats": [
         {
@@ -3810,7 +3852,7 @@
         },
         {
           "statId": "critDamage",
-          "value": 24.0
+          "value": 24
         },
         {
           "statId": "manaCap",
@@ -3827,7 +3869,7 @@
       "id": "sentinel_frostgem_legendary",
       "name": "Everwinter Sentinel Frostgem",
       "icon": "amulet",
-      "slot": "amulet",
+      "slot": "neck",
       "track": "arcane",
       "stats": [
         {
@@ -3862,7 +3904,7 @@
         },
         {
           "statId": "speed",
-          "value": 24.0
+          "value": 24
         },
         {
           "statId": "critChance",
@@ -3876,10 +3918,10 @@
       "bossOnly": true
     },
     {
-      "id": "sentinel_rime_legendary",
-      "name": "Everwinter Sentinel Rime",
-      "icon": "sparkles",
-      "slot": "trinket1",
+      "id": "sentinel_crown_legendary",
+      "name": "Everwinter Sentinel Crown",
+      "icon": "crown",
+      "slot": "head",
       "track": "universal",
       "stats": [
         {
@@ -3888,7 +3930,7 @@
         },
         {
           "statId": "materialFind",
-          "value": 24.0
+          "value": 24
         },
         {
           "statId": "fortune",
@@ -3905,7 +3947,7 @@
       "id": "sentinel_shard_legendary",
       "name": "Everwinter Sentinel Shard",
       "icon": "burst",
-      "slot": "trinket2",
+      "slot": "offHand",
       "track": "universal",
       "stats": [
         {
@@ -3918,6 +3960,1054 @@
         },
         {
           "statId": "resistance",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_helm",
+      "name": "Vanguard Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 1.8
+        }
+      ],
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_helm_uncommon"
+    },
+    {
+      "id": "vanguard_helm_uncommon",
+      "name": "Honed Vanguard Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 4.2
+        },
+        {
+          "statId": "resistance",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_helm_rare"
+    },
+    {
+      "id": "vanguard_helm_rare",
+      "name": "Warforged Vanguard Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 9.8
+        },
+        {
+          "statId": "resistance",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_helm_epic"
+    },
+    {
+      "id": "vanguard_helm_epic",
+      "name": "Ancient Vanguard Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 22.9
+        },
+        {
+          "statId": "resistance",
+          "value": 10.3
+        },
+        {
+          "statId": "hpCap",
+          "value": 6.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_helm_legendary"
+    },
+    {
+      "id": "vanguard_helm_legendary",
+      "name": "Elderheart Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 53.3
+        },
+        {
+          "statId": "resistance",
+          "value": 24
+        },
+        {
+          "statId": "hpCap",
+          "value": 16
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "vanguard_greaves",
+      "name": "Vanguard Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 6
+        }
+      ],
+      "rarity": "common",
+      "setId": "woodland_vanguard",
+      "minDepth": 1,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_greaves_uncommon"
+    },
+    {
+      "id": "vanguard_greaves_uncommon",
+      "name": "Honed Vanguard Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 14
+        },
+        {
+          "statId": "grit",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_vanguard",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_greaves_rare"
+    },
+    {
+      "id": "vanguard_greaves_rare",
+      "name": "Warforged Vanguard Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "grit",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_vanguard",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_greaves_epic"
+    },
+    {
+      "id": "vanguard_greaves_epic",
+      "name": "Ancient Vanguard Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "grit",
+          "value": 34.3
+        },
+        {
+          "statId": "resistance",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_vanguard",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "vanguard_greaves_legendary"
+    },
+    {
+      "id": "vanguard_greaves_legendary",
+      "name": "Elderheart Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "grit",
+          "value": 80
+        },
+        {
+          "statId": "resistance",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_vanguard",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_leggings",
+      "name": "Adept Leggings",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 6
+        }
+      ],
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 10,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_leggings_uncommon"
+    },
+    {
+      "id": "adept_leggings_uncommon",
+      "name": "Honed Adept Leggings",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 14
+        },
+        {
+          "statId": "willpower",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_leggings_rare"
+    },
+    {
+      "id": "adept_leggings_rare",
+      "name": "Warforged Adept Leggings",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "willpower",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_leggings_epic"
+    },
+    {
+      "id": "adept_leggings_epic",
+      "name": "Ancient Adept Leggings",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "willpower",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_leggings_legendary"
+    },
+    {
+      "id": "adept_leggings_legendary",
+      "name": "Elderheart Leggings",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "willpower",
+          "value": 80
+        },
+        {
+          "statId": "regen",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "adept_cloak",
+      "name": "Adept Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 6
+        }
+      ],
+      "rarity": "common",
+      "setId": "woodland_adept",
+      "minDepth": 20,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_cloak_uncommon"
+    },
+    {
+      "id": "adept_cloak_uncommon",
+      "name": "Honed Adept Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 14
+        },
+        {
+          "statId": "regen",
+          "value": 6.3
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "woodland_adept",
+      "minDepth": 150,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_cloak_rare"
+    },
+    {
+      "id": "adept_cloak_rare",
+      "name": "Warforged Adept Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 32.7
+        },
+        {
+          "statId": "regen",
+          "value": 14.7
+        }
+      ],
+      "rarity": "rare",
+      "setId": "woodland_adept",
+      "minDepth": 400,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_cloak_epic"
+    },
+    {
+      "id": "adept_cloak_epic",
+      "name": "Ancient Adept Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.2
+        },
+        {
+          "statId": "regen",
+          "value": 34.3
+        },
+        {
+          "statId": "speed",
+          "value": 22.9
+        }
+      ],
+      "rarity": "epic",
+      "setId": "woodland_adept",
+      "minDepth": 700,
+      "zoneId": "whispering_woods",
+      "nextTierId": "adept_cloak_legendary"
+    },
+    {
+      "id": "adept_cloak_legendary",
+      "name": "Elderheart Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 177.8
+        },
+        {
+          "statId": "regen",
+          "value": 80
+        },
+        {
+          "statId": "speed",
+          "value": 53.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "woodland_adept",
+      "minDepth": 950,
+      "zoneId": "whispering_woods",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_helm",
+      "name": "Warden's Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 4.3
+        },
+        {
+          "statId": "resistance",
+          "value": 1.9
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 1,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_helm_rare"
+    },
+    {
+      "id": "wardens_helm_rare",
+      "name": "Hallowed Warden's Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 10
+        },
+        {
+          "statId": "resistance",
+          "value": 4.4
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_helm_epic"
+    },
+    {
+      "id": "wardens_helm_epic",
+      "name": "Sepulchral Warden's Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 23.3
+        },
+        {
+          "statId": "resistance",
+          "value": 10.3
+        },
+        {
+          "statId": "regen",
+          "value": 7
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_helm_legendary"
+    },
+    {
+      "id": "wardens_helm_legendary",
+      "name": "Deathless Warden's Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 54.3
+        },
+        {
+          "statId": "resistance",
+          "value": 24
+        },
+        {
+          "statId": "regen",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "wardens_sabatons",
+      "name": "Warden's Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 14.4
+        },
+        {
+          "statId": "speed",
+          "value": 2.7
+        }
+      ],
+      "rarity": "uncommon",
+      "setId": "crypt_warden",
+      "minDepth": 1,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_sabatons_rare"
+    },
+    {
+      "id": "wardens_sabatons_rare",
+      "name": "Hallowed Warden's Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 33.6
+        },
+        {
+          "statId": "speed",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "crypt_warden",
+      "minDepth": 300,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_sabatons_epic"
+    },
+    {
+      "id": "wardens_sabatons_epic",
+      "name": "Sepulchral Warden's Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 78.3
+        },
+        {
+          "statId": "speed",
+          "value": 14.7
+        },
+        {
+          "statId": "regen",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "crypt_warden",
+      "minDepth": 525,
+      "zoneId": "sunken_crypt",
+      "nextTierId": "wardens_sabatons_legendary"
+    },
+    {
+      "id": "wardens_sabatons_legendary",
+      "name": "Deathless Warden's Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "stats": [
+        {
+          "statId": "hpCap",
+          "value": 182.4
+        },
+        {
+          "statId": "speed",
+          "value": 34.3
+        },
+        {
+          "statId": "regen",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "crypt_warden",
+      "minDepth": 712,
+      "zoneId": "sunken_crypt",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_legguards",
+      "name": "Zealot Legguards",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 33.6
+        },
+        {
+          "statId": "resistance",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 1,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_legguards_epic"
+    },
+    {
+      "id": "zealot_legguards_epic",
+      "name": "Blazing Zealot Legguards",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 78.3
+        },
+        {
+          "statId": "resistance",
+          "value": 14.7
+        },
+        {
+          "statId": "speed",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_legguards_legendary"
+    },
+    {
+      "id": "zealot_legguards_legendary",
+      "name": "Sunforged Zealot Legguards",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 182.4
+        },
+        {
+          "statId": "resistance",
+          "value": 34.3
+        },
+        {
+          "statId": "speed",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_treads",
+      "name": "Zealot Treads",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 10.1
+        },
+        {
+          "statId": "might",
+          "value": 4.5
+        }
+      ],
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 20,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_treads_epic"
+    },
+    {
+      "id": "zealot_treads_epic",
+      "name": "Blazing Zealot Treads",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 23.5
+        },
+        {
+          "statId": "might",
+          "value": 10.5
+        },
+        {
+          "statId": "regen",
+          "value": 7
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_treads_legendary"
+    },
+    {
+      "id": "zealot_treads_legendary",
+      "name": "Sunforged Zealot Treads",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 54.8
+        },
+        {
+          "statId": "might",
+          "value": 24.5
+        },
+        {
+          "statId": "regen",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_wraps",
+      "name": "Zealot Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 10.1
+        },
+        {
+          "statId": "arcana",
+          "value": 10.9
+        }
+      ],
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 10,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_wraps_epic"
+    },
+    {
+      "id": "zealot_wraps_epic",
+      "name": "Blazing Zealot Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 23.5
+        },
+        {
+          "statId": "arcana",
+          "value": 25.4
+        },
+        {
+          "statId": "critChance",
+          "value": 7
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_wraps_legendary"
+    },
+    {
+      "id": "zealot_wraps_legendary",
+      "name": "Sunforged Zealot Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "universal",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 54.8
+        },
+        {
+          "statId": "arcana",
+          "value": 59.2
+        },
+        {
+          "statId": "critChance",
+          "value": 16.3
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "zealot_mantle",
+      "name": "Zealot Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 33.6
+        },
+        {
+          "statId": "willpower",
+          "value": 6.3
+        }
+      ],
+      "rarity": "rare",
+      "setId": "ember_zealot",
+      "minDepth": 10,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_mantle_epic"
+    },
+    {
+      "id": "zealot_mantle_epic",
+      "name": "Blazing Zealot Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 78.3
+        },
+        {
+          "statId": "willpower",
+          "value": 14.7
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.5
+        }
+      ],
+      "rarity": "epic",
+      "setId": "ember_zealot",
+      "minDepth": 350,
+      "zoneId": "ember_caverns",
+      "nextTierId": "zealot_mantle_legendary"
+    },
+    {
+      "id": "zealot_mantle_legendary",
+      "name": "Sunforged Zealot Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 182.4
+        },
+        {
+          "statId": "willpower",
+          "value": 34.3
+        },
+        {
+          "statId": "critDamage",
+          "value": 54.8
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "ember_zealot",
+      "minDepth": 475,
+      "zoneId": "ember_caverns",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_legwraps",
+      "name": "Sentinel Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 76.8
+        },
+        {
+          "statId": "willpower",
+          "value": 14.4
+        },
+        {
+          "statId": "regen",
+          "value": 9.6
+        }
+      ],
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 1,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_legwraps_legendary"
+    },
+    {
+      "id": "sentinel_legwraps_legendary",
+      "name": "Everwinter Sentinel Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 178.9
+        },
+        {
+          "statId": "willpower",
+          "value": 33.6
+        },
+        {
+          "statId": "regen",
+          "value": 22.4
+        }
+      ],
+      "rarity": "legendary",
+      "setId": "frost_sentinel",
+      "minDepth": 238,
+      "zoneId": "frostbound_peaks",
+      "bossOnly": true
+    },
+    {
+      "id": "sentinel_cloak",
+      "name": "Sentinel Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 32
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 9.6
+        }
+      ],
+      "rarity": "epic",
+      "setId": "frost_sentinel",
+      "minDepth": 1,
+      "zoneId": "frostbound_peaks",
+      "nextTierId": "sentinel_cloak_legendary"
+    },
+    {
+      "id": "sentinel_cloak_legendary",
+      "name": "Everwinter Sentinel Cloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 74.6
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
           "value": 22.4
         }
       ],

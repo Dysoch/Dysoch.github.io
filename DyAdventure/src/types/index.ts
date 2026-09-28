@@ -1,19 +1,24 @@
 
 export type StatId = 'might' | 'grit' | 'arcana' | 'willpower' | 'fortune' | 'speed'
 
-export type GearTrack = 'physical' | 'arcane'
+export type GearTrack = 'physical' | 'arcane' | 'universal'
 
+/** Where gear is worn. Rings have two slots; see ItemSlot for what a catalog item is. */
 export type GearSlot =
-  | 'weapon'
-  | 'armor'
-  | 'boots'
-  | 'gloves'
-  | 'focusItem'
-  | 'robe'
-  | 'amulet'
-  | 'ring'
-  | 'trinket1'
-  | 'trinket2'
+  | 'head'
+  | 'body'
+  | 'legs'
+  | 'feet'
+  | 'hands'
+  | 'mainHand'
+  | 'offHand'
+  | 'neck'
+  | 'back'
+  | 'ring1'
+  | 'ring2'
+
+/** A catalog item's kind: the equip slot it goes in, except a ring fits either ring slot. */
+export type ItemSlot = Exclude<GearSlot, 'ring1' | 'ring2'> | 'ring'
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
 
@@ -101,7 +106,7 @@ export interface GearCatalogItemDef {
   id: string
   name: string
   icon: string
-  slot: GearSlot
+  slot: ItemSlot
   track: GearTrack | 'universal'
   /** Every stat this item boosts (more stats on higher rarities) */
   stats: GearStatDef[]
@@ -377,6 +382,7 @@ export type MainToWorkerMessage =
   | { type: 'UPGRADE_ABILITY'; abilityId: string; count?: number }
   | { type: 'EQUIP_ITEM'; instanceId: string; slot?: GearSlot }
   | { type: 'UNEQUIP_ITEM'; slot: GearSlot }
+  | { type: 'EQUIP_SET'; setId: string }
   | { type: 'SOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'UNSOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'SALVAGE_ITEM'; instanceId: string }

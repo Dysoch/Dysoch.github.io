@@ -22,45 +22,45 @@
     }
   ],
   "slotMaterials": {
-    "weapon": [
+    "head": [
+      "stone",
+      "leather"
+    ],
+    "body": [
+      "leather",
+      "stone"
+    ],
+    "legs": [
+      "leather",
+      "wood"
+    ],
+    "feet": [
+      "leather",
+      "wood"
+    ],
+    "hands": [
+      "leather",
+      "crystals"
+    ],
+    "mainHand": [
       "stone",
       "wood"
     ],
-    "armor": [
-      "leather",
-      "stone"
-    ],
-    "boots": [
-      "leather",
-      "wood"
-    ],
-    "gloves": [
-      "leather",
-      "crystals"
-    ],
-    "focusItem": [
+    "offHand": [
       "wood",
       "crystals"
     ],
-    "robe": [
-      "leather",
-      "crystals"
-    ],
-    "amulet": [
+    "neck": [
       "crystals",
       "stone"
+    ],
+    "back": [
+      "leather",
+      "crystals"
     ],
     "ring": [
       "crystals",
       "stone"
-    ],
-    "trinket1": [
-      "crystals",
-      "leather"
-    ],
-    "trinket2": [
-      "wood",
-      "leather"
     ]
   },
   "craftCostByRarity": {

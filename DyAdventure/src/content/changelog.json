@@ -3,6 +3,9 @@
     "version": "0.1.5",
     "date": "2026-09-28",
     "changes": [
+      "Gear rework: 11 equipment slots (Head, Body, Legs, Feet, Hands, Main Hand, Off Hand, Neck, Back and two Rings). You now wear either a weapon or a wand, and either armor or a robe, so builds lean physical or arcane. Trinkets became real pieces (e.g. the Adept Orb is an off hand, the Adept Tome became the Adept Hood). Existing saves move over automatically; where two worn items now share a slot, the one matching your main ability type stays on and the other goes to your inventory.",
+      "Every set now has a piece for every slot, with a new 10-piece bonus. New pieces: helms, greaves, leggings, cloaks, sabatons and more across all five sets.",
+      "New: compare and equip whole sets. Each set on the Inventory page shows what wearing it would change overall, and Equip set puts on your best owned copy of every piece in one click.",
       "Inventory redesign: equipped gear and your inventory are compact lists, and selecting an item shows everything about it in one panel: stats, what equipping it would change, augments, fusing, reforging and salvage. On phones the panel opens from the bottom.",
       "Upgrade / Sidegrade / Worse now judge your whole character, not just the item's own numbers. Set bonuses gained or broken and augments count, and each stat is valued by what it actually does for you. Items show the overall % change, and the panel breaks it down into Offense, Defense, Sustain, Resources and Economy.",
       "Each equipped slot shows how many items in your inventory would improve it, and selecting a slot lists every candidate with an Equip button.",
