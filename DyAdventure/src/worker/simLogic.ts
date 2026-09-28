@@ -1369,6 +1369,8 @@ function trackPeakEchoRate(state: SimState): SimState {
 // one damage application can never take pathologically long (or loop forever) no matter how large
 // damage or how the depth-clear bookkeeping evolves.
 const MAX_OVERKILL_CHAIN_KILLS = 10
+/** Safety cap on casts of one ability in a single tick (a 1s offline step at very high Speed). */
+const MAX_CASTS_PER_TICK = 50
 
 /**
  * Applies damage to the current monster. On a kill, any bleed on that target ends, and if
@@ -1586,10 +1588,16 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
   next = tickMonsterDot(next, deltaMs, now, events)
 
   const cooldowns = { ...next.abilityCooldowns }
+  // Time an ability spent ready during this tick (≤ 0). A long tick (offline catch-up steps a second at a
+  // time) can owe a fast ability several casts; dropping this surplus made offline progress far weaker
+  // than online once cooldowns got shorter than a second.
+  const readyCredit: Record<string, number> = {}
   for (const abilityId of Object.keys(next.abilities)) {
     const progress = next.abilities[abilityId]
     if (!progress || progress.rank <= 0) continue
-    cooldowns[abilityId] = Math.max(0, (cooldowns[abilityId] ?? 0) - deltaMs)
+    const left = (cooldowns[abilityId] ?? 0) - deltaMs
+    cooldowns[abilityId] = Math.max(0, left)
+    readyCredit[abilityId] = Math.min(0, left)
   }
   next = { ...next, abilityCooldowns: cooldowns }
 
@@ -1603,9 +1611,18 @@ export function advanceTick(state: SimState, deltaMs: number, now: number): Tick
   for (const abilityId of orderedAbilityIds) {
     const progress = next.abilities[abilityId]
     if (!progress || progress.rank <= 0) continue
-    if ((next.abilityCooldowns[abilityId] ?? 0) > 0) continue
-    if (!next.currentMonster) break
-    next = fireAbility(next, abilityId, now, events)
+    let credit = readyCredit[abilityId] ?? 0
+    for (let casts = 0; casts < MAX_CASTS_PER_TICK; casts++) {
+      if ((next.abilityCooldowns[abilityId] ?? 0) > 0 || !next.currentMonster) break
+      next = fireAbility(next, abilityId, now, events)
+      const cooldown = next.abilityCooldowns[abilityId] ?? 0
+      // Still 0: it couldn't fire (out of Stamina/Mana), so the rest of the credit is lost
+      if (cooldown <= 0) break
+      // The cooldown started when the ability became ready, not at the end of the tick
+      const remaining = cooldown + credit
+      next = { ...next, abilityCooldowns: { ...next.abilityCooldowns, [abilityId]: Math.max(0, remaining) } }
+      credit = Math.min(0, remaining)
+    }
   }
 
   return { state: { ...next, lastTickTimestamp: now }, events }

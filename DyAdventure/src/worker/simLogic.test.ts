@@ -1367,3 +1367,23 @@ describe('cast rate in the upgrade score (regression: Speed counted fully even w
     expect(compareToEquipped(comfortable, banner).aspects.offense).toBeCloseTo(0)
   })
 })
+
+describe('long ticks (regression: offline catch-up steps 1s at a time and lost every cast after the first per step)', () => {
+  test('one 1s tick casts a fast ability about as often as ten 100ms ticks', () => {
+    const base = createInitialState()
+    // Speed 650: Strike's 1.5s cooldown drops to 200ms, so a second holds about five casts
+    const state: SimState = {
+      ...base,
+      abilities: { ...base.abilities, strike: { rank: 10 }, bolt: { rank: 0 } },
+      stats: { ...base.stats, speed: 650 },
+      currentMonster: { ...base.currentMonster!, hp: 1e12, maxHp: 1e12 },
+    }
+    const now = Date.now()
+    let fast = state
+    for (let i = 1; i <= 10; i++) fast = advanceTick(fast, 100, now + i * 100).state
+    const slow = advanceTick(state, 1000, now + 1000).state
+    const uses = (s: SimState) => s.lifetime.ability_strike_uses ?? 0
+    expect(uses(fast)).toBeGreaterThanOrEqual(4)
+    expect(Math.abs(uses(slow) - uses(fast))).toBeLessThanOrEqual(1)
+  })
+})

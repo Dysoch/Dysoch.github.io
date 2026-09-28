@@ -24,6 +24,7 @@
       "Fixed the top bar on phones: HP, Stamina and Mana now share a row instead of running off the screen.",
       "Gear comparisons now know when Stamina or Mana runs out: more Speed only counts as far as your resources can pay for the extra casts, and Stamina, Mana, Endurance and Spirit count toward Offense when you are running dry.",
       "Set gear now carries the new attributes: Woodland Vanguard and Crypt Warden pieces have Endurance instead of Stamina Cap, Woodland Adept and Frost Sentinel pieces have Spirit instead of Regeneration, and Ember Zealot has Precision instead of Crit Chance. Several set bonuses now grant Endurance, Spirit or Precision. The Gear Stats Overview lists the new attributes.",
+      "Fixed offline progress being much weaker than online at high Speed: catch-up runs in one-second steps and each ability could only fire once per step. Fast abilities now fire as often offline as they would while you watch.",
       "New: Pause in Settings. Time stops (no combat, regeneration or Focus) while you can still train, equip and craft. A Paused chip in the top bar resumes the game, paused time does not count as offline time, and reloading resumes.",
       "Abilities, Training and the combat ability bar are grouped: Physical (Stamina) and Arcane (Mana) abilities, and Physical, Arcane and Utility stats.",
       "Fixed the Combat page on phones: the combat log now sits below the fight instead of squeezing it."
