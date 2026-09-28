@@ -18,6 +18,15 @@
     "group": "physical"
   },
   {
+    "id": "endurance",
+    "name": "Endurance",
+    "icon": "heart",
+    "description": "+1.5 max Stamina and +0.5% Stamina regeneration per point.",
+    "baseTrainCost": 10,
+    "trainCostMultiplier": 1.09,
+    "group": "physical"
+  },
+  {
     "id": "arcana",
     "name": "Arcana",
     "icon": "wand",
@@ -30,7 +39,16 @@
     "id": "willpower",
     "name": "Willpower",
     "icon": "sparkles",
-    "description": "+1.5 max Mana and future magic defense.",
+    "description": "+1.5 max Mana per point.",
+    "baseTrainCost": 10,
+    "trainCostMultiplier": 1.09,
+    "group": "arcane"
+  },
+  {
+    "id": "spirit",
+    "name": "Spirit",
+    "icon": "burst",
+    "description": "+0.5% Mana regeneration per point, and reduces monster damage taken (half as much as Grit).",
     "baseTrainCost": 10,
     "trainCostMultiplier": 1.09,
     "group": "arcane"
@@ -39,7 +57,7 @@
     "id": "fortune",
     "name": "Fortune",
     "icon": "clover",
-    "description": "Increases loot quantity and loot rarity.",
+    "description": "More gear drops (diminishing, up to +50% drop chance) and +2% Focus from kills per point.",
     "baseTrainCost": 15,
     "trainCostMultiplier": 1.17,
     "group": "utility"
@@ -48,7 +66,16 @@
     "id": "speed",
     "name": "Speed",
     "icon": "lightning",
-    "description": "Fills your ability cooldowns faster — more attacks per minute.",
+    "description": "Fills your ability cooldowns faster — more attacks per minute, as long as Stamina and Mana keep up.",
+    "baseTrainCost": 15,
+    "trainCostMultiplier": 1.15,
+    "group": "utility"
+  },
+  {
+    "id": "precision",
+    "name": "Precision",
+    "icon": "target",
+    "description": "Crit Chance (diminishing, up to +40%) and +0.3% Crit Damage per point.",
     "baseTrainCost": 15,
     "trainCostMultiplier": 1.15,
     "group": "utility"

@@ -1,14 +1,31 @@
 import type { ReactNode } from 'react'
 import statsData from '../content/stats.json'
 import abilitiesData from '../content/abilities.json'
+import groupsData from '../content/groups.json'
 import { useGameStore } from '../store/gameStore'
-import { automationUnlockRecalls, isAutomationUnlocked, totalPendingLevels } from '../worker/simLogic'
+import { automationUnlockRecalls, buildPresetWeights, isAutomationUnlocked, listBuildPresets, totalPendingLevels } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
-import type { AbilityDef, AutomationFeature, DuplicateMode, StatDef } from '../types'
+import type { AbilityDef, AutomationFeature, DuplicateMode, GroupDef, StatDef } from '../types'
 
 const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
+const STAT_GROUPS = groupsData.statGroups as GroupDef[]
+const ABILITY_GROUPS = groupsData.abilityGroups as GroupDef[]
+const PRESETS = listBuildPresets()
+
+function sameWeights(a: Record<string, number>, b: Record<string, number>): boolean {
+  return Object.keys(b).every((k) => (a[k] ?? 0) === b[k])
+}
+
+/** A small group label above a group's weight rows. */
+function GroupLabel({ group }: { group: GroupDef }) {
+  return (
+    <div style={{ gridColumn: '1 / -1', color: group.color, fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '4px' }}>
+      {group.name}
+    </div>
+  )
+}
 
 const DUPLICATE_MODES: { id: DuplicateMode; label: string; description: string; feature?: AutomationFeature }[] = [
   { id: 'keep', label: 'Keep', description: 'Duplicates wait on the item you own as pending levels. Fuse them from the Inventory page.' },
@@ -80,6 +97,31 @@ export default function AutomationPage() {
         Automation takes over repetitive clicking. More features unlock as you Recall. Unlocks count every Recall you've ever made, so an Ascend never locks them again.
       </p>
 
+      {(trainUnlocked || abilitiesUnlocked) && (
+      <Section title="Build preset">
+        <div className="small mb-2" style={{ color: 'var(--text-dim)' }}>
+          Sets every weight below in one click, so the autobuyers stop spending Focus on stats and abilities your build doesn't use. You can still fine-tune afterwards.
+        </div>
+        <div className="d-flex gap-2 flex-wrap">
+          {PRESETS.map((preset) => {
+            const weights = buildPresetWeights(preset)
+            const active = sameWeights(a.statWeights, weights.statWeights) && sameWeights(a.abilityWeights, weights.abilityWeights)
+            return (
+              <button
+                key={preset.id}
+                type="button"
+                className={`btn btn-sm ${active ? 'btn-primary' : 'btn-outline-secondary'}`}
+                title={preset.description}
+                onClick={() => setAutomation(weights)}
+              >
+                {preset.name}
+              </button>
+            )
+          })}
+        </div>
+      </Section>
+      )}
+
       {!trainUnlocked ? <LockedSection feature="autoTrain" recalls={recalls} /> : (
       <Section
         title="Auto-train"
@@ -88,19 +130,22 @@ export default function AutomationPage() {
         <div className="small mb-2" style={{ color: 'var(--text-dim)' }}>
           The autobuyer always buys whatever is cheapest compared to its weight. A weight of 2 keeps training that stat until it costs twice as much as the weight-1 stats. A weight of 0 skips it.
         </div>
-        <div className="stat-grid" style={{ gap: '8px', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
-          {STATS.map((stat) => (
+        <div className="stat-grid" style={{ gap: '8px', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
+          {STAT_GROUPS.flatMap((group) => [
+            <GroupLabel key={`g-${group.id}`} group={group} />,
+            ...STATS.filter((stat) => stat.group === group.id).map((stat) => (
             <div key={stat.id} className="d-flex align-items-center justify-content-between inventory-card" style={{ flexDirection: 'row', padding: '6px 10px' }}>
               <span className="d-flex align-items-center gap-2 small">
                 <Icon name={stat.icon} size={14} /> {stat.name}
-                <span style={{ color: 'var(--text-dim)' }}>Lv {formatNumber(state.statLevels[stat.id] ?? 0)}</span>
+                <span style={{ color: 'var(--text-dim)', whiteSpace: 'nowrap' }}>Lv {formatNumber(state.statLevels[stat.id] ?? 0)}</span>
               </span>
               <WeightStepper
                 value={a.statWeights[stat.id] ?? 0}
                 onChange={(v) => setAutomation({ statWeights: { ...a.statWeights, [stat.id]: v } })}
               />
             </div>
-          ))}
+            )),
+          ])}
         </div>
       </Section>
       )}
@@ -113,8 +158,10 @@ export default function AutomationPage() {
         <div className="small mb-2" style={{ color: 'var(--text-dim)' }}>
           Works like Auto-train, sharing the same Focus. Locked abilities (rank 0) get unlocked too unless their weight is 0.
         </div>
-        <div className="stat-grid" style={{ gap: '8px', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
-          {ABILITIES.map((ability) => {
+        <div className="stat-grid" style={{ gap: '8px', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
+          {ABILITY_GROUPS.flatMap((group) => [
+            <GroupLabel key={`g-${group.id}`} group={group} />,
+            ...ABILITIES.filter((ability) => ability.group === group.id).map((ability) => {
             const rank = state.abilities[ability.id]?.rank ?? 0
             return (
               <div key={ability.id} className="d-flex align-items-center justify-content-between inventory-card" style={{ flexDirection: 'row', padding: '6px 10px' }}>
@@ -128,7 +175,8 @@ export default function AutomationPage() {
                 />
               </div>
             )
-          })}
+            }),
+          ])}
         </div>
       </Section>
       )}

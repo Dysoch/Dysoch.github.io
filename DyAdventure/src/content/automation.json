@@ -4,5 +4,49 @@
     "autoAbilities": 3,
     "autoFuse": 5
   },
-  "maxPurchasesPerTick": 200
+  "maxPurchasesPerTick": 200,
+  "buildPresets": [
+    {
+      "id": "physical",
+      "name": "Physical",
+      "description": "Weapon build: trains Physical and Utility stats and upgrades Physical abilities only.",
+      "statGroupWeights": {
+        "physical": 3,
+        "arcane": 0,
+        "utility": 1
+      },
+      "abilityGroupWeights": {
+        "physical": 1,
+        "arcane": 0
+      }
+    },
+    {
+      "id": "arcane",
+      "name": "Arcane",
+      "description": "Caster build: trains Arcane and Utility stats and upgrades Arcane abilities only.",
+      "statGroupWeights": {
+        "physical": 0,
+        "arcane": 3,
+        "utility": 1
+      },
+      "abilityGroupWeights": {
+        "physical": 0,
+        "arcane": 1
+      }
+    },
+    {
+      "id": "hybrid",
+      "name": "Hybrid",
+      "description": "Everything evenly, like the default.",
+      "statGroupWeights": {
+        "physical": 1,
+        "arcane": 1,
+        "utility": 1
+      },
+      "abilityGroupWeights": {
+        "physical": 1,
+        "arcane": 1
+      }
+    }
+  ]
 }

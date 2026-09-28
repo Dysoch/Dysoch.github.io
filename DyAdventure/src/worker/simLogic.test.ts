@@ -77,6 +77,11 @@ import {
   equipSet,
   planAllUpgrades,
   SIMILAR_BAND,
+  computeStaminaRegenMultiplier,
+  computeManaRegenMultiplier,
+  computeIncomingDamage,
+  listBuildPresets,
+  buildPresetWeights,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
@@ -1006,7 +1011,7 @@ describe('autobuyers', () => {
   })
 
   test('auto-train spends Focus and respects weights (weight 0 is skipped, higher weight gets more levels)', () => {
-    const weights = { might: 3, grit: 1, arcana: 0, willpower: 1, fortune: 1, speed: 1 }
+    const weights = { might: 3, grit: 1, endurance: 1, arcana: 0, willpower: 1, spirit: 1, fortune: 1, speed: 1, precision: 1 }
     const after = runAutobuyers(unlocked({ autoTrain: true, statWeights: weights }))
     expect(after.focus).toBeLessThan(5_000)
     expect(after.statLevels.arcana).toBe(0)
@@ -1290,5 +1295,51 @@ describe('equip all upgrades', () => {
     expect(plan.net).toBeGreaterThan(SIMILAR_BAND)
     // Nothing left to improve afterwards
     expect(planAllUpgrades(plan.state).swaps).toEqual([])
+  })
+})
+
+describe('Endurance, Spirit and Precision', () => {
+  const withStat = (statId: 'endurance' | 'spirit' | 'precision', value: number): SimState => {
+    const base = createInitialState()
+    return { ...base, stats: { ...base.stats, [statId]: value } }
+  }
+
+  test('Endurance raises max Stamina and Stamina regeneration, not Mana regeneration', () => {
+    const base = withStat('endurance', 0)
+    const trained = withStat('endurance', 100)
+    expect(computeStaminaCap(trained) - computeStaminaCap(base)).toBeCloseTo(150)
+    expect(computeStaminaRegenMultiplier(trained) / computeStaminaRegenMultiplier(base)).toBeCloseTo(1.5)
+    expect(computeManaRegenMultiplier(trained)).toBeCloseTo(computeManaRegenMultiplier(base))
+  })
+
+  test('Spirit raises Mana regeneration and reduces damage taken, at half the rate of Grit', () => {
+    const base = withStat('spirit', 0)
+    const trained = withStat('spirit', 100)
+    expect(computeManaRegenMultiplier(trained) / computeManaRegenMultiplier(base)).toBeCloseTo(1.5)
+    expect(computeIncomingDamage(trained, 1000)).toBeLessThan(computeIncomingDamage(base, 1000))
+    const grit = { ...base, stats: { ...base.stats, grit: 50 } }
+    expect(computeIncomingDamage(trained, 1000)).toBeCloseTo(computeIncomingDamage(grit, 1000))
+  })
+
+  test('Precision adds crit chance with diminishing returns (never past the 75% cap) and some crit damage', () => {
+    const at = (p: number) => computeCritChance(withStat('precision', p))
+    expect(at(100) - at(0)).toBeGreaterThan(at(200) - at(100))
+    expect(at(100_000)).toBeLessThanOrEqual(0.75)
+    expect(computeCritMultiplier(withStat('precision', 100))).toBeGreaterThan(computeCritMultiplier(withStat('precision', 0)))
+  })
+
+  test('saves from before these stats existed get them at 0', () => {
+    const base = createInitialState()
+    const legacy = { ...base, stats: { might: 5, grit: 5, arcana: 5, willpower: 5, fortune: 5, speed: 5 }, statLevels: { might: 3, grit: 3, arcana: 3, willpower: 3, fortune: 3, speed: 3 } } as unknown as SimState
+    const migrated = migrateSave(legacy)
+    expect(migrated.stats).toMatchObject({ might: 5, endurance: 0, spirit: 0, precision: 0 })
+    expect(migrated.statLevels).toMatchObject({ might: 3, endurance: 0, spirit: 0, precision: 0 })
+    expect(migrated.automation.statWeights).toMatchObject({ endurance: 1, spirit: 1, precision: 1 })
+  })
+
+  test('build presets weight stats and abilities by group', () => {
+    const physical = buildPresetWeights(listBuildPresets().find((p) => p.id === 'physical')!)
+    expect(physical.statWeights).toMatchObject({ might: 3, endurance: 3, arcana: 0, spirit: 0, precision: 1 })
+    expect(physical.abilityWeights).toMatchObject({ strike: 1, bolt: 0 })
   })
 })

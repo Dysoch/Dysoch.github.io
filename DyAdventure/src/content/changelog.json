@@ -3,6 +3,11 @@
     "version": "0.1.5",
     "date": "2026-09-28",
     "changes": [
+      "Three new attributes, one per group: Endurance (Physical: max Stamina and Stamina regeneration), Spirit (Arcane: Mana regeneration and less damage taken) and Precision (Utility: Crit Chance and Crit Damage). Weapon abilities no longer run dry on Stamina once you have some Endurance. Existing saves start them at 0.",
+      "Monsters are tougher to match: HP and damage now grow a little faster per depth (Whispering Woods 4% to 4.15%, other zones 3.5% to 3.8%). Early floors barely change; deep floors and zone-gate bosses are noticeably harder.",
+      "Fortune's extra gear drop chance is now diminishing (up to +50%) instead of passing a guaranteed drop. Its Focus bonus is unchanged. Fixed the Fortune, Willpower and Speed descriptions.",
+      "New: Build presets on the Automation page (Physical, Arcane, Hybrid) set every autobuyer weight at once, so Focus stops going into stats and abilities your build doesn't use. The weight lists are grouped like Training and Abilities.",
+      "Inventory: Equip all upgrades fills empty slots and takes every overall upgrade in one click. Items are now labelled Upgrade, About the same or Worse by the overall change, with a hint when a worse item still improves something. Rows show tags for augments, MAX level and reforge-ready, lists use whole levels, and on wide screens Equipped and Inventory sit side by side.",
       "Gear rework: 11 equipment slots (Head, Body, Legs, Feet, Hands, Main Hand, Off Hand, Neck, Back and two Rings). You now wear either a weapon or a wand, and either armor or a robe, so builds lean physical or arcane. Trinkets became real pieces (e.g. the Adept Orb is an off hand, the Adept Tome became the Adept Hood). Existing saves move over automatically; where two worn items now share a slot, the one matching your main ability type stays on and the other goes to your inventory.",
       "Every set now has a piece for every slot, with a new 10-piece bonus. New pieces: helms, greaves, leggings, cloaks, sabatons and more across all five sets.",
       "New: compare and equip whole sets. Each set on the Inventory page shows what wearing it would change overall, and Equip set puts on your best owned copy of every piece in one click.",

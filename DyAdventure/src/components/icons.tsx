@@ -24,6 +24,7 @@ const PATHS: Record<string, string> = {
   ring: '<circle cx="12" cy="14" r="5"/><path d="M9 9l3-6 3 6"/>',
   boots: '<path d="M8 4h4v9l4 2v3a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-3z"/>',
   gloves: '<path d="M7 10V6a2 2 0 0 1 4 0v3m0-3a2 2 0 0 1 4 0v3m0 0V7a2 2 0 0 1 4 0v6a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5v-3z"/>',
+  target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
   helm: '<path d="M5 15a7 7 0 0 1 14 0v3H5z"/><path d="M12 8v10M9 15h6"/>',
   legs: '<path d="M7 3h10l-1 18h-3l-1-11-1 11H8z"/>',
   cloak: '<path d="M9 3h6l2 4-1 1 3 13H5l3-13-1-1z"/><path d="M12 3v18"/>',

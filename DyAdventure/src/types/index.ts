@@ -1,5 +1,5 @@
 
-export type StatId = 'might' | 'grit' | 'arcana' | 'willpower' | 'fortune' | 'speed'
+export type StatId = 'might' | 'grit' | 'endurance' | 'arcana' | 'willpower' | 'spirit' | 'fortune' | 'speed' | 'precision'
 
 export type GearTrack = 'physical' | 'arcane' | 'universal'
 

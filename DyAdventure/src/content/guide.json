@@ -34,15 +34,18 @@
     "title": "Training & Focus",
     "paragraphs": [
       "Focus is your main currency. You earn it from kills (more on deeper floors) and by salvaging gear. Spend it on the Training page to raise stats permanently for the current run.",
-      "Each stat costs more than the last, so spread your training out sensibly."
+      "Each stat costs more than the last, so spread your training out sensibly. Stats come in three groups: Physical ones help weapon abilities (which use Stamina), Arcane ones help spells (which use Mana), and Utility ones help every build. Most characters do best leaning into one of Physical or Arcane; the Build preset on the Automation page sets that up for the autobuyers."
     ],
     "bullets": [
       "Might: +8% physical damage per point.",
       "Grit: +1.5 max HP per point and reduces damage taken.",
+      "Endurance: +1.5 max Stamina and +0.5% Stamina regeneration per point. Without it, fast weapon abilities run out of Stamina.",
       "Arcana: +8% spell damage per point.",
       "Willpower: +1.5 max Mana per point.",
-      "Fortune: better loot chance and Focus rewards.",
-      "Speed: abilities come off cooldown faster."
+      "Spirit: +0.5% Mana regeneration per point, and reduces damage taken (half as much as Grit).",
+      "Fortune: more gear drops (diminishing, up to +50% drop chance) and +2% Focus from kills per point.",
+      "Speed: abilities come off cooldown faster, as long as Stamina and Mana keep up.",
+      "Precision: Crit Chance (diminishing, up to +40%) and a little Crit Damage."
     ]
   },
   {

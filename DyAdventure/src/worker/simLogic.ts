@@ -772,13 +772,18 @@ export function bonusFor(state: SimState, statId: PrimaryStat): number {
 }
 
 /** Chance (0-0.75) that an ability hit is a critical hit: +0.5% per point, plus perks. */
+/** Crit Chance from Precision: approaches +40% (half of it by ~277 points). */
+function precisionCritChance(state: SimState): number {
+  return 0.4 * (1 - Math.exp(-totalStat(state, 'precision') / 400))
+}
+
 export function computeCritChance(state: SimState): number {
-  return Math.min(0.75, bonusFor(state, 'critChance') * 0.005 + perkBonus(state, 'critChance'))
+  return Math.min(0.75, bonusFor(state, 'critChance') * 0.005 + perkBonus(state, 'critChance') + precisionCritChance(state))
 }
 
 /** Damage multiplier on a crit: 1.5x base, +2% per point of Crit Damage, plus perks. */
 export function computeCritMultiplier(state: SimState): number {
-  return 1.5 + bonusFor(state, 'critDamage') * 0.02 + perkBonus(state, 'critDamage')
+  return 1.5 + bonusFor(state, 'critDamage') * 0.02 + perkBonus(state, 'critDamage') + totalStat(state, 'precision') * 0.003
 }
 
 /** Damage reduction (0-0.6): 0.5% per point of Resistance, plus perks. */
@@ -805,8 +810,22 @@ export function computeEffectiveStat(state: SimState, statId: StatId): number {
   return state.stats[statId] + computeSetBonusForStat(state, statId)
 }
 
+/** A trainable stat plus what gear and set bonuses add to it. */
+function totalStat(state: SimState, statId: StatId): number {
+  return computeEffectiveStat(state, statId) + gearBonusForStat(state, statId)
+}
+
 export function computeStaminaCap(state: SimState): number {
-  return BASE_STAMINA_CAP + gearBonusForStat(state, 'staminaCap') + computeSetBonusForStat(state, 'staminaCap') + perkBonus(state, 'staminaCap')
+  return BASE_STAMINA_CAP + gearBonusForStat(state, 'staminaCap') + computeSetBonusForStat(state, 'staminaCap') + perkBonus(state, 'staminaCap') + totalStat(state, 'endurance') * 1.5
+}
+
+/** Stamina regenerates faster with Endurance (+0.5% per point), Mana with Spirit, on top of the shared regen multiplier. */
+export function computeStaminaRegenMultiplier(state: SimState): number {
+  return computeRegenMultiplier(state) * (1 + totalStat(state, 'endurance') * 0.005)
+}
+
+export function computeManaRegenMultiplier(state: SimState): number {
+  return computeRegenMultiplier(state) * (1 + totalStat(state, 'spirit') * 0.005)
 }
 
 export function computeManaCap(state: SimState): number {
@@ -863,7 +882,8 @@ export function computeMonsterDamage(zone: ZoneDef, depth: number, isBoss: boole
 
 export function computeIncomingDamage(state: SimState, rawDamage: number): number {
   const totalGrit = computeEffectiveStat(state, 'grit') + gearBonusForStat(state, 'grit')
-  return (rawDamage / (1 + totalGrit * GRIT_DEFENSE_FACTOR)) * (1 - computeResistance(state))
+  const spiritFactor = 1 + totalStat(state, 'spirit') * GRIT_DEFENSE_FACTOR * 0.5
+  return (rawDamage / (1 + totalGrit * GRIT_DEFENSE_FACTOR) / spiritFactor) * (1 - computeResistance(state))
 }
 
 export function computeMonsterAttackIntervalMs(zone: ZoneDef, isBoss: boolean): number {
@@ -943,7 +963,8 @@ export function pickWeighted<T>(items: T[], weight: (item: T) => number): T {
 
 function rollLootCatalogEntry(state: SimState, zone: ZoneDef, depth: number, isBoss: boolean): GearCatalogItemDef | null {
   const fortune = computeFortune(state)
-  const dropChance = 0.12 + fortune * 0.002 + perkBonus(state, 'dropChance')
+  // Fortune's share approaches +50% (half of it by ~173 Fortune) instead of pushing past a guaranteed drop
+  const dropChance = 0.12 + 0.5 * (1 - Math.exp(-fortune / 250)) + perkBonus(state, 'dropChance')
   if (Math.random() > dropChance) return null
   const eligible = GEAR_ITEMS.filter(
     (i) => zone.gearItemIds.includes(i.id) && i.minDepth <= depth && (!i.bossOnly || isBoss),
@@ -998,6 +1019,8 @@ export function salvageItems(state: SimState, instanceIds: string[]): { state: S
 
 function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
   const deltaSeconds = baseDeltaSeconds * computeRegenMultiplier(state)
+  const staminaSeconds = baseDeltaSeconds * computeStaminaRegenMultiplier(state)
+  const manaSeconds = baseDeltaSeconds * computeManaRegenMultiplier(state)
   const staminaCap = computeStaminaCap(state)
   const manaCap = computeManaCap(state)
   const hpCap = computeHpCap(state)
@@ -1005,11 +1028,11 @@ function applyRegen(state: SimState, baseDeltaSeconds: number): SimState {
     ...state,
     stamina: {
       max: staminaCap,
-      current: Math.min(staminaCap, state.stamina.current + staminaCap * REGEN_PCT_PER_SEC * deltaSeconds),
+      current: Math.min(staminaCap, state.stamina.current + staminaCap * REGEN_PCT_PER_SEC * staminaSeconds),
     },
     mana: {
       max: manaCap,
-      current: Math.min(manaCap, state.mana.current + manaCap * REGEN_PCT_PER_SEC * deltaSeconds),
+      current: Math.min(manaCap, state.mana.current + manaCap * REGEN_PCT_PER_SEC * manaSeconds),
     },
     playerHp: {
       max: hpCap,
@@ -1847,6 +1870,9 @@ function migrateLegacySlots<T extends SimState>(state: T): T {
 
 export function migrateSave<T extends SimState>(state: T): T {
   let next = migrateLegacySlots(state)
+  if (!STATS.every((s) => typeof next.stats?.[s.id] === 'number')) {
+    next = { ...next, stats: { ...(Object.fromEntries(STATS.map((s) => [s.id, 0])) as Record<StatId, number>), ...next.stats } }
+  }
   if (!next.statLevels || !STATS.every((s) => typeof next.statLevels[s.id] === 'number')) {
     const gain = computeStatGainPerTrain(next)
     const statLevels = Object.fromEntries(
@@ -1894,6 +1920,26 @@ export function decodeSaveString(data: string): SimState | null {
 // --- Automation ---------------------------------------------------------------------------------
 
 const AUTOMATION_UNLOCKS = automationData.unlockRecalls as Record<AutomationFeature, number>
+
+export interface BuildPreset {
+  id: string
+  name: string
+  description: string
+  statGroupWeights: Record<string, number>
+  abilityGroupWeights: Record<string, number>
+}
+
+export function listBuildPresets(): BuildPreset[] {
+  return automationData.buildPresets as BuildPreset[]
+}
+
+/** The stat and ability weights a preset sets, derived from each stat's and ability's group. */
+export function buildPresetWeights(preset: BuildPreset): Pick<AutomationSettings, 'statWeights' | 'abilityWeights'> {
+  return {
+    statWeights: Object.fromEntries(STATS.map((s) => [s.id, preset.statGroupWeights[s.group] ?? 1])) as Record<StatId, number>,
+    abilityWeights: Object.fromEntries(ABILITIES.map((a) => [a.id, preset.abilityGroupWeights[a.group] ?? 1])),
+  }
+}
 
 export function defaultAutomation(): AutomationSettings {
   return {
