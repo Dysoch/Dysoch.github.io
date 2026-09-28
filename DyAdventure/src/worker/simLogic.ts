@@ -381,8 +381,11 @@ export function imbueAugment(state: SimState, augmentId: string, now: number, co
   return { state: next, event: { kind: 'imbued', augmentId, newRank: rank + actual, timestamp: now } }
 }
 
+// Looked up on every ability hit (through set bonuses), so a Map rather than a scan of ~200 items
+const GEAR_BY_ID = new Map(GEAR_ITEMS.map((i) => [i.id, i]))
+
 export function getGearCatalogItem(id: string): GearCatalogItemDef {
-  const def = GEAR_ITEMS.find((i) => i.id === id)
+  const def = GEAR_BY_ID.get(id)
   if (!def) throw new Error(`Unknown gear item: ${id}`)
   return def
 }
