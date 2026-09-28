@@ -83,7 +83,7 @@ const ASPECT_LABELS: Record<LoadoutAspect, { label: string; title: string }> = {
 
 const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary']
 
-const OVERVIEW_STATS: PrimaryStat[] = ['might', 'grit', 'arcana', 'willpower', 'fortune', 'speed', 'staminaCap', 'manaCap', 'hpCap', 'critChance', 'critDamage', 'regen', 'resistance', 'lifeSteal', 'focusGain', 'materialFind']
+const OVERVIEW_STATS: PrimaryStat[] = ['might', 'grit', 'endurance', 'arcana', 'willpower', 'spirit', 'fortune', 'speed', 'precision', 'staminaCap', 'manaCap', 'hpCap', 'critChance', 'critDamage', 'regen', 'resistance', 'lifeSteal', 'focusGain', 'materialFind']
 
 type Filter = 'all' | 'upgrades' | GearSlot
 type SortKey = 'best' | 'rarity' | 'level' | 'name'
