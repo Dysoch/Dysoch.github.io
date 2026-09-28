@@ -34,14 +34,15 @@
     "title": "Training & Focus",
     "paragraphs": [
       "Focus is your main currency. You earn it from kills (more on deeper floors) and by salvaging gear. Spend it on the Training page to raise stats permanently for the current run.",
-      "Each stat costs more than the last, so spread your training out sensibly. Stats come in three groups: Physical ones help weapon abilities (which use Stamina), Arcane ones help spells (which use Mana), and Utility ones help every build. Most characters do best leaning into one of Physical or Arcane; the Build preset on the Automation page sets that up for the autobuyers."
+      "Each stat costs more than the last, so spread your training out sensibly. Stats come in three groups: Physical ones help weapon abilities (which use Stamina), Arcane ones help spells (which use Mana), and Utility ones help every build. The Build preset on the Automation page sets the autobuyers up for one of them.",
+      "Builds: your abilities deal more damage the more your Physical-vs-Arcane training leans toward their school (Utility stats don't count). Going all-in on one school gives its abilities up to x2.25 damage; an even split gets no bonus at all. Physical builds hit hard from the start but slow down in later zones, whose monsters resist weapons. Arcane builds start slow, but spells grow stronger with every point of Arcana and finish strong. Hybrid builds get everywhere too, just much more slowly."
     ],
     "bullets": [
       "Might: +8% physical damage per point.",
       "Grit: +1.5 max HP per point and reduces damage taken.",
       "Endurance: +1.5 max Stamina and +0.5% Stamina regeneration per point. Without it, fast weapon abilities run out of Stamina.",
       "Arcana: +8% spell damage per point.",
-      "Willpower: +1.5 max Mana per point.",
+      "Willpower: +1.5 max Mana and +0.75 max HP per point, so casters can survive without Grit.",
       "Spirit: +0.5% Mana regeneration per point, and reduces damage taken (half as much as Grit).",
       "Fortune: more gear drops (diminishing, up to +50% drop chance) and +2% Focus from kills per point.",
       "Speed: abilities come off cooldown faster, as long as Stamina and Mana keep up.",
@@ -64,7 +65,7 @@
       "Finding a duplicate adds levels to the copy you own (each level adds 1% to its stats). At first they wait as pending levels until you press Fuse on the Inventory page. You can also have duplicates salvaged automatically, and after a few Recalls unlock auto-fusing (see Automation). A lower-rarity copy of an item you've reforged feeds the higher-rarity version, at a reduced rate. Once an item hits its rarity's level cap, further duplicates are salvaged automatically — reforge it to keep leveling. Salvaging an item gives Focus and materials instead.",
       "Sets: each set has a piece for every slot, and wearing several pieces grants bonuses at 2, 4, 6, 8 and 10 pieces. Set Progress on the Inventory page compares what each set would do for you and can equip a whole set at once. Sets appear in Set Progress once you have found at least one piece. You cannot complete two sets at once — pick one and build around it.",
       "Higher rarity items have augment slots. Augments are learned from boss kills and socketed into gear to permanently boost a stat or Focus gain. Augments are never used up: remove one for free and socket it elsewhere. When you equip a replacement, the old item's augments move over to its open slots.",
-      "The Inventory page rates each item by what equipping it would do to your whole character, set bonuses and moved augments included: Upgrade (better overall, with the % change), Sidegrade (better at something but not overall) or Worse. Select an item to see the change in Offense, Defense, Sustain, Resources and Economy. Salvage all worse keeps set pieces unless you tick include set pieces."
+      "The Inventory page rates each item by what equipping it would do to your whole character, set bonuses and moved augments included: Upgrade, About the same (within 0.25%) or Worse, each with the overall % change. A worse item that still improves something says so. Select an item to see the change in Offense, Defense, Sustain, Resources and Economy. Salvage all worse keeps set pieces unless you tick include set pieces."
     ],
     "bullets": [
       "Gear can boost several stats — more on higher rarities (1 on common, 2 on uncommon and rare, 3 on epic and above).",
@@ -78,7 +79,8 @@
     "title": "Zones",
     "paragraphs": [
       "Each zone has its own monsters, loot and difficulty. You start in the Whispering Woods.",
-      "Defeating a zone's Gate Boss (the boss at depth {gateDepth}) unlocks the next zone. Later zones are much harder but give more Echoes when you Recall."
+      "Defeating a zone's Gate Boss (the boss at depth {gateDepth}) unlocks the next zone. Later zones are much harder but give more Echoes when you Recall.",
+      "Monsters in later zones resist some damage types: the undead of the Sunken Crypt shrug off part of every weapon blow, and deeper zones resist weapons more. The Zones page shows each zone's resistances."
     ]
   },
   {

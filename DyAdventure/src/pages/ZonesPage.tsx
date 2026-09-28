@@ -10,6 +10,15 @@ function lockHint(zoneId: string): string {
   return prev ? `Defeat the Gate Boss at depth ${zoneGateDepth(prev)} in ${prev.name} to unlock.` : ''
 }
 
+/** e.g. "Monsters resist 35% physical and 5% spell damage" */
+function resistText(zone: ZoneDef): string {
+  const parts = [
+    zone.physicalResist ? `${Math.round(zone.physicalResist * 100)}% physical` : null,
+    zone.arcaneResist ? `${Math.round(zone.arcaneResist * 100)}% spell` : null,
+  ].filter(Boolean)
+  return parts.length > 0 ? `Monsters resist ${parts.join(' and ')} damage` : 'Monsters here have no resistances'
+}
+
 export default function ZonesPage() {
   const currentZoneId = useGameStore((s) => s.currentZoneId)
   const unlockedZoneIds = useGameStore((s) => s.unlockedZoneIds)
@@ -36,6 +45,9 @@ export default function ZonesPage() {
             <div className="fw-bold">{zone.name}</div>
             <div className="text-body-secondary small mb-2">{zone.description}</div>
             <div className="small">Depths {zone.minDepth}–{zone.maxDepth} · Boss every {zone.bossEvery} floors</div>
+            <div className="small" style={{ color: 'var(--text-dim)' }} title="Share of that damage type the monsters here shrug off">
+              {resistText(zone)}
+            </div>
             <button
               type="button"
               className="btn btn-sm btn-outline-primary mt-2"

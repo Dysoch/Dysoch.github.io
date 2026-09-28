@@ -1,0 +1,12 @@
+{
+  "specialization": {
+    "maxBonus": 1.25,
+    "description": "Abilities deal more damage the more of your Physical-vs-Arcane attribute levels sit in their school. An even split gives x1 to both; all-in on one school gives x(1 + maxBonus) to it."
+  },
+  "spellMastery": {
+    "perArcana": 0.0013,
+    "description": "Spells deal baseMultiplier x (1 + Arcana x perArcana) on top of Arcana's normal +8%: weak early, large late. Arcane's zero-to-hero curve.",
+    "baseMultiplier": 0.4
+  },
+  "willpowerHpPerPoint": 0.75
+}

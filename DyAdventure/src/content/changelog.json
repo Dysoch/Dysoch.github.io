@@ -3,6 +3,10 @@
     "version": "0.1.5",
     "date": "2026-09-28",
     "changes": [
+      "Builds now matter. Your abilities deal more damage the more your Physical-vs-Arcane training leans toward their school, up to x2.25 for going all-in; an even split gets no bonus. Physical builds start fast but slow down in later zones, Arcane builds start slow and finish strong, and Hybrid builds get there too, just much more slowly.",
+      "Monsters in later zones resist weapons (Sunken Crypt 20%, Ember Caverns 35%, Frostbound Peaks 50%) and deeper zones resist a little spell damage too. Resistances are shown on the Zones page.",
+      "Spells start weaker but gain extra power from every point of Arcana (Arcane mastery). Arcana now costs the same to train as Might, and Willpower also grants +0.75 max HP per point so casters can survive without Grit.",
+      "The game is slower and longer: monsters get tougher faster with depth, so reaching Frostbound Peaks now takes a focused build around 200 to 240 hours of play instead of about 60.",
       "Three new attributes, one per group: Endurance (Physical: max Stamina and Stamina regeneration), Spirit (Arcane: Mana regeneration and less damage taken) and Precision (Utility: Crit Chance and Crit Damage). Weapon abilities no longer run dry on Stamina once you have some Endurance. Existing saves start them at 0.",
       "Monsters are tougher to match: HP and damage now grow a little faster per depth (Whispering Woods 4% to 4.15%, other zones 3.5% to 3.8%). Early floors barely change; deep floors and zone-gate bosses are noticeably harder.",
       "Fortune's extra gear drop chance is now diminishing (up to +50%) instead of passing a guaranteed drop. Its Focus bonus is unchanged. Fixed the Fortune, Willpower and Speed descriptions.",

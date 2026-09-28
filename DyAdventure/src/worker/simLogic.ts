@@ -7,6 +7,7 @@ import prestigeData from '../content/prestige.json'
 import materialsData from '../content/materials.json'
 import automationData from '../content/automation.json'
 import milestonesData from '../content/milestones.json'
+import balanceData from '../content/balance.json'
 import {
   BASE_HP_CAP,
   DEPTH_CLEARS_MAX,
@@ -51,6 +52,7 @@ const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
 const RARITIES = gearData.rarities as RarityDef[]
 const GEAR_ITEMS = gearData.items as GearCatalogItemDef[]
+const BALANCE = balanceData
 const SETS = gearData.sets as SetDef[]
 const AUGMENTS = augmentsData as AugmentDef[]
 const ZONES = zonesData as ZoneDef[]
@@ -547,7 +549,9 @@ export function computeLoadoutScore(state: SimState): Record<LoadoutAspect, numb
   // Cast rate per school: Speed shortens cooldowns, but only as far as Stamina (physical) or Mana (spells) can pay
   const physicalRate = computeCastRate(s, 'physical')
   const spellRate = computeCastRate(s, 'spell')
-  const power = physicalShare * computePhysicalPower(s) * physicalRate + (1 - physicalShare) * computeMagicPower(s) * spellRate
+  const power =
+    physicalShare * computePhysicalPower(s) * physicalRate * computeSchoolMultiplier(s, 'physical') +
+    (1 - physicalShare) * computeMagicPower(s) * spellRate * computeSchoolMultiplier(s, 'spell')
   const critFactor = 1 + computeCritChance(s) * (computeCritMultiplier(s) - 1)
   return {
     offense: power * critFactor,
@@ -863,7 +867,9 @@ export function computeManaCap(state: SimState): number {
 
 export function computeHpCap(state: SimState): number {
   const totalGrit = computeEffectiveStat(state, 'grit') + gearBonusForStat(state, 'grit')
-  return BASE_HP_CAP + gearBonusForStat(state, 'hpCap') + computeSetBonusForStat(state, 'hpCap') + perkBonus(state, 'hpCap') + totalGrit * 1.5
+  // Willpower adds some HP too, so casters don't have to train Grit just to survive
+  const willpowerHp = totalStat(state, 'willpower') * BALANCE.willpowerHpPerPoint
+  return BASE_HP_CAP + gearBonusForStat(state, 'hpCap') + computeSetBonusForStat(state, 'hpCap') + perkBonus(state, 'hpCap') + totalGrit * 1.5 + willpowerHp
 }
 
 export function computePhysicalPower(state: SimState): number {
@@ -895,7 +901,41 @@ export function computeAbilityDamage(state: SimState, abilityId: string): number
   if (rank <= 0) return 0
   const power = def.type === 'physical' ? computePhysicalPower(state) : computeMagicPower(state)
   const effect = def.baseEffect + def.effectPerRank * (rank - 1)
-  return effect * power * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004) * computeBossPowerMultiplier(state)
+  return effect * power * computeSchoolMultiplier(state, def.type) * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004) * computeBossPowerMultiplier(state)
+}
+
+/** Stat group each ability school draws its specialization from (content/groups.json ids). */
+const SCHOOL_GROUP: Record<AbilityType, string> = { physical: 'physical', spell: 'arcane' }
+
+/**
+ * Specialization: x1 for an even split of Physical vs Arcane attribute levels (Utility doesn't count),
+ * rising to x(1 + maxBonus) for the school you've gone all-in on. Hybrid builds get no bonus.
+ */
+export function computeSpecializationMultiplier(state: SimState, type: AbilityType): number {
+  let physical = 0
+  let arcane = 0
+  for (const stat of STATS) {
+    if (stat.group === 'physical') physical += state.statLevels[stat.id] ?? 0
+    if (stat.group === 'arcane') arcane += state.statLevels[stat.id] ?? 0
+  }
+  if (physical + arcane <= 0) return 1
+  const share = (SCHOOL_GROUP[type] === 'physical' ? physical : arcane) / (physical + arcane)
+  return 1 + BALANCE.specialization.maxBonus * Math.max(0, share * 2 - 1)
+}
+
+/** How much of a school's damage the current zone lets through (content/zones.json resistances). */
+export function computeZoneResistance(zone: ZoneDef, type: AbilityType): number {
+  return type === 'physical' ? (zone.physicalResist ?? 0) : (zone.arcaneResist ?? 0)
+}
+
+/**
+ * Everything that scales one school's damage beyond its raw power: specialization, the current zone's
+ * resistance, and (spells only) Arcane mastery, which grows with Arcana — small early, large late.
+ */
+export function computeSchoolMultiplier(state: SimState, type: AbilityType): number {
+  const resist = computeZoneResistance(getZoneDef(state.currentZoneId), type)
+  const mastery = type === 'spell' ? BALANCE.spellMastery.baseMultiplier * (1 + totalStat(state, 'arcana') * BALANCE.spellMastery.perArcana) : 1
+  return computeSpecializationMultiplier(state, type) * (1 - resist) * mastery
 }
 
 export function computeMonsterMaxHp(zone: ZoneDef, depth: number, isBoss: boolean): number {

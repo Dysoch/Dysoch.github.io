@@ -82,10 +82,13 @@ import {
   computeIncomingDamage,
   listBuildPresets,
   computeCastRate,
+  computeSpecializationMultiplier,
+  computeSchoolMultiplier,
   buildPresetWeights,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
+import balanceData from '../content/balance.json'
 import type { AbilityDef, GearCatalogItemDef, GearItem, PerkEffect, RarityDef, SimState } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
@@ -1385,5 +1388,32 @@ describe('long ticks (regression: offline catch-up steps 1s at a time and lost e
     const uses = (s: SimState) => s.lifetime.ability_strike_uses ?? 0
     expect(uses(fast)).toBeGreaterThanOrEqual(4)
     expect(Math.abs(uses(slow) - uses(fast))).toBeLessThanOrEqual(1)
+  })
+})
+
+describe('build balance mechanics', () => {
+  const base = createInitialState()
+  const levels = (might: number, arcana: number): SimState => ({ ...base, statLevels: { ...base.statLevels, might, arcana } })
+
+  test('specialization: an even Physical/Arcane split gets no bonus, all-in boosts that school only', () => {
+    const full = 1 + balanceData.specialization.maxBonus
+    expect(computeSpecializationMultiplier(levels(0, 0), 'physical')).toBe(1)
+    expect(computeSpecializationMultiplier(levels(50, 50), 'physical')).toBe(1)
+    expect(computeSpecializationMultiplier(levels(50, 50), 'spell')).toBe(1)
+    expect(computeSpecializationMultiplier(levels(100, 0), 'physical')).toBeCloseTo(full)
+    expect(computeSpecializationMultiplier(levels(100, 0), 'spell')).toBe(1)
+    expect(computeSpecializationMultiplier(levels(75, 25), 'physical')).toBeCloseTo(1 + (full - 1) / 2)
+  })
+
+  test('zone resistances cut that school\'s damage', () => {
+    const woods = { ...base, currentZoneId: 'whispering_woods' }
+    const frost = { ...base, currentZoneId: 'frostbound_peaks' }
+    expect(computeSchoolMultiplier(frost, 'physical')).toBeLessThan(computeSchoolMultiplier(woods, 'physical'))
+  })
+
+  test('Arcane mastery makes spells scale up with Arcana; Willpower adds HP', () => {
+    const arcane = { ...base, stats: { ...base.stats, arcana: 1000, willpower: 100 } }
+    expect(computeSchoolMultiplier(arcane, 'spell')).toBeGreaterThan(computeSchoolMultiplier(base, 'spell'))
+    expect(computeHpCap(arcane)).toBeGreaterThan(computeHpCap(base))
   })
 })

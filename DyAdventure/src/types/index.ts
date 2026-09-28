@@ -222,6 +222,10 @@ export interface ZoneDef {
   bossEvery: number
   baseMonsterPower: number
   perDepthGrowthPct: number
+  /** Share of physical ability damage the zone's monsters shrug off (0-1). */
+  physicalResist?: number
+  /** Share of spell damage the zone's monsters shrug off (0-1). */
+  arcaneResist?: number
   bossPowerMultiplier: number
   baseMonsterDamage: number
   baseMonsterAttackIntervalMs: number

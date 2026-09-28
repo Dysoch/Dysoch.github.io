@@ -32,14 +32,14 @@
     "icon": "wand",
     "description": "+8% spell damage per point.",
     "baseTrainCost": 10,
-    "trainCostMultiplier": 1.11,
+    "trainCostMultiplier": 1.09,
     "group": "arcane"
   },
   {
     "id": "willpower",
     "name": "Willpower",
     "icon": "sparkles",
-    "description": "+1.5 max Mana per point.",
+    "description": "+1.5 max Mana and +0.75 max HP per point.",
     "baseTrainCost": 10,
     "trainCostMultiplier": 1.09,
     "group": "arcane"
