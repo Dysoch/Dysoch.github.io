@@ -32,6 +32,7 @@ npm test                              # vitest run — fast, deterministic regre
 npm run test:watch                    # vitest in watch mode
 npm run sim                           # progression simulator — see below
 npm run sim -- --hours 14 --recall asap
+npm run balance                       # all three builds (hybrid/physical/arcane) to Frostbound in parallel: hours per zone unlock
 npm run e2e                           # Playwright smoke tests in the real app (installed Edge; E2E_CHANNEL=chrome for Chrome)
 ```
 `DyWorld-Inc` and `idle-game` have no test suites.
@@ -74,6 +75,8 @@ All three use the same stack: **React 19 + TypeScript 5 + Bootstrap 5.3 + Zustan
 **Offline catch-up:** On `INIT`, if more than 1s has elapsed since `lastTickTimestamp` (capped at `MAX_OFFLINE_SIMULATED_MS` = 48h), `simulateOfflineElapsed` fast-forwards `advanceTick` in 1s steps.
 
 **Content files** (`src/content/`): `stats.json` (`baseTrainCost`/`trainCostMultiplier`), `abilities.json` (`baseRankCost`/`rankCostMultiplier`/`maxRank`), `gear.json` (rarities, catalog items, sets), `augments.json`, `zones.json`, `prestige.json` (perks + Recall/Ascend config), `materials.json` (`craftCostByRarity`, slot materials), `automation.json` (Recall counts that unlock auto-train / auto-abilities / auto-fuse), `milestones.json` (lifetime-counter tracks; each tier's reward feeds `perkBonus` via an existing `PerkEffect`, so no new formula wiring is needed).
+
+**Build balance:** `content/balance.json` holds the build levers (specialization bonus, spell mastery, Willpower HP); zones carry `physicalResist`/`arcaneResist` and `perDepthGrowthPct`. Current targets (simulator bots, goal `frostbound_peaks:2`): Physical and Arcane around 200-240h with Physical fastest early and Arcane strongest late, Hybrid slower (~400h) but still getting there. Check with `npm run balance` after changing any of these, or stats/abilities/gear numbers.
 
 **Cost formulas:** Stats/abilities/perks all use `base × multiplier^level`, capped where a `maxRank`/`maxLevel` exists. Gear crafting cost is flat per rarity (doesn't scale with count owned).
 
