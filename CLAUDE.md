@@ -32,6 +32,7 @@ npm test                              # vitest run — fast, deterministic regre
 npm run test:watch                    # vitest in watch mode
 npm run sim                           # progression simulator — see below
 npm run sim -- --hours 14 --recall asap
+npm run e2e                           # Playwright smoke tests in the real app (installed Edge; E2E_CHANNEL=chrome for Chrome)
 ```
 `DyWorld-Inc` and `idle-game` have no test suites.
 
@@ -78,6 +79,7 @@ All three use the same stack: **React 19 + TypeScript 5 + Bootstrap 5.3 + Zustan
 
 **Testing:** Two separate tools, for two separate questions — don't conflate them:
 - `npm test` (Vitest, `src/worker/simLogic.test.ts`) — fast (~1s), deterministic pass/fail regression tests against `simLogic.ts`'s pure functions directly (build a `SimState` via `createInitialState()` + targeted overrides, call the real exported function, assert). Run this after any `simLogic.ts` or `content/*.json` change. Covers: ability-firing fairness (no ability should be starved by a fixed loop order), the dot/buff ability-uses stat, DoT/buff/overkill/execute mechanics, buy-N cost-math consistency, perk-effect wiring (a perk added to `prestige.json` without a formula hook fails this), and Recall economy invariants.
+- `npm run e2e` (Playwright, `e2e/`) — drives the real app in an installed browser (Edge by default, no browser download) with saves generated from the game logic by `e2e/make-fixtures.ts` (git-ignored `e2e/.fixtures`). Starts its own dev server on port 5199. Covers what unit tests can't: every tab renders without console errors, Inventory/Crafting interactions, Pause, the old-save slot migration end to end, and the phone-width top bar. Run it after UI changes.
 - `npm run sim` (`scripts/simulate.ts`, via `tsx`) — a bot-driven progression simulator for pacing/balance questions that aren't pass/fail (e.g. "does Recall still pay off over N hours", "is a depth wall forming"). Takes `--hours`, `--recall <never|threshold|asap>` and `--automation` (switch on each autobuyer as it unlocks, and report the unlock times), `--preset <physical|arcane|hybrid>` to spend like a player who picked that Build preset (same weights as the Automation page), and `--load-save <file|string>` to start from a player's exported save string (same decode/migration as the in-game import, `decodeSaveString`); prints a depth/focus/faints-over-time report, not assertions. Redirect to a file to diff before/after a balance change. This is how the resource-starvation, ability-uses, and Recall-exploit bugs fixed this session were actually found — reading the code alone didn't surface them.
 
 ---
