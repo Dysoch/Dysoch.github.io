@@ -3,6 +3,7 @@ import { useGameStore } from '../store/gameStore'
 import {
   compareToEquipped,
   computeCraftCostN,
+  computeEquippedSetCounts,
   computeLoadoutScore,
   computeFuseRate,
   computeFuseRoomCopies,
@@ -30,6 +31,26 @@ import type { CraftCost } from '../worker/simLogic'
 import type { GearCatalogItemDef, SimState } from '../types'
 
 const MATERIALS = listMaterials()
+const HIDDEN_GROUPS_KEY = 'DyAdventure.craftHiddenGroups'
+
+/** Which craft groups (set ids, '' for gear without a set) are hidden; a per-browser preference. */
+function loadHiddenGroups(): string[] {
+  try {
+    const raw = localStorage.getItem(HIDDEN_GROUPS_KEY)
+    const parsed: unknown = raw ? JSON.parse(raw) : []
+    return Array.isArray(parsed) ? parsed.filter((g): g is string => typeof g === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function saveHiddenGroups(groups: string[]) {
+  try {
+    localStorage.setItem(HIDDEN_GROUPS_KEY, JSON.stringify(groups))
+  } catch {
+    // Storage blocked: the filter still works for this visit
+  }
+}
 const QTY_STEPS = [1, 5, 10, 25] as const
 
 function materialName(id: string): string {
@@ -225,6 +246,12 @@ export default function CraftingPage() {
   const craftItem = useGameStore((s) => s.craftItem)
   const imbueAugment = useGameStore((s) => s.imbueAugment)
   const [view, setView] = useState<'craft' | 'imbue'>('craft')
+  const [hiddenGroups, setHiddenGroupsState] = useState<string[]>(loadHiddenGroups)
+  const setHiddenGroups = (next: string[]) => {
+    setHiddenGroupsState(next)
+    saveHiddenGroups(next)
+  }
+  const wornBySet = computeEquippedSetCounts(state)
   const items = listCraftableItems(state)
   const base = computeLoadoutScore(state)
 
@@ -246,6 +273,10 @@ export default function CraftingPage() {
     groups.set(key, [...(groups.get(key) ?? []), tiers])
   }
   const orderedKeys = [...groups.keys()].sort((a, b) => (a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)))
+  const groupName = (key: string) => (key ? getSetDef(key).name : 'Other gear')
+  const visibleKeys = orderedKeys.filter((key) => !hiddenGroups.includes(key))
+  const wornKeys = orderedKeys.filter((key) => key && (wornBySet[key] ?? 0) > 0)
+  const onlyWorn = wornKeys.length > 0 && visibleKeys.length === wornKeys.length && visibleKeys.every((k) => wornKeys.includes(k))
 
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -280,9 +311,55 @@ export default function CraftingPage() {
         <div className="text-body-secondary small">You haven't discovered any gear yet — pieces you find can be crafted here later.</div>
       )}
 
-      {view === 'craft' && orderedKeys.map((key) => (
+      {view === 'craft' && orderedKeys.length > 1 && (
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          <span className="small" style={{ color: 'var(--text-dim)' }}>Show:</span>
+          <button
+            type="button"
+            className={`btn btn-sm ${hiddenGroups.length === 0 ? 'btn-primary' : 'btn-outline-secondary'}`}
+            style={{ padding: '1px 9px', fontSize: '12px' }}
+            onClick={() => setHiddenGroups([])}
+          >
+            All
+          </button>
+          {wornKeys.length > 0 && (
+            <button
+              type="button"
+              className={`btn btn-sm ${onlyWorn ? 'btn-primary' : 'btn-outline-secondary'}`}
+              style={{ padding: '1px 9px', fontSize: '12px' }}
+              title="Only the sets you're wearing at least one piece of"
+              onClick={() => setHiddenGroups(orderedKeys.filter((key) => !wornKeys.includes(key)))}
+            >
+              Worn sets only
+            </button>
+          )}
+          <span style={{ width: '1px', height: '18px', background: 'var(--border)' }} />
+          {orderedKeys.map((key) => {
+            const shown = !hiddenGroups.includes(key)
+            return (
+              <button
+                key={key || 'none'}
+                type="button"
+                className={`btn btn-sm ${shown ? 'btn-outline-primary' : 'btn-outline-secondary'}`}
+                style={{ padding: '1px 9px', fontSize: '12px', opacity: shown ? 1 : 0.6 }}
+                aria-pressed={shown}
+                onClick={() => setHiddenGroups(shown ? [...hiddenGroups, key] : hiddenGroups.filter((k) => k !== key))}
+              >
+                {shown ? '✓ ' : ''}{groupName(key)}
+                {key && (wornBySet[key] ?? 0) > 0 && <span style={{ opacity: 0.7 }}> · {wornBySet[key]} worn</span>}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {view === 'craft' && items.length > 0 && visibleKeys.length === 0 && (
+        <div className="text-body-secondary small">Every group is hidden. Pick one above, or press All.</div>
+      )}
+
+      {view === 'craft' && visibleKeys.map((key) => (
         <div key={key || 'none'}>
-          <h6>{key ? getSetDef(key).name : 'Other gear'}</h6>
+          <h6>{groupName(key)}</h6>
           <div className="inventory-grid">
             {groups.get(key)!.map((tiers) => (
               <CraftLineCard key={getTierChain(tiers[0].id)[0]} tiers={tiers} state={state} base={base} onCraft={craftItem} />
