@@ -1,0 +1,38 @@
+{
+  "abilityGroups": [
+    {
+      "id": "physical",
+      "name": "Physical",
+      "resource": "Stamina",
+      "color": "var(--physical)",
+      "description": "Weapon techniques. Scale with Might and draw from Stamina."
+    },
+    {
+      "id": "arcane",
+      "name": "Arcane",
+      "resource": "Mana",
+      "color": "var(--arcane)",
+      "description": "Spells. Scale with Arcana and draw from Mana."
+    }
+  ],
+  "statGroups": [
+    {
+      "id": "physical",
+      "name": "Physical",
+      "color": "var(--physical)",
+      "description": "Power and toughness for weapon fighters."
+    },
+    {
+      "id": "arcane",
+      "name": "Arcane",
+      "color": "var(--arcane)",
+      "description": "Spell power and Mana for casters."
+    },
+    {
+      "id": "utility",
+      "name": "Utility",
+      "color": "var(--focus)",
+      "description": "Helps every build: loot, Focus and ability speed."
+    }
+  ]
+}

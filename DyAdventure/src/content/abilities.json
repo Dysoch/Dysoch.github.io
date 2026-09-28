@@ -11,7 +11,8 @@
     "effectPerRank": 1.5,
     "baseRankCost": 8,
     "rankCostMultiplier": 1.1,
-    "maxRank": 100
+    "maxRank": 100,
+    "group": "physical"
   },
   {
     "id": "combo_slash",
@@ -25,7 +26,8 @@
     "effectPerRank": 3,
     "baseRankCost": 20,
     "rankCostMultiplier": 1.12,
-    "maxRank": 100
+    "maxRank": 100,
+    "group": "physical"
   },
   {
     "id": "finishing_blow",
@@ -41,7 +43,8 @@
     "rankCostMultiplier": 1.14,
     "maxRank": 100,
     "executeThresholdPct": 0.25,
-    "executeMultiplier": 2
+    "executeMultiplier": 2,
+    "group": "physical"
   },
   {
     "id": "rend",
@@ -58,7 +61,8 @@
     "maxRank": 100,
     "kind": "dot",
     "dotTicks": 5,
-    "dotTickIntervalMs": 1000
+    "dotTickIntervalMs": 1000,
+    "group": "physical"
   },
   {
     "id": "battle_focus",
@@ -75,7 +79,8 @@
     "maxRank": 100,
     "kind": "buff",
     "buffStatId": "critChance",
-    "buffDurationMs": 6000
+    "buffDurationMs": 6000,
+    "group": "physical"
   },
   {
     "id": "cleave",
@@ -90,7 +95,8 @@
     "baseRankCost": 20,
     "rankCostMultiplier": 1.12,
     "maxRank": 100,
-    "overkill": true
+    "overkill": true,
+    "group": "physical"
   },
   {
     "id": "bolt",
@@ -104,7 +110,8 @@
     "effectPerRank": 1.7,
     "baseRankCost": 8,
     "rankCostMultiplier": 1.1,
-    "maxRank": 100
+    "maxRank": 100,
+    "group": "arcane"
   },
   {
     "id": "arcane_burst",
@@ -118,7 +125,8 @@
     "effectPerRank": 3.5,
     "baseRankCost": 20,
     "rankCostMultiplier": 1.12,
-    "maxRank": 100
+    "maxRank": 100,
+    "group": "arcane"
   },
   {
     "id": "meteor",
@@ -134,7 +142,8 @@
     "rankCostMultiplier": 1.14,
     "maxRank": 100,
     "executeThresholdPct": 0.25,
-    "executeMultiplier": 2
+    "executeMultiplier": 2,
+    "group": "arcane"
   },
   {
     "id": "ignite",
@@ -151,7 +160,8 @@
     "maxRank": 100,
     "kind": "dot",
     "dotTicks": 5,
-    "dotTickIntervalMs": 1000
+    "dotTickIntervalMs": 1000,
+    "group": "arcane"
   },
   {
     "id": "haste",
@@ -168,7 +178,8 @@
     "maxRank": 100,
     "kind": "buff",
     "buffStatId": "speed",
-    "buffDurationMs": 6000
+    "buffDurationMs": 6000,
+    "group": "arcane"
   },
   {
     "id": "chain_lightning",
@@ -183,6 +194,7 @@
     "baseRankCost": 20,
     "rankCostMultiplier": 1.12,
     "maxRank": 100,
-    "overkill": true
+    "overkill": true,
+    "group": "arcane"
   }
 ]

@@ -11,7 +11,9 @@
       "Salvage buttons now show what you'll get, and single salvage asks for confirmation. Salvage all worse keeps set pieces unless you tick include set pieces.",
       "Inventory can be searched, sorted (best first, rarity, level, name) and filtered to hide worse items.",
       "Crafting cards say whether the piece would be an upgrade over what you wear, and Imbue has moved to its own tab on the Crafting page.",
-      "New: Pause in Settings. Time stops (no combat, regeneration or Focus) while you can still train, equip and craft. A Paused chip in the top bar resumes the game, paused time does not count as offline time, and reloading resumes."
+      "New: Pause in Settings. Time stops (no combat, regeneration or Focus) while you can still train, equip and craft. A Paused chip in the top bar resumes the game, paused time does not count as offline time, and reloading resumes.",
+      "Abilities, Training and the combat ability bar are grouped: Physical (Stamina) and Arcane (Mana) abilities, and Physical, Arcane and Utility stats.",
+      "Fixed the Combat page on phones: the combat log now sits below the fight instead of squeezing it."
     ]
   },
   {

@@ -29,8 +29,20 @@ export interface StatDef {
   name: string
   icon: string
   description: string
+  /** Section on the Training page (see content/groups.json) */
+  group: string
   baseTrainCost: number
   trainCostMultiplier: number
+}
+
+/** A section of abilities or stats, from content/groups.json. */
+export interface GroupDef {
+  id: string
+  name: string
+  color: string
+  description: string
+  /** What the group's abilities spend (ability groups only) */
+  resource?: string
 }
 
 export interface AbilityDef {
@@ -39,6 +51,8 @@ export interface AbilityDef {
   icon: string
   description: string
   type: AbilityType
+  /** Section on the Abilities page and combat ability bar (see content/groups.json) */
+  group: string
   resourceCost: number
   cooldownMs: number
   baseEffect: number
