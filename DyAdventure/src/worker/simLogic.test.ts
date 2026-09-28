@@ -81,6 +81,7 @@ import {
   computeManaRegenMultiplier,
   computeIncomingDamage,
   listBuildPresets,
+  computeCastRate,
   buildPresetWeights,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
@@ -1341,5 +1342,28 @@ describe('Endurance, Spirit and Precision', () => {
     const physical = buildPresetWeights(listBuildPresets().find((p) => p.id === 'physical')!)
     expect(physical.statWeights).toMatchObject({ might: 3, endurance: 3, arcana: 0, spirit: 0, precision: 1 })
     expect(physical.abilityWeights).toMatchObject({ strike: 1, bolt: 0 })
+  })
+})
+
+describe('cast rate in the upgrade score (regression: Speed counted fully even when Stamina could not keep up)', () => {
+  const base = createInitialState()
+  const fighter = (speed: number): SimState => ({
+    ...base,
+    abilities: { ...base.abilities, strike: { rank: 20 }, bolt: { rank: 0 } },
+    stats: { ...base.stats, speed },
+  })
+  const banner: GearItem = { instanceId: 'banner', catalogId: 'vanguard_banner', level: 50, augmentIds: [] }
+
+  test('cast rate is capped by what Stamina regenerates', () => {
+    // Strike alone wants 5 Stamina per 1.5s; 200 Stamina regenerates 10/s, so about 3x cooldown speed at most
+    expect(computeCastRate(fighter(0), 'physical')).toBe(1)
+    expect(computeCastRate(fighter(500), 'physical')).toBeCloseTo(3, 1)
+  })
+
+  test('a starved fighter values Stamina gear in Offense; one with Stamina to spare does not', () => {
+    const starved = { ...fighter(500), inventory: [banner] }
+    const comfortable = { ...fighter(0), inventory: [banner] }
+    expect(compareToEquipped(starved, banner).aspects.offense).toBeGreaterThan(0)
+    expect(compareToEquipped(comfortable, banner).aspects.offense).toBeCloseTo(0)
   })
 })

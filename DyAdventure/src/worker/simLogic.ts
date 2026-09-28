@@ -20,6 +20,7 @@ import {
 } from '../constants'
 import type {
   AbilityDef,
+  AbilityType,
   AugmentDef,
   AutomationFeature,
   AutomationSettings,
@@ -507,6 +508,28 @@ export const LOADOUT_ASPECTS = Object.keys(LOADOUT_WEIGHTS) as LoadoutAspect[]
  * so trained stats, set bonuses, augments and perks all count, and a stat is valued by what it actually
  * does for this character. Temporary ability buffs are left out so a comparison doesn't flicker with them.
  */
+/**
+ * How fast one school of abilities fires relative to Speed 0, after resources: the cooldown speed-up
+ * (1 + Speed × factor), capped at what Stamina (physical) or Mana (spells) regenerates. A Stamina-starved
+ * character gets nothing from more Speed, and a lot from more Stamina, Endurance or regen.
+ */
+export function computeCastRate(state: SimState, type: AbilityType): number {
+  const speed = computeEffectiveStat(state, 'speed') + gearBonusForStat(state, 'speed') + buffBonusForStat(state, 'speed') + perkBonus(state, 'speed')
+  const speedFactor = 1 + speed * SPEED_COOLDOWN_FACTOR
+  // Resource spent per second if every trained ability fired on its base cooldown
+  let baseDemand = 0
+  for (const def of ABILITIES) {
+    if (def.type !== type || (state.abilities[def.id]?.rank ?? 0) <= 0) continue
+    baseDemand += def.resourceCost / (def.cooldownMs / 1000)
+  }
+  if (baseDemand <= 0) return speedFactor
+  const regenPerSec =
+    type === 'physical'
+      ? computeStaminaCap(state) * REGEN_PCT_PER_SEC * computeStaminaRegenMultiplier(state)
+      : computeManaCap(state) * REGEN_PCT_PER_SEC * computeManaRegenMultiplier(state)
+  return Math.min(speedFactor, regenPerSec / baseDemand)
+}
+
 export function computeLoadoutScore(state: SimState): Record<LoadoutAspect, number> {
   const s = state.activeBuffs.length > 0 ? { ...state, activeBuffs: [] } : state
   // Physical vs magic power weighted by where the ability ranks went
@@ -518,11 +541,13 @@ export function computeLoadoutScore(state: SimState): Record<LoadoutAspect, numb
     else spellRanks += rank
   }
   const physicalShare = physicalRanks + spellRanks > 0 ? physicalRanks / (physicalRanks + spellRanks) : 0.5
-  const power = physicalShare * computePhysicalPower(s) + (1 - physicalShare) * computeMagicPower(s)
+  // Cast rate per school: Speed shortens cooldowns, but only as far as Stamina (physical) or Mana (spells) can pay
+  const physicalRate = computeCastRate(s, 'physical')
+  const spellRate = computeCastRate(s, 'spell')
+  const power = physicalShare * computePhysicalPower(s) * physicalRate + (1 - physicalShare) * computeMagicPower(s) * spellRate
   const critFactor = 1 + computeCritChance(s) * (computeCritMultiplier(s) - 1)
-  const speed = computeEffectiveStat(s, 'speed') + gearBonusForStat(s, 'speed') + perkBonus(s, 'speed')
   return {
-    offense: power * critFactor * (1 + speed * SPEED_COOLDOWN_FACTOR),
+    offense: power * critFactor,
     // Effective HP: how much raw monster damage it takes to empty the HP bar (Grit and Resistance both shrink hits)
     defense: computeHpCap(s) / computeIncomingDamage(s, 1),
     // Share of max HP restored per second, counting Life Steal as roughly one ability hit per second
