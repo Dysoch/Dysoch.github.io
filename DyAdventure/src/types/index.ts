@@ -361,9 +361,10 @@ export type MainToWorkerMessage =
   | { type: 'SELECT_ZONE'; zoneId: string }
   | { type: 'TRAIN_STAT'; statId: StatId; count?: number }
   | { type: 'UPGRADE_ABILITY'; abilityId: string; count?: number }
-  | { type: 'EQUIP_ITEM'; instanceId: string }
+  | { type: 'EQUIP_ITEM'; instanceId: string; slot?: GearSlot }
   | { type: 'UNEQUIP_ITEM'; slot: GearSlot }
   | { type: 'SOCKET_AUGMENT'; instanceId: string; augmentId: string }
+  | { type: 'UNSOCKET_AUGMENT'; instanceId: string; augmentId: string }
   | { type: 'SALVAGE_ITEM'; instanceId: string }
   | { type: 'SALVAGE_ITEMS'; instanceIds: string[] }
   | { type: 'FUSE_ITEM'; instanceId: string }

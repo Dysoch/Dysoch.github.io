@@ -22,6 +22,7 @@ import {
   socketAugment,
   trainStat,
   unequipItem,
+  unsocketAugment,
   upgradeAbility,
 } from './simLogic'
 
@@ -105,13 +106,16 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       state = upgradeAbility(state, msg.abilityId, msg.count)
       break
     case 'EQUIP_ITEM':
-      state = equipItem(state, msg.instanceId)
+      state = equipItem(state, msg.instanceId, msg.slot)
       break
     case 'UNEQUIP_ITEM':
       state = unequipItem(state, msg.slot)
       break
     case 'SOCKET_AUGMENT':
       state = socketAugment(state, msg.instanceId, msg.augmentId)
+      break
+    case 'UNSOCKET_AUGMENT':
+      state = unsocketAugment(state, msg.instanceId, msg.augmentId)
       break
     case 'SALVAGE_ITEM': {
       const result = salvageItem(state, msg.instanceId)

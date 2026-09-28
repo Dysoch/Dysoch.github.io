@@ -1,33 +1,39 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import augmentsData from '../content/augments.json'
 import { useGameStore } from '../store/gameStore'
 import {
+  LOADOUT_ASPECTS,
+  compareGear,
+  compareToEquipped,
   computeAllTimeDepth,
   computeEquippedSetCounts,
+  computeLoadoutScore,
   computeReforgeCost,
   computeReforgeDepthRequirement,
+  computeSalvageYield,
   computeSetBonusForStat,
   describeAugment,
-  compareGear,
   effectiveDuplicateMode,
   effectiveGearStats,
-  gearVerdict,
-  getStatLabel,
+  equipSlotsFor,
   gearBonusForStat,
   getGearCatalogItem,
   getRarityDef,
   getSetDef,
+  getStatLabel,
   getZoneDef,
   listMaterials,
   listSets,
   listWorseItems,
   overflowSalvagedKey,
   totalPendingLevels,
+  type GearComparison,
   type GearVerdict,
+  type LoadoutAspect,
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
-import type { AugmentDef, GearItem, GearSlot, PrimaryStat, SimState } from '../types'
+import type { AugmentDef, GearCatalogItemDef, GearItem, GearSlot, PrimaryStat, SimState } from '../types'
 
 const AUGMENTS = augmentsData as AugmentDef[]
 const MATERIALS = listMaterials()
@@ -38,88 +44,192 @@ function materialName(id: string): string {
   return MATERIALS.find((m) => m.id === id)?.name ?? id
 }
 
-function ReforgeButton({ item, state, onReforge }: { item: GearItem; state: SimState; onReforge: (instanceId: string) => void }) {
-  const targetId = getGearCatalogItem(item.catalogId).nextTierId
-  if (!targetId) return null
-  const cost = computeReforgeCost(item.catalogId)!
-  const targetRarity = getRarityDef(getGearCatalogItem(targetId).rarity)
-  const depthReq = computeReforgeDepthRequirement(item.catalogId)
-  const depthReached = depthReq ? (computeAllTimeDepth(state, depthReq.zoneId)) : 0
-  const depthMet = !depthReq || depthReached >= depthReq.depth
-  const affordable = state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
-  const title = depthMet
-    ? `${cost.materials.map((m) => `${formatNumber(m.amount)} ${materialName(m.materialId)}`).join(', ')}, ${formatNumber(cost.focus)} Focus`
-    : `Requires reaching depth ${formatNumber(depthReq!.depth)} in ${getZoneDef(depthReq!.zoneId).name} (currently ${formatNumber(depthReached)})`
-  return (
-    <button
-      type="button"
-      className="btn btn-sm btn-outline-warning"
-      disabled={!affordable || !depthMet}
-      title={title}
-      onClick={() => onReforge(item.instanceId)}
-    >
-      Reforge → {targetRarity.name}
-    </button>
-  )
+const SLOT_LABELS: Record<GearSlot, string> = {
+  weapon: 'Weapon',
+  armor: 'Armor',
+  boots: 'Boots',
+  gloves: 'Gloves',
+  focusItem: 'Focus Item',
+  robe: 'Robe',
+  amulet: 'Amulet',
+  ring: 'Ring',
+  trinket1: 'Trinket 1',
+  trinket2: 'Trinket 2',
 }
 
-/** Always-visible reforge cost and depth requirement, so it's clear what's missing while the button is disabled. */
-function ReforgeInfo({ item, state }: { item: GearItem; state: SimState }) {
-  const targetId = getGearCatalogItem(item.catalogId).nextTierId
-  if (!targetId) return null
-  const cost = computeReforgeCost(item.catalogId)!
-  const targetRarity = getRarityDef(getGearCatalogItem(targetId).rarity)
-  const depthReq = computeReforgeDepthRequirement(item.catalogId)
-  const depthReached = depthReq ? (computeAllTimeDepth(state, depthReq.zoneId)) : 0
-  const depthMet = !depthReq || depthReached >= depthReq.depth
-  const ok = 'var(--text)'
-  const missing = 'var(--physical)'
+/** Slot label for an item's kind rather than a specific equip slot (a trinket fits either trinket slot). */
+function slotKindLabel(def: GearCatalogItemDef): string {
+  return equipSlotsFor(def.id).length > 1 ? 'Trinket' : SLOT_LABELS[def.slot]
+}
+
+const VERDICTS: Record<GearVerdict, { label: string; color: string; order: number }> = {
+  emptySlot: { label: '▲ Empty slot', color: 'var(--hp)', order: 0 },
+  upgrade: { label: '▲ Upgrade', color: 'var(--hp)', order: 1 },
+  sidegrade: { label: '◆ Sidegrade', color: 'var(--focus)', order: 2 },
+  worse: { label: '▼ Worse', color: 'var(--physical)', order: 3 },
+}
+
+const ASPECT_LABELS: Record<LoadoutAspect, { label: string; title: string }> = {
+  offense: { label: 'Offense', title: 'Damage output: Might/Arcana (weighted by your ability ranks), crit and Speed' },
+  defense: { label: 'Defense', title: 'Effective HP: HP Cap, Grit and Resistance' },
+  sustain: { label: 'Sustain', title: 'Healing over time: Regeneration and Life Steal' },
+  resources: { label: 'Resources', title: 'Stamina and Mana caps' },
+  economy: { label: 'Economy', title: 'Focus gain, Fortune and Material Find' },
+}
+
+const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary']
+
+const OVERVIEW_STATS: PrimaryStat[] = ['might', 'grit', 'arcana', 'willpower', 'fortune', 'speed', 'staminaCap', 'manaCap', 'hpCap', 'critChance', 'critDamage', 'regen', 'resistance', 'lifeSteal', 'focusGain', 'materialFind']
+
+type Filter = 'all' | 'upgrades' | GearSlot
+type SortKey = 'best' | 'rarity' | 'level' | 'name'
+type Selection = { kind: 'equipped'; slot: GearSlot } | { kind: 'inventory'; instanceId: string } | null
+
+const SLOT_ORDER = Object.keys(SLOT_LABELS) as GearSlot[]
+
+function levelText(level: number): string {
+  return `Lv.${Math.round(level * 100) / 100}`
+}
+
+function pctText(value: number): string {
+  const pct = value * 100
+  const digits = Math.abs(pct) < 0.1 ? 2 : 1
+  return `${pct >= 0 ? '+' : '−'}${Math.abs(pct).toFixed(digits)}%`
+}
+
+function verdictText(c: GearComparison): string {
+  if (c.verdict === 'emptySlot') return VERDICTS.emptySlot.label
+  if (c.verdict === 'worse') return VERDICTS.worse.label
+  return `${c.verdict === 'upgrade' ? '▲' : '◆'} ${pctText(c.net)}`
+}
+
+/** Set bonus tiers gained or lost by a change in worn pieces, e.g. "loses +3 Might". */
+function describeSetChange(change: GearComparison['setChanges'][number]): { text: string; gained: boolean } {
+  const set = getSetDef(change.setId)
+  const gained = change.after > change.before
+  const lo = Math.min(change.before, change.after)
+  const hi = Math.max(change.before, change.after)
+  const tiers = set.bonuses.filter((t) => t.pieces > lo && t.pieces <= hi).map((t) => t.description)
+  const effect = tiers.length > 0 ? `: ${gained ? 'gains' : 'loses'} ${tiers.join(', ')}` : ''
+  return { text: `${set.name} ${change.before}→${change.after} pieces${effect}`, gained }
+}
+
+function RarityBadge({ def }: { def: GearCatalogItemDef }) {
+  const rarity = getRarityDef(def.rarity)
+  return <span style={{ fontSize: '10px', color: rarity.color, border: `1px solid ${rarity.color}`, borderRadius: '4px', padding: '0 5px' }}>{rarity.name}</span>
+}
+
+function ItemHeader({ item }: { item: GearItem }) {
+  const def = getGearCatalogItem(item.catalogId)
+  const rarity = getRarityDef(def.rarity)
   return (
-    <div className="small" style={{ color: 'var(--text-dim)' }}>
-      Reforge to <span style={{ color: targetRarity.color }}>{targetRarity.name}</span>:{' '}
-      {cost.materials.map((m) => (
-        <span key={m.materialId} style={{ marginRight: '6px', color: (state.materials[m.materialId] ?? 0) >= m.amount ? ok : missing }}>
-          {formatNumber(m.amount)} {materialName(m.materialId)}
-        </span>
-      ))}
-      <span style={{ color: state.focus >= cost.focus ? ok : missing }}>{formatNumber(cost.focus)} Focus</span>
-      {depthReq && (
-        <div style={{ color: depthMet ? 'var(--text-dim)' : missing }}>
-          {depthMet ? '✓ ' : ''}Needs depth {formatNumber(depthReq.depth)} in {getZoneDef(depthReq.zoneId).name}
-          {!depthMet && ` (your deepest: ${formatNumber(depthReached)})`}
-        </div>
+    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+      <Icon name={def.icon} size={18} />
+      <span style={{ color: rarity.color, fontWeight: 600, fontSize: '15px' }}>{def.name}</span>
+      <RarityBadge def={def} />
+      <span className="small" style={{ color: 'var(--text-dim)' }}>{levelText(item.level)}</span>
+      {rarity.maxLevel != null && item.level >= rarity.maxLevel && (
+        <span style={{ fontSize: '10px', color: 'var(--focus)', border: '1px solid var(--focus)', borderRadius: '4px', padding: '0 5px' }} title={`Level cap for ${rarity.name}`}>MAX</span>
       )}
     </div>
   )
 }
 
-/** Socketed augments on an item, plus a picker to socket another while it has open slots. */
-function AugmentSection({ item, learnedAugmentIds, onSocket }: { item: GearItem; learnedAugmentIds: string[]; onSocket: (instanceId: string, augmentId: string) => void }) {
-  const state = useGameStore((s) => s)
-  const [choice, setChoice] = useState('')
-  const slots = getRarityDef(getGearCatalogItem(item.catalogId).rarity).augmentSlots
-  const socketed = item.augmentIds.map((id) => AUGMENTS.find((a) => a.id === id)).filter((a): a is AugmentDef => !!a)
-  const available = learnedAugmentIds.filter((id) => !item.augmentIds.includes(id))
-  const openSlots = item.augmentIds.length < slots
-  if (slots === 0) return null
+/** For an item at its level cap: duplicates can no longer level it, so they're salvaged — show how many so far. */
+function MaxedNote({ item, lifetime }: { item: GearItem; lifetime: Record<string, number> }) {
+  const maxLevel = getRarityDef(getGearCatalogItem(item.catalogId).rarity).maxLevel
+  if (maxLevel == null || item.level + (item.pendingLevels ?? 0) < maxLevel) return null
+  const salvaged = lifetime[overflowSalvagedKey(item.catalogId)] ?? 0
   return (
-    <div className="small">
-      {socketed.map((aug) => (
-        <div key={aug.id} style={{ color: 'var(--focus)' }}>◆ {aug.name}: {describeAugment(state, aug.id)}{(state.augmentRanks[aug.id] ?? 0) > 0 ? ` (Imbue rank ${state.augmentRanks[aug.id]})` : ''}</div>
-      ))}
-      {openSlots && (
-        <div style={{ color: 'var(--text-dim)' }}>
-          {slots - item.augmentIds.length} open augment slot{slots - item.augmentIds.length > 1 ? 's' : ''}
-          {available.length === 0 && ' · defeat bosses to learn augments'}
+    <div className="small" style={{ color: 'var(--text-dim)' }}>
+      {item.level >= maxLevel ? 'Max level' : 'Max level once fused'}: further duplicates are salvaged
+      {salvaged > 0 ? ` (${formatNumber(salvaged)} so far)` : ''}
+      {getGearCatalogItem(item.catalogId).nextTierId ? '. Reforge to keep leveling.' : '.'}
+    </div>
+  )
+}
+
+/** Reforge cost, depth requirement and button; what's missing is shown in red while the button is disabled. */
+function ReforgeSection({ item, state, onReforge }: { item: GearItem; state: SimState; onReforge: (instanceId: string) => void }) {
+  const targetId = getGearCatalogItem(item.catalogId).nextTierId
+  if (!targetId) return null
+  const cost = computeReforgeCost(item.catalogId)!
+  const targetRarity = getRarityDef(getGearCatalogItem(targetId).rarity)
+  const depthReq = computeReforgeDepthRequirement(item.catalogId)
+  const depthReached = depthReq ? computeAllTimeDepth(state, depthReq.zoneId) : 0
+  const depthMet = !depthReq || depthReached >= depthReq.depth
+  const affordable = state.focus >= cost.focus && cost.materials.every((m) => (state.materials[m.materialId] ?? 0) >= m.amount)
+  const ok = 'var(--text)'
+  const missing = 'var(--physical)'
+  return (
+    <div className="detail-section">
+      <div className="detail-label">Reforge</div>
+      <div className="small">
+        To <span style={{ color: targetRarity.color }}>{targetRarity.name}</span> (resets to Lv.1):{' '}
+        {cost.materials.map((m) => (
+          <span key={m.materialId} style={{ marginRight: '6px', color: (state.materials[m.materialId] ?? 0) >= m.amount ? ok : missing }}>
+            {formatNumber(m.amount)} {materialName(m.materialId)}
+          </span>
+        ))}
+        <span style={{ color: state.focus >= cost.focus ? ok : missing }}>{formatNumber(cost.focus)} Focus</span>
+      </div>
+      {depthReq && (
+        <div className="small" style={{ color: depthMet ? 'var(--text-dim)' : missing }}>
+          {depthMet ? '✓ ' : ''}Needs depth {formatNumber(depthReq.depth)} in {getZoneDef(depthReq.zoneId).name}
+          {!depthMet && ` (your deepest: ${formatNumber(depthReached)})`}
         </div>
       )}
-      {openSlots && available.length > 0 && (
+      <div>
+        <button type="button" className="btn btn-sm btn-outline-warning mt-1" disabled={!affordable || !depthMet} onClick={() => onReforge(item.instanceId)}>
+          Reforge → {targetRarity.name}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/** Socketed augments (each removable for free) plus a picker for any open slots. */
+function AugmentSection({ item, state, onSocket, onUnsocket }: {
+  item: GearItem
+  state: SimState
+  onSocket: (instanceId: string, augmentId: string) => void
+  onUnsocket: (instanceId: string, augmentId: string) => void
+}) {
+  const [choice, setChoice] = useState('')
+  const slots = getRarityDef(getGearCatalogItem(item.catalogId).rarity).augmentSlots
+  if (slots === 0) return null
+  const socketed = item.augmentIds.map((id) => AUGMENTS.find((a) => a.id === id)).filter((a): a is AugmentDef => !!a)
+  const available = state.learnedAugmentIds.filter((id) => !item.augmentIds.includes(id))
+  const open = slots - item.augmentIds.length
+  return (
+    <div className="detail-section">
+      <div className="detail-label">Augments <span style={{ textTransform: 'none', letterSpacing: 0 }}>· {item.augmentIds.length}/{slots}</span></div>
+      {socketed.map((aug) => (
+        <div key={aug.id} className="d-flex align-items-center gap-2 small" style={{ color: 'var(--focus)' }}>
+          <span>◆ {aug.name}: {describeAugment(state, aug.id)}{(state.augmentRanks[aug.id] ?? 0) > 0 ? ` (Imbue rank ${state.augmentRanks[aug.id]})` : ''}</span>
+          <button
+            type="button"
+            className="btn btn-sm btn-link p-0 ms-auto"
+            style={{ color: 'var(--text-dim)', textDecoration: 'none' }}
+            title="Remove this augment. It stays learned and can be socketed again anywhere."
+            onClick={() => onUnsocket(item.instanceId, aug.id)}
+          >
+            ✕ remove
+          </button>
+        </div>
+      ))}
+      {open > 0 && available.length === 0 && (
+        <div className="small" style={{ color: 'var(--text-dim)' }}>
+          {open} open slot{open > 1 ? 's' : ''}{state.learnedAugmentIds.length === 0 ? ' · defeat bosses to learn augments' : ''}
+        </div>
+      )}
+      {open > 0 && available.length > 0 && (
         <div className="d-flex gap-2 mt-1">
           <select className="form-select form-select-sm" value={choice} onChange={(e) => setChoice(e.target.value)}>
-            <option value="">Choose augment…</option>
+            <option value="">Choose augment ({open} open slot{open > 1 ? 's' : ''})…</option>
             {available.map((id) => {
               const def = AUGMENTS.find((a) => a.id === id)!
-              return <option key={id} value={id}>{def.name} — {describeAugment(state, id)}</option>
+              return <option key={id} value={id}>{def.name}: {describeAugment(state, id)}</option>
             })}
           </select>
           <button
@@ -139,70 +249,50 @@ function AugmentSection({ item, learnedAugmentIds, onSocket }: { item: GearItem;
   )
 }
 
-const SLOT_LABELS: Record<GearSlot, string> = {
-  weapon: 'Weapon',
-  armor: 'Armor',
-  boots: 'Boots',
-  gloves: 'Gloves',
-  focusItem: 'Focus Item',
-  robe: 'Robe',
-  amulet: 'Amulet',
-  ring: 'Ring',
-  trinket1: 'Trinket',
-  trinket2: 'Trinket',
-}
-
-const VERDICTS: Record<GearVerdict, { label: string; color: string; order: number }> = {
-  emptySlot: { label: '▲ Empty slot', color: 'var(--hp)', order: 0 },
-  upgrade: { label: '▲ Upgrade', color: 'var(--hp)', order: 1 },
-  sidegrade: { label: '◆ Sidegrade', color: 'var(--focus)', order: 2 },
-  worse: { label: '▼ Worse', color: 'var(--physical)', order: 3 },
-}
-
-const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary']
-
-const OVERVIEW_STATS: PrimaryStat[] = ['might', 'grit', 'arcana', 'willpower', 'fortune', 'speed', 'staminaCap', 'manaCap', 'hpCap', 'critChance', 'critDamage', 'regen', 'resistance', 'lifeSteal', 'focusGain', 'materialFind']
-
-type Filter = 'all' | 'upgrades' | GearSlot
-
-function levelText(level: number): string {
-  return `Lv.${Math.round(level * 100) / 100}`
-}
-
-function ItemHeader({ item }: { item: GearItem }) {
-  const def = getGearCatalogItem(item.catalogId)
-  const rarity = getRarityDef(def.rarity)
+/** What equipping an inventory item would change: overall score, per-aspect changes, set bonuses and raw stats. */
+function ComparisonSection({ comparison, item, state }: { comparison: GearComparison; item: GearItem; state: SimState }) {
+  const equipped = state.gear[comparison.slot]
+  const deltas = compareGear(item, equipped)
+  const verdict = VERDICTS[comparison.verdict]
   return (
-    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-      <Icon name={def.icon} size={16} />
-      <span style={{ color: rarity.color, fontWeight: 600 }}>{def.name}</span>
-      <span style={{ fontSize: '10px', color: rarity.color, border: `1px solid ${rarity.color}`, borderRadius: '4px', padding: '0 5px' }}>{rarity.name}</span>
-      <span className="small" style={{ color: 'var(--text-dim)' }}>{levelText(item.level)}</span>
-      {rarity.maxLevel != null && item.level >= rarity.maxLevel && (
-        <span style={{ fontSize: '10px', color: 'var(--focus)', border: '1px solid var(--focus)', borderRadius: '4px', padding: '0 5px' }} title={`Level cap for ${rarity.name}`}>MAX</span>
+    <div className="detail-section">
+      <div className="detail-label">
+        If equipped in {SLOT_LABELS[comparison.slot]}
+        {equipped ? ` (replacing ${getGearCatalogItem(equipped.catalogId).name})` : ''}
+      </div>
+      <div style={{ color: verdict.color, fontWeight: 600 }}>
+        {verdict.label}
+        {comparison.verdict !== 'worse' && <span style={{ marginLeft: '6px' }}>{pctText(comparison.net)} overall</span>}
+      </div>
+      <div className="aspect-grid">
+        {LOADOUT_ASPECTS.map((k) => {
+          const v = comparison.aspects[k]
+          const flat = Math.abs(v) < 1e-4
+          return (
+            <div key={k} title={ASPECT_LABELS[k].title}>
+              <span style={{ color: 'var(--text-dim)' }}>{ASPECT_LABELS[k].label} </span>
+              <span style={{ color: flat ? 'var(--text-dim)' : v > 0 ? 'var(--hp)' : 'var(--physical)' }}>{flat ? '—' : pctText(v)}</span>
+            </div>
+          )
+        })}
+      </div>
+      {comparison.setChanges.map((change) => {
+        const { text, gained } = describeSetChange(change)
+        return <div key={change.setId} className="small" style={{ color: gained ? 'var(--hp)' : 'var(--physical)' }}>{gained ? '▲' : '▼'} {text}</div>
+      })}
+      {deltas.length > 0 && (
+        <div className="small">
+          {deltas.map((d) => (
+            <span key={d.statId} style={{ marginRight: '8px', color: d.value >= 0 ? 'var(--hp)' : 'var(--physical)' }}>
+              {d.value >= 0 ? '+' : ''}{formatNumber(d.value)} {statLabel(d.statId)}
+            </span>
+          ))}
+          <span className="text-body-secondary">item stats</span>
+        </div>
       )}
-    </div>
-  )
-}
-
-/** For an item at its level cap: duplicates can no longer level it, so they're salvaged — show how many so far. */
-function MaxedNote({ item, lifetime }: { item: GearItem; lifetime: Record<string, number> }) {
-  const maxLevel = getRarityDef(getGearCatalogItem(item.catalogId).rarity).maxLevel
-  if (maxLevel == null || item.level + (item.pendingLevels ?? 0) < maxLevel) return null
-  const salvaged = lifetime[overflowSalvagedKey(item.catalogId)] ?? 0
-  return (
-    <div className="small" style={{ color: 'var(--text-dim)' }}>
-      {item.level >= maxLevel ? 'Max level' : 'Max level once fused'} — further duplicates are salvaged
-      {salvaged > 0 ? ` (${formatNumber(salvaged)} so far)` : ''}
-      {getGearCatalogItem(item.catalogId).nextTierId ? '. Reforge to keep leveling.' : '.'}
-    </div>
-  )
-}
-
-function ItemStats({ item }: { item: GearItem }) {
-  return (
-    <div className="small" style={{ color: 'var(--text-dim)' }}>
-      {effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(' · ')}
+      {equipped && equipped.augmentIds.length > 0 && (
+        <div className="small" style={{ color: 'var(--text-dim)' }}>Augments on the replaced item move over to open slots.</div>
+      )}
     </div>
   )
 }
@@ -217,11 +307,32 @@ function PendingFuse({ item, onFuse }: { item: GearItem; onFuse: (instanceId: st
   )
 }
 
+/** Two-click salvage button that previews the payout. */
+function SalvageButton({ item, onSalvage }: { item: GearItem; onSalvage: () => void }) {
+  const [confirm, setConfirm] = useState(false)
+  const payout = computeSalvageYield(item)
+  return (
+    <button
+      type="button"
+      className={`btn btn-sm ${confirm ? 'btn-danger' : 'btn-outline-danger'}`}
+      onClick={() => {
+        if (!confirm) return setConfirm(true)
+        onSalvage()
+        setConfirm(false)
+      }}
+      onBlur={() => setConfirm(false)}
+    >
+      {confirm ? 'Confirm salvage' : 'Salvage'} → {formatNumber(payout.focus)} Focus, {formatNumber(payout.materials)} {materialName(payout.materialId)}
+    </button>
+  )
+}
+
 export default function InventoryPage() {
   const state = useGameStore((s) => s)
   const equipItem = useGameStore((s) => s.equipItem)
   const unequipItem = useGameStore((s) => s.unequipItem)
   const socketAugment = useGameStore((s) => s.socketAugment)
+  const unsocketAugment = useGameStore((s) => s.unsocketAugment)
   const salvageItem = useGameStore((s) => s.salvageItem)
   const salvageItems = useGameStore((s) => s.salvageItems)
   const reforgeItem = useGameStore((s) => s.reforgeItem)
@@ -230,7 +341,29 @@ export default function InventoryPage() {
   const setActiveTab = useGameStore((s) => s.setActiveTab)
   const [expandedSets, setExpandedSets] = useState<Record<string, boolean>>({})
   const [filter, setFilter] = useState<Filter>('all')
+  const [sortKey, setSortKey] = useState<SortKey>('best')
+  const [search, setSearch] = useState('')
+  const [hideWorse, setHideWorse] = useState(false)
+  const [includeSetPieces, setIncludeSetPieces] = useState(false)
   const [confirmSalvage, setConfirmSalvage] = useState(false)
+  const [selection, setSelection] = useState<Selection>(null)
+  const [compareSlot, setCompareSlot] = useState<GearSlot | null>(null)
+
+  // Comparing every inventory item runs the loadout formulas per item; the worker re-sends state several
+  // times a second, so only recompute when something that feeds the comparison actually changed.
+  const comparisonKey = JSON.stringify([state.gear, state.inventory, state.stats, state.abilities, state.perkLevels, state.augmentRanks, state.milestonesReached])
+  const { rows, worseItems } = useMemo(() => {
+    const base = computeLoadoutScore(state)
+    return {
+      rows: state.inventory.map((item) => {
+        // One comparison per slot it fits (two for a trinket); the headline one is the best of them
+        const bySlot = Object.fromEntries(equipSlotsFor(item.catalogId).map((slot) => [slot, compareToEquipped(state, item, base, slot)])) as Partial<Record<GearSlot, GearComparison>>
+        return { item, def: getGearCatalogItem(item.catalogId), bySlot, comparison: compareToEquipped(state, item, base) }
+      }),
+      worseItems: listWorseItems(state, includeSetPieces),
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comparisonKey, includeSetPieces])
 
   const setCounts = computeEquippedSetCounts(state)
   const allSets = listSets()
@@ -240,26 +373,52 @@ export default function InventoryPage() {
     .sort((a, b) => (setCounts[b.id] ?? 0) - (setCounts[a.id] ?? 0))
 
   const pending = totalPendingLevels(state)
-  const worseItems = listWorseItems(state)
   const duplicateMode = effectiveDuplicateMode(state)
+  const bulkPayout = new Map<string, number>()
+  let bulkFocus = 0
+  for (const item of worseItems) {
+    const payout = computeSalvageYield(item)
+    bulkFocus += payout.focus
+    bulkPayout.set(payout.materialId, (bulkPayout.get(payout.materialId) ?? 0) + payout.materials)
+  }
 
-  // Best candidates first: upgrades, then sidegrades, then by rarity and level
-  const rows = state.inventory
-    .map((item) => ({ item, def: getGearCatalogItem(item.catalogId), verdict: gearVerdict(state, item) }))
-    .sort(
-      (a, b) =>
-        VERDICTS[a.verdict].order - VERDICTS[b.verdict].order ||
-        RARITY_ORDER.indexOf(b.def.rarity) - RARITY_ORDER.indexOf(a.def.rarity) ||
-        b.item.level - a.item.level,
-    )
+  const isImprovement = (c: GearComparison) => c.verdict === 'upgrade' || c.verdict === 'emptySlot'
+  const fitsSlot = (def: GearCatalogItemDef, slot: GearSlot) => equipSlotsFor(def.id).includes(slot)
+  const upgradesForSlot = (slot: GearSlot) => rows.filter((r) => r.bySlot[slot] && isImprovement(r.bySlot[slot])).length
+
+  const sorted = [...rows].sort((a, b) => {
+    if (sortKey === 'rarity') return RARITY_ORDER.indexOf(b.def.rarity) - RARITY_ORDER.indexOf(a.def.rarity) || b.item.level - a.item.level
+    if (sortKey === 'level') return b.item.level - a.item.level
+    if (sortKey === 'name') return a.def.name.localeCompare(b.def.name)
+    return VERDICTS[a.comparison.verdict].order - VERDICTS[b.comparison.verdict].order || b.comparison.net - a.comparison.net
+  })
   const slotCounts = new Map<GearSlot, number>()
-  for (const { def } of rows) slotCounts.set(def.slot, (slotCounts.get(def.slot) ?? 0) + 1)
-  const upgradeCount = rows.filter((r) => r.verdict === 'upgrade' || r.verdict === 'emptySlot').length
-  // A slot filter whose last item just left the inventory falls back to showing everything
+  for (const { def } of rows) {
+    for (const slot of equipSlotsFor(def.id).slice(0, 1)) slotCounts.set(slot, (slotCounts.get(slot) ?? 0) + 1)
+  }
+  const upgradeCount = rows.filter((r) => isImprovement(r.comparison)).length
+  // A filter that no longer matches anything falls back to showing everything
   const activeFilter: Filter = (filter === 'upgrades' && upgradeCount === 0) || (filter !== 'all' && filter !== 'upgrades' && !slotCounts.has(filter)) ? 'all' : filter
-  const visible = rows.filter(({ def, verdict }) =>
-    activeFilter === 'all' ? true : activeFilter === 'upgrades' ? verdict === 'upgrade' || verdict === 'emptySlot' : def.slot === activeFilter,
-  )
+  const query = search.trim().toLowerCase()
+  const visible = sorted.filter(({ def, comparison }) => {
+    if (hideWorse && comparison.verdict === 'worse') return false
+    if (query && !def.name.toLowerCase().includes(query)) return false
+    if (activeFilter === 'upgrades') return isImprovement(comparison)
+    if (activeFilter !== 'all') return fitsSlot(def, activeFilter)
+    return true
+  })
+
+  // Resolve the selection; a vanished item (equipped, salvaged) falls back to the first visible row
+  const selectedRow = selection?.kind === 'inventory' ? rows.find((r) => r.item.instanceId === selection.instanceId) : undefined
+  const selectedSlot = selection?.kind === 'equipped' ? selection.slot : null
+  const fallbackRow = !selectedRow && !selectedSlot ? visible[0] : undefined
+  const detailRow = selectedRow ?? fallbackRow
+  const detailSlot = detailRow ? null : (selectedSlot ?? SLOT_ORDER.find((s) => state.gear[s]) ?? null)
+
+  const select = (next: Selection) => {
+    setSelection(next)
+    setCompareSlot(null)
+  }
 
   const chip = (id: Filter, label: string, count: number) => (
     <button
@@ -273,6 +432,98 @@ export default function InventoryPage() {
     </button>
   )
 
+  const renderDetail = () => {
+    if (detailRow) {
+      const { item, def } = detailRow
+      const slots = equipSlotsFor(def.id)
+      const comparison = (compareSlot && detailRow.bySlot[compareSlot]) || detailRow.comparison
+      return (
+        <>
+          <div className="small" style={{ color: 'var(--text-dim)' }}>
+            Inventory · {slotKindLabel(def)}{def.setId ? ` · ${getSetDef(def.setId).name}` : ''}
+          </div>
+          <ItemHeader item={item} />
+          <div className="small">{effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(' · ')}</div>
+          {slots.length > 1 && (
+            <div className="d-flex align-items-center gap-1 small">
+              <span style={{ color: 'var(--text-dim)' }}>Compare with:</span>
+              {slots.map((slot) => (
+                <button
+                  key={slot}
+                  type="button"
+                  className={`btn btn-sm ${comparison.slot === slot ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  style={{ padding: '0 8px', fontSize: '11.5px' }}
+                  onClick={() => setCompareSlot(slot)}
+                >
+                  {SLOT_LABELS[slot]}
+                </button>
+              ))}
+            </div>
+          )}
+          <ComparisonSection comparison={comparison} item={item} state={state} />
+          <PendingFuse item={item} onFuse={fuseItem} />
+          <MaxedNote item={item} lifetime={state.lifetime} />
+          <AugmentSection key={item.instanceId} item={item} state={state} onSocket={socketAugment} onUnsocket={unsocketAugment} />
+          <ReforgeSection item={item} state={state} onReforge={reforgeItem} />
+          <div className="d-flex gap-2 flex-wrap pt-1">
+            <button
+              type="button"
+              className="btn btn-sm btn-primary"
+              onClick={() => {
+                equipItem(item.instanceId, comparison.slot)
+                select({ kind: 'equipped', slot: comparison.slot })
+              }}
+            >
+              Equip{slots.length > 1 ? ` in ${SLOT_LABELS[comparison.slot]}` : ''}
+            </button>
+            <SalvageButton key={item.instanceId} item={item} onSalvage={() => salvageItem(item.instanceId)} />
+          </div>
+        </>
+      )
+    }
+    if (detailSlot) {
+      const item = state.gear[detailSlot]
+      const candidates = sorted
+        .filter((r) => r.bySlot[detailSlot])
+        .map((r) => ({ ...r, comparison: r.bySlot[detailSlot]! }))
+        .sort((a, b) => VERDICTS[a.comparison.verdict].order - VERDICTS[b.comparison.verdict].order || b.comparison.net - a.comparison.net)
+      return (
+        <>
+          <div className="small" style={{ color: 'var(--text-dim)' }}>Equipped · {SLOT_LABELS[detailSlot]}{item && getGearCatalogItem(item.catalogId).setId ? ` · ${getSetDef(getGearCatalogItem(item.catalogId).setId!).name}` : ''}</div>
+          {item ? (
+            <>
+              <ItemHeader item={item} />
+              <div className="small">{effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(' · ')}</div>
+              <PendingFuse item={item} onFuse={fuseItem} />
+              <MaxedNote item={item} lifetime={state.lifetime} />
+              <AugmentSection key={item.instanceId} item={item} state={state} onSocket={socketAugment} onUnsocket={unsocketAugment} />
+              <ReforgeSection item={item} state={state} onReforge={reforgeItem} />
+              <div className="pt-1">
+                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => unequipItem(detailSlot)}>Unequip</button>
+              </div>
+            </>
+          ) : (
+            <div className="small" style={{ color: 'var(--text-dim)' }}>Nothing equipped.</div>
+          )}
+          <div className="detail-section">
+            <div className="detail-label">In your inventory for this slot</div>
+            {candidates.length === 0 && <div className="small" style={{ color: 'var(--text-dim)' }}>Nothing yet.</div>}
+            {candidates.map(({ item: c, def, comparison }) => (
+              <div key={c.instanceId} className="d-flex align-items-center gap-2 small">
+                <button type="button" className="btn btn-link btn-sm p-0 text-start" style={{ color: getRarityDef(def.rarity).color, textDecoration: 'none' }} onClick={() => select({ kind: 'inventory', instanceId: c.instanceId })}>
+                  {def.name} <span style={{ color: 'var(--text-dim)' }}>{levelText(c.level)}</span>
+                </button>
+                <span style={{ color: VERDICTS[comparison.verdict].color, whiteSpace: 'nowrap' }}>{verdictText(comparison)}</span>
+                <button type="button" className="btn btn-sm btn-outline-primary ms-auto" style={{ padding: '0 8px' }} onClick={() => equipItem(c.instanceId, detailSlot)}>Equip</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )
+    }
+    return <div className="small" style={{ color: 'var(--text-dim)' }}>Select an item to see its details.</div>
+  }
+
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div className="panel d-flex align-items-center gap-3 flex-wrap" style={{ padding: '12px 16px' }}>
@@ -283,7 +534,7 @@ export default function InventoryPage() {
           type="button"
           className={`btn btn-sm ${confirmSalvage ? 'btn-danger' : 'btn-outline-danger'}`}
           disabled={worseItems.length === 0}
-          title="Salvages every inventory item that is worse than what you're wearing in its slot, on raw stats. Items with augments are skipped."
+          title="Salvages every inventory item that would improve nothing if equipped, counting set bonuses and augments."
           onClick={() => {
             if (!confirmSalvage) return setConfirmSalvage(true)
             salvageItems(worseItems.map((i) => i.instanceId))
@@ -292,90 +543,101 @@ export default function InventoryPage() {
           onBlur={() => setConfirmSalvage(false)}
         >
           {confirmSalvage ? `Confirm: salvage ${worseItems.length} items` : `Salvage all worse (${worseItems.length})`}
+          {worseItems.length > 0 && ` → ${formatNumber(bulkFocus)} Focus, ${[...bulkPayout].map(([id, n]) => `${formatNumber(n)} ${materialName(id)}`).join(', ')}`}
         </button>
-        <span className="small" style={{ color: 'var(--text-dim)' }}>
+        <label className="small d-flex align-items-center gap-1" style={{ color: 'var(--text-dim)' }} title="Set pieces are kept by default: a piece that's worse today can complete a set bonus later.">
+          <input type="checkbox" checked={includeSetPieces} onChange={(e) => setIncludeSetPieces(e.target.checked)} />
+          include set pieces
+        </label>
+        <span className="small ms-auto" style={{ color: 'var(--text-dim)' }}>
           Duplicates: <strong style={{ color: 'var(--text)' }}>{duplicateMode === 'keep' ? 'kept for fusing' : duplicateMode === 'salvage' ? 'auto-salvaged' : 'auto-fused'}</strong>
           {' · '}
           <button type="button" className="btn btn-link btn-sm p-0 align-baseline" onClick={() => setActiveTab('automation')}>change</button>
         </span>
       </div>
 
-      <div>
-        <h6>Equipped</h6>
-        <div className="gear-slot-grid">
-          {(Object.entries(state.gear) as [GearSlot, GearItem | null][]).map(([slot, item]) => (
-            <div key={slot} className="inventory-card" style={item ? undefined : { opacity: 0.6 }}>
-              <div className="small" style={{ color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '10.5px' }}>{SLOT_LABELS[slot]}</div>
-              {item ? (
-                <>
-                  <ItemHeader item={item} />
-                  <ItemStats item={item} />
-                  <PendingFuse item={item} onFuse={fuseItem} />
-                  <MaxedNote item={item} lifetime={state.lifetime} />
-                  <AugmentSection item={item} learnedAugmentIds={state.learnedAugmentIds} onSocket={socketAugment} />
-                  <ReforgeInfo item={item} state={state} />
-                  <div className="d-flex gap-2 flex-wrap mt-auto pt-1">
-                    <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => unequipItem(slot)}>Unequip</button>
-                    <ReforgeButton item={item} state={state} onReforge={reforgeItem} />
-                  </div>
-                </>
-              ) : (
-                <div className="small" style={{ color: 'var(--text-dim)' }}>Empty</div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h6>Inventory ({state.inventory.length})</h6>
-        {state.inventory.length === 0 ? (
-          <div className="text-body-secondary small">No items yet — keep fighting for loot.</div>
-        ) : (
-          <>
-            <div className="d-flex flex-wrap gap-1 mb-2">
-              {chip('all', 'All', rows.length)}
-              {upgradeCount > 0 && chip('upgrades', '▲ Upgrades', upgradeCount)}
-              {(Object.keys(SLOT_LABELS) as GearSlot[]).filter((slot) => slotCounts.has(slot)).map((slot) => chip(slot, SLOT_LABELS[slot], slotCounts.get(slot)!))}
-            </div>
-            <div className="inventory-grid">
-              {visible.map(({ item, def, verdict }) => {
-                const equipped = state.gear[def.slot]
-                const deltas = equipped ? compareGear(item, equipped) : []
-                const setLabel = def.setId ? getSetDef(def.setId).name : null
+      <div className="inv-layout">
+        <div className="inv-lists">
+          <div className="panel" style={{ padding: '12px' }}>
+            <h6 style={{ marginBottom: '8px' }}>Equipped</h6>
+            <div className="inv-list">
+              {SLOT_ORDER.map((slot) => {
+                const item = state.gear[slot]
+                const def = item ? getGearCatalogItem(item.catalogId) : null
+                const upgrades = upgradesForSlot(slot)
+                const selected = !detailRow && detailSlot === slot
                 return (
-                  <div key={item.instanceId} className="inventory-card">
-                    <div className="d-flex justify-content-between gap-2">
-                      <span className="small" style={{ color: 'var(--text-dim)' }}>{SLOT_LABELS[def.slot]}{setLabel ? ` · ${setLabel}` : ''}</span>
-                      <span className="small" style={{ color: VERDICTS[verdict].color, whiteSpace: 'nowrap' }}>{VERDICTS[verdict].label}</span>
-                    </div>
-                    <ItemHeader item={item} />
-                    <ItemStats item={item} />
-                    {deltas.length > 0 && (
-                      <div className="small">
-                        {deltas.map((d) => (
-                          <span key={d.statId} style={{ marginRight: '8px', color: d.value >= 0 ? 'var(--hp)' : 'var(--physical)' }}>
-                            {d.value >= 0 ? '+' : ''}{formatNumber(d.value)} {statLabel(d.statId)}
-                          </span>
-                        ))}
-                        <span className="text-body-secondary">vs. equipped</span>
-                      </div>
+                  <button key={slot} type="button" className={`inv-row${selected ? ' selected' : ''}`} onClick={() => select({ kind: 'equipped', slot })}>
+                    <span className="inv-row-slot">{SLOT_LABELS[slot]}</span>
+                    {item && def ? (
+                      <>
+                        <Icon name={def.icon} size={14} />
+                        <span className="inv-row-name" style={{ color: getRarityDef(def.rarity).color }}>{def.name}</span>
+                        <span className="inv-row-meta">{levelText(item.level)}</span>
+                        {item.augmentIds.length > 0 && <span className="inv-row-meta" style={{ color: 'var(--focus)' }} title="Socketed augments">◆{item.augmentIds.length}</span>}
+                        {item.pendingLevels ? <span className="inv-row-meta" style={{ color: 'var(--focus)' }} title="Levels waiting to be fused">+{formatNumber(item.pendingLevels)} lv</span> : null}
+                      </>
+                    ) : (
+                      <span className="inv-row-name" style={{ color: 'var(--text-dim)' }}>Empty</span>
                     )}
-                    <PendingFuse item={item} onFuse={fuseItem} />
-                    <MaxedNote item={item} lifetime={state.lifetime} />
-                    <AugmentSection item={item} learnedAugmentIds={state.learnedAugmentIds} onSocket={socketAugment} />
-                    <ReforgeInfo item={item} state={state} />
-                    <div className="d-flex gap-2 flex-wrap mt-auto pt-1">
-                      <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => equipItem(item.instanceId)}>Equip</button>
-                      <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => salvageItem(item.instanceId)}>Salvage</button>
-                      <ReforgeButton item={item} state={state} onReforge={reforgeItem} />
-                    </div>
-                  </div>
+                    {upgrades > 0 && <span className="inv-row-badge" title={`${upgrades} item${upgrades > 1 ? 's' : ''} in your inventory would improve this slot`}>▲{upgrades}</span>}
+                  </button>
                 )
               })}
             </div>
-          </>
-        )}
+          </div>
+
+          <div className="panel" style={{ padding: '12px' }}>
+            <h6 style={{ marginBottom: '8px' }}>Inventory ({state.inventory.length})</h6>
+            {state.inventory.length === 0 ? (
+              <div className="text-body-secondary small">No items yet. Keep fighting for loot.</div>
+            ) : (
+              <>
+                <div className="d-flex flex-wrap gap-1 mb-2">
+                  {chip('all', 'All', rows.length)}
+                  {upgradeCount > 0 && chip('upgrades', '▲ Upgrades', upgradeCount)}
+                  {SLOT_ORDER.filter((slot) => slotCounts.has(slot)).map((slot) => chip(slot, slot === 'trinket1' ? 'Trinket' : SLOT_LABELS[slot], slotCounts.get(slot)!))}
+                </div>
+                <div className="d-flex flex-wrap gap-2 mb-2 align-items-center">
+                  <input type="search" className="form-control form-control-sm" style={{ maxWidth: '180px' }} placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} />
+                  <select className="form-select form-select-sm" style={{ width: 'auto' }} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
+                    <option value="best">Best first</option>
+                    <option value="rarity">Rarity</option>
+                    <option value="level">Level</option>
+                    <option value="name">Name</option>
+                  </select>
+                  <label className="small d-flex align-items-center gap-1" style={{ color: 'var(--text-dim)' }}>
+                    <input type="checkbox" checked={hideWorse} onChange={(e) => setHideWorse(e.target.checked)} />
+                    hide worse
+                  </label>
+                </div>
+                <div className="inv-list">
+                  {visible.length === 0 && <div className="small" style={{ color: 'var(--text-dim)' }}>No items match.</div>}
+                  {visible.map(({ item, def, comparison }) => (
+                    <button
+                      key={item.instanceId}
+                      type="button"
+                      className={`inv-row${detailRow?.item.instanceId === item.instanceId ? ' selected' : ''}`}
+                      onClick={() => select({ kind: 'inventory', instanceId: item.instanceId })}
+                    >
+                      <span className="inv-row-verdict" style={{ color: VERDICTS[comparison.verdict].color }}>{verdictText(comparison)}</span>
+                      <Icon name={def.icon} size={14} />
+                      <span className="inv-row-name" style={{ color: getRarityDef(def.rarity).color }}>{def.name}</span>
+                      <span className="inv-row-meta">{levelText(item.level)}</span>
+                      {item.pendingLevels ? <span className="inv-row-meta" style={{ color: 'var(--focus)' }} title="Levels waiting to be fused">+{formatNumber(item.pendingLevels)} lv</span> : null}
+                      <span className="inv-row-meta inv-row-kind">{slotKindLabel(def)}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className={`panel inv-detail${selection ? ' open' : ''}`}>
+          <button type="button" className="btn btn-sm btn-outline-secondary inv-detail-close" onClick={() => select(null)}>Close</button>
+          {renderDetail()}
+        </div>
       </div>
 
       <div className="panel" style={{ padding: '16px' }}>
@@ -430,3 +692,4 @@ export default function InventoryPage() {
     </div>
   )
 }
+

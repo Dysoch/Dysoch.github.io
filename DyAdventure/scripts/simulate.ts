@@ -37,6 +37,7 @@ import {
   trainStat,
   upgradeAbility,
   equipItem,
+  gearVerdict,
   computeTrainCost,
   computeAbilityRankCost,
   computeRecallEchoes,
@@ -294,8 +295,9 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
 
   for (const event of result.events) {
     if (event.kind === 'loot') {
-      // Simple auto-equip: always equip a newly found item (good enough for a pacing check).
-      state = equipItem(state, event.item.instanceId)
+      // Equip a newly found item when it improves the loadout (the same check the Inventory page shows)
+      const verdict = gearVerdict(state, event.item)
+      if (verdict === 'upgrade' || verdict === 'emptySlot') state = equipItem(state, event.item.instanceId)
     }
     if (event.kind === 'bossDefeated') {
       const zoneId = state.currentZoneId

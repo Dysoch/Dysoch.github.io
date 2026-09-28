@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import {
+  compareToEquipped,
   computeCraftCostN,
+  computeLoadoutScore,
   computeFuseRate,
   computeFuseRoomCopies,
   computeFuseTargetId,
@@ -18,6 +20,8 @@ import {
   getTierChain,
   listCraftableItems,
   listMaterials,
+  type GearComparison,
+  type LoadoutAspect,
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
@@ -93,7 +97,30 @@ function ImbuePanel({ state, onImbue }: { state: SimState; onImbue: (augmentId: 
 }
 
 /** One card per item line: every discovered rarity tier of the same piece, with a rarity picker. */
-function CraftLineCard({ tiers, state, onCraft }: { tiers: GearCatalogItemDef[]; state: SimState; onCraft: (catalogId: string, count: number) => void }) {
+/** How the piece crafting would give (the owned copy, or a fresh Lv.1 one) compares with what's worn. */
+function compareCraftResult(state: SimState, catalogId: string, base: Record<LoadoutAspect, number>): GearComparison | 'equipped' {
+  const ownedId = computeFuseTargetId(state, catalogId)
+  const owned = ownedId ? getOwnedItem(state, ownedId) : null
+  if (owned && Object.values(state.gear).some((g) => g?.instanceId === owned.instanceId)) return 'equipped'
+  return compareToEquipped(state, owned ?? { instanceId: 'craft-preview', catalogId, level: 1, augmentIds: [] }, base)
+}
+
+function ComparisonLine({ comparison, owned }: { comparison: GearComparison | 'equipped'; owned: boolean }) {
+  if (comparison === 'equipped') return <div className="small" style={{ color: 'var(--text-dim)' }}>Crafting levels up your equipped piece.</div>
+  const who = owned ? 'Your copy' : 'A new copy'
+  const pct = `${comparison.net >= 0 ? '+' : '−'}${Math.abs(comparison.net * 100).toFixed(1)}%`
+  const [text, color] =
+    comparison.verdict === 'emptySlot'
+      ? ['would fill an empty slot', 'var(--hp)']
+      : comparison.verdict === 'upgrade'
+        ? [`would be an upgrade (${pct})`, 'var(--hp)']
+        : comparison.verdict === 'sidegrade'
+          ? [`would be a sidegrade (${pct})`, 'var(--focus)']
+          : ['is worse than what you wear', 'var(--physical)']
+  return <div className="small" style={{ color }}>{who} {text}</div>
+}
+
+function CraftLineCard({ tiers, state, base, onCraft }: { tiers: GearCatalogItemDef[]; state: SimState; base: Record<LoadoutAspect, number>; onCraft: (catalogId: string, count: number) => void }) {
   const [selectedId, setSelectedId] = useState(tiers[tiers.length - 1].id)
   const item = tiers.find((t) => t.id === selectedId) ?? tiers[tiers.length - 1]
   const rarity = getRarityDef(item.rarity)
@@ -158,6 +185,8 @@ function CraftLineCard({ tiers, state, onCraft }: { tiers: GearCatalogItemDef[];
         </div>
       )}
 
+      <ComparisonLine comparison={compareCraftResult(state, item.id, base)} owned={!!fuseTargetId} />
+
       <div className="small text-body-secondary">
         <span style={{ color: rarity.color }}>{rarity.name}</span>: {item.stats.map((st) => `+${formatNumber(st.value)} ${getStatLabel(st.statId)}`).join(', ')}
       </div>
@@ -195,7 +224,9 @@ export default function CraftingPage() {
   const state = useGameStore((s) => s)
   const craftItem = useGameStore((s) => s.craftItem)
   const imbueAugment = useGameStore((s) => s.imbueAugment)
+  const [view, setView] = useState<'craft' | 'imbue'>('craft')
   const items = listCraftableItems(state)
+  const base = computeLoadoutScore(state)
 
   // One line per reforge chain (lowest tier first), keyed by its root item
   const lines = new Map<string, GearCatalogItemDef[]>()
@@ -233,18 +264,28 @@ export default function CraftingPage() {
         </div>
       </div>
 
-      <ImbuePanel state={state} onImbue={imbueAugment} />
+      {state.learnedAugmentIds.length > 0 && (
+        <div className="d-flex gap-1">
+          {(['craft', 'imbue'] as const).map((v) => (
+            <button key={v} type="button" className={`btn btn-sm ${view === v ? 'btn-primary' : 'btn-outline-secondary'}`} onClick={() => setView(v)}>
+              {v === 'craft' ? 'Craft gear' : `Imbue augments (${state.learnedAugmentIds.length})`}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {items.length === 0 && (
+      {view === 'imbue' && <ImbuePanel state={state} onImbue={imbueAugment} />}
+
+      {view === 'craft' && items.length === 0 && (
         <div className="text-body-secondary small">You haven't discovered any gear yet — pieces you find can be crafted here later.</div>
       )}
 
-      {orderedKeys.map((key) => (
+      {view === 'craft' && orderedKeys.map((key) => (
         <div key={key || 'none'}>
           <h6>{key ? getSetDef(key).name : 'Other gear'}</h6>
           <div className="inventory-grid">
             {groups.get(key)!.map((tiers) => (
-              <CraftLineCard key={getTierChain(tiers[0].id)[0]} tiers={tiers} state={state} onCraft={craftItem} />
+              <CraftLineCard key={getTierChain(tiers[0].id)[0]} tiers={tiers} state={state} base={base} onCraft={craftItem} />
             ))}
           </div>
         </div>

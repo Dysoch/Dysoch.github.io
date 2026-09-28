@@ -57,10 +57,11 @@
     "id": "gear",
     "title": "Gear, Sets & Augments",
     "paragraphs": [
-      "Monsters drop gear from the current zone's loot pool. Some items only drop from bosses or below a certain depth. There are 10 equipment slots.",
+      "Monsters drop gear from the current zone's loot pool. Some items only drop from bosses or below a certain depth. There are 10 equipment slots; a trinket fits either trinket slot.",
       "Finding a duplicate adds levels to the copy you own (each level adds 1% to its stats). At first they wait as pending levels until you press Fuse on the Inventory page. You can also have duplicates salvaged automatically, and after a few Recalls unlock auto-fusing (see Automation). A lower-rarity copy of an item you've reforged feeds the higher-rarity version, at a reduced rate. Once an item hits its rarity's level cap, further duplicates are salvaged automatically — reforge it to keep leveling. Salvaging an item gives Focus and materials instead.",
       "Sets: wearing several pieces of the same set grants bonuses at 2, 4, 6 and 8 pieces. Sets appear in Set Progress once you have found at least one piece. You cannot complete two sets at once — pick one and build around it.",
-      "Higher rarity items have augment slots. Augments are learned from boss kills and socketed into gear to permanently boost a stat or Focus gain."
+      "Higher rarity items have augment slots. Augments are learned from boss kills and socketed into gear to permanently boost a stat or Focus gain. Augments are never used up: remove one for free and socket it elsewhere. When you equip a replacement, the old item's augments move over to its open slots.",
+      "The Inventory page rates each item by what equipping it would do to your whole character, set bonuses and moved augments included: Upgrade (better overall, with the % change), Sidegrade (better at something but not overall) or Worse. Select an item to see the change in Offense, Defense, Sustain, Resources and Economy. Salvage all worse keeps set pieces unless you tick include set pieces."
     ],
     "bullets": [
       "Gear can boost several stats — more on higher rarities (1 on common, 2 on uncommon and rare, 3 on epic and above).",

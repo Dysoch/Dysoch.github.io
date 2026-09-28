@@ -468,21 +468,128 @@ export function compareGear(item: GearItem, other: GearItem | null): GearStatDef
 
 export type GearVerdict = 'upgrade' | 'sidegrade' | 'worse' | 'emptySlot'
 
-/** How an inventory item compares to what's worn in its slot, on raw item stats (augments and set bonuses aside). */
-export function gearVerdict(state: SimState, item: GearItem): GearVerdict {
-  const equipped = state.gear[getGearCatalogItem(item.catalogId).slot]
-  if (!equipped) return 'emptySlot'
-  const deltas = compareGear(item, equipped)
-  const better = deltas.some((d) => d.value > 0)
-  const worse = deltas.some((d) => d.value < 0)
-  if (better && !worse) return 'upgrade'
-  if (better && worse) return 'sidegrade'
-  return 'worse'
+const TRINKET_SLOTS: GearSlot[] = ['trinket1', 'trinket2']
+
+/** Equip slots an item fits: a trinket goes in either trinket slot, everything else only in its own. */
+export function equipSlotsFor(catalogId: string): GearSlot[] {
+  const slot = getGearCatalogItem(catalogId).slot
+  return TRINKET_SLOTS.includes(slot) ? TRINKET_SLOTS : [slot]
 }
 
-/** Inventory items safe to bulk-salvage: strictly worse than what's worn, with no augments socketed. */
-export function listWorseItems(state: SimState): GearItem[] {
-  return state.inventory.filter((i) => i.augmentIds.length === 0 && gearVerdict(state, i) === 'worse')
+/**
+ * The state with `item` worn in `slot`. Whatever it replaces goes back to the inventory, and that item's
+ * augments move over into the newcomer's open augment slots — augments are learned, not consumed, so
+ * moving them costs nothing and a swap never silently drops them.
+ */
+function withItemEquipped(state: SimState, item: GearItem, slot: GearSlot): SimState {
+  const previous = state.gear[slot]
+  let incoming = item
+  let outgoing = previous
+  if (previous && previous.augmentIds.length > 0) {
+    const room = getRarityDef(getGearCatalogItem(item.catalogId).rarity).augmentSlots - item.augmentIds.length
+    const moving = previous.augmentIds.filter((id) => !item.augmentIds.includes(id)).slice(0, Math.max(0, room))
+    incoming = { ...item, augmentIds: [...item.augmentIds, ...moving] }
+    outgoing = { ...previous, augmentIds: previous.augmentIds.filter((id) => !moving.includes(id)) }
+  }
+  const inventory = state.inventory.filter((i) => i.instanceId !== item.instanceId)
+  return { ...state, gear: { ...state.gear, [slot]: incoming }, inventory: outgoing ? [...inventory, outgoing] : inventory }
+}
+
+export type LoadoutAspect = 'offense' | 'defense' | 'sustain' | 'resources' | 'economy'
+
+/** How much each aspect counts toward an item's overall score (sums to 1). Fighting power dominates. */
+const LOADOUT_WEIGHTS: Record<LoadoutAspect, number> = { offense: 0.4, defense: 0.25, sustain: 0.1, resources: 0.1, economy: 0.15 }
+export const LOADOUT_ASPECTS = Object.keys(LOADOUT_WEIGHTS) as LoadoutAspect[]
+
+/**
+ * What the worn loadout is worth per aspect (each higher-is-better), through the real combat formulas —
+ * so trained stats, set bonuses, augments and perks all count, and a stat is valued by what it actually
+ * does for this character. Temporary ability buffs are left out so a comparison doesn't flicker with them.
+ */
+export function computeLoadoutScore(state: SimState): Record<LoadoutAspect, number> {
+  const s = state.activeBuffs.length > 0 ? { ...state, activeBuffs: [] } : state
+  // Physical vs magic power weighted by where the ability ranks went
+  let physicalRanks = 0
+  let spellRanks = 0
+  for (const def of ABILITIES) {
+    const rank = s.abilities[def.id]?.rank ?? 0
+    if (def.type === 'physical') physicalRanks += rank
+    else spellRanks += rank
+  }
+  const physicalShare = physicalRanks + spellRanks > 0 ? physicalRanks / (physicalRanks + spellRanks) : 0.5
+  const power = physicalShare * computePhysicalPower(s) + (1 - physicalShare) * computeMagicPower(s)
+  const critFactor = 1 + computeCritChance(s) * (computeCritMultiplier(s) - 1)
+  const speed = computeEffectiveStat(s, 'speed') + gearBonusForStat(s, 'speed') + perkBonus(s, 'speed')
+  return {
+    offense: power * critFactor * (1 + speed * SPEED_COOLDOWN_FACTOR),
+    // Effective HP: how much raw monster damage it takes to empty the HP bar (Grit and Resistance both shrink hits)
+    defense: computeHpCap(s) / computeIncomingDamage(s, 1),
+    // Share of max HP restored per second, counting Life Steal as roughly one ability hit per second
+    sustain: HP_REGEN_PCT_PER_SEC * computeRegenMultiplier(s) + computeLifeStealPct(s),
+    resources: computeStaminaCap(s) + computeManaCap(s),
+    economy: focusGainMultiplier(s) * (1 + computeFortune(s) * 0.02) * computeMaterialFindMultiplier(s),
+  }
+}
+
+export interface GearComparison {
+  /** The slot this comparison is for (the better trinket slot, for a trinket). */
+  slot: GearSlot
+  verdict: GearVerdict
+  /** Relative change per aspect if equipped (0.05 = +5%). */
+  aspects: Record<LoadoutAspect, number>
+  /** Weighted overall change (0.05 = +5%). */
+  net: number
+  /** Worn-piece counts of every set the swap changes. */
+  setChanges: { setId: string; before: number; after: number }[]
+}
+
+const VERDICT_EPSILON = 1e-4
+
+function compareInSlot(state: SimState, item: GearItem, slot: GearSlot, base: Record<LoadoutAspect, number>): GearComparison {
+  const swapped = withItemEquipped(state, item, slot)
+  const after = computeLoadoutScore(swapped)
+  const aspects = Object.fromEntries(LOADOUT_ASPECTS.map((k) => [k, base[k] > 0 ? after[k] / base[k] - 1 : 0])) as Record<LoadoutAspect, number>
+  // Geometric weighting, so a +10% / -10% trade doesn't read as a wash
+  const net = Math.exp(LOADOUT_ASPECTS.reduce((sum, k) => sum + LOADOUT_WEIGHTS[k] * Math.log(1 + aspects[k]), 0)) - 1
+  const verdict: GearVerdict = !state.gear[slot]
+    ? 'emptySlot'
+    : net > VERDICT_EPSILON
+      ? 'upgrade'
+      : LOADOUT_ASPECTS.some((k) => aspects[k] > VERDICT_EPSILON)
+        ? 'sidegrade'
+        : 'worse'
+  const countsBefore = computeEquippedSetCounts(state)
+  const countsAfter = computeEquippedSetCounts(swapped)
+  const setChanges = [...new Set([...Object.keys(countsBefore), ...Object.keys(countsAfter)])]
+    .filter((id) => (countsBefore[id] ?? 0) !== (countsAfter[id] ?? 0))
+    .map((setId) => ({ setId, before: countsBefore[setId] ?? 0, after: countsAfter[setId] ?? 0 }))
+  return { slot, verdict, aspects, net, setChanges }
+}
+
+/**
+ * How equipping an item would change the whole loadout — set bonuses gained or broken, and augments moved
+ * over, included. Without `slot`, uses the slot it fits best (an empty trinket slot first, else whichever
+ * trinket it improves most). Pass `base` (computeLoadoutScore) when comparing many items at once.
+ */
+export function compareToEquipped(state: SimState, item: GearItem, base: Record<LoadoutAspect, number> = computeLoadoutScore(state), slot?: GearSlot): GearComparison {
+  const slots = slot ? [slot] : equipSlotsFor(item.catalogId)
+  const options = slots.map((s) => compareInSlot(state, item, s, base))
+  return options.find((o) => o.verdict === 'emptySlot') ?? options.reduce((best, o) => (o.net > best.net ? o : best))
+}
+
+export function gearVerdict(state: SimState, item: GearItem): GearVerdict {
+  return compareToEquipped(state, item).verdict
+}
+
+/**
+ * Inventory items safe to bulk-salvage: equipping them would improve nothing. Set pieces are kept unless
+ * asked for — one that's worse today can complete a set bonus later.
+ */
+export function listWorseItems(state: SimState, includeSetPieces: boolean = false): GearItem[] {
+  const base = computeLoadoutScore(state)
+  return state.inventory.filter(
+    (i) => (includeSetPieces || !getGearCatalogItem(i.catalogId).setId) && compareToEquipped(state, i, base).verdict === 'worse',
+  )
 }
 
 const CAP_LABELS: Record<string, string> = {
@@ -756,11 +863,16 @@ export function computeSalvageValue(item: GearItem): number {
   return Math.max(1, Math.round(totalValue * item.level * (rarityWeight[catalogDef.rarity] ?? 1)))
 }
 
+/** What salvaging `count` copies of an item pays out. Pending (unfused) levels count toward its value. */
+export function computeSalvageYield(item: GearItem, count: number = 1): { focus: number; materialId: string; materials: number } {
+  const focus = computeSalvageValue({ ...item, level: item.level + (item.pendingLevels ?? 0) }) * count
+  const materialId = SLOT_MATERIALS[getGearCatalogItem(item.catalogId).slot][0]
+  return { focus, materialId, materials: Math.max(1, Math.round(focus / materialsData.salvageMaterialDivisor)) }
+}
+
 /** Credits the Focus and materials for salvaging `count` copies of an item (the caller removes the item itself, if any). */
 function creditSalvage(state: SimState, item: GearItem, now: number, count: number = 1): { state: SimState; event: CombatEvent } {
-  const focusGained = computeSalvageValue(item) * count
-  const materialId = SLOT_MATERIALS[getGearCatalogItem(item.catalogId).slot][0]
-  const materialsGained = Math.max(1, Math.round(focusGained / materialsData.salvageMaterialDivisor))
+  const { focus: focusGained, materialId, materials: materialsGained } = computeSalvageYield(item, count)
   const next = {
     ...state,
     focus: state.focus + focusGained,
@@ -773,9 +885,7 @@ function creditSalvage(state: SimState, item: GearItem, now: number, count: numb
 export function salvageItem(state: SimState, instanceId: string): { state: SimState; event: CombatEvent | null } {
   const item = state.inventory.find((i) => i.instanceId === instanceId)
   if (!item) return { state, event: null }
-  // Pending (unfused) levels still count toward the item's value
-  const valued = { ...item, level: item.level + (item.pendingLevels ?? 0) }
-  return creditSalvage({ ...state, inventory: state.inventory.filter((i) => i.instanceId !== instanceId) }, valued, Date.now())
+  return creditSalvage({ ...state, inventory: state.inventory.filter((i) => i.instanceId !== instanceId) }, item, Date.now())
 }
 
 /** Salvages several inventory items at once (e.g. "salvage everything worse than equipped"). */
@@ -1708,17 +1818,12 @@ export function upgradeAbility(state: SimState, abilityId: string, count: number
   }, 'focusSpent', cost)
 }
 
-export function equipItem(state: SimState, instanceId: string): SimState {
+/** Equips an inventory item into `slot`, or into the slot it fits best (see compareToEquipped) when none is given or it doesn't fit there. */
+export function equipItem(state: SimState, instanceId: string, slot?: GearSlot): SimState {
   const item = state.inventory.find((i) => i.instanceId === instanceId)
   if (!item) return state
-  const slot = getGearCatalogItem(item.catalogId).slot
-  const previous = state.gear[slot]
-  const inventory = state.inventory.filter((i) => i.instanceId !== instanceId)
-  return {
-    ...state,
-    gear: { ...state.gear, [slot]: item },
-    inventory: previous ? [...inventory, previous] : inventory,
-  }
+  const target = slot && equipSlotsFor(item.catalogId).includes(slot) ? slot : compareToEquipped(state, item).slot
+  return withItemEquipped(state, item, target)
 }
 
 export function unequipItem(state: SimState, slot: GearSlot): SimState {
@@ -1744,6 +1849,16 @@ export function socketAugment(state: SimState, instanceId: string, augmentId: st
   ) as SimState['gear']
   const inventory = state.inventory.map(applyTo)
   return { ...state, gear, inventory }
+}
+
+/** Removes an augment from an item. Free: the augment stays learned and can be socketed again anywhere. */
+export function unsocketAugment(state: SimState, instanceId: string, augmentId: string): SimState {
+  const applyTo = (item: GearItem): GearItem =>
+    item.instanceId === instanceId ? { ...item, augmentIds: item.augmentIds.filter((id) => id !== augmentId) } : item
+  const gear = Object.fromEntries(
+    Object.entries(state.gear).map(([slot, item]) => [slot, item ? applyTo(item) : item]),
+  ) as SimState['gear']
+  return { ...state, gear, inventory: state.inventory.map(applyTo) }
 }
 
 export function selectZone(state: SimState, zoneId: string): SimState {

@@ -68,10 +68,15 @@ import {
   computeEchoRatePerHour,
   overflowSalvagedKey,
   getGearCatalogItem,
+  computeSalvageYield,
+  compareToEquipped,
+  equipItem,
+  equipSlotsFor,
+  unsocketAugment,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
-import type { AbilityDef, GearCatalogItemDef, PerkEffect, RarityDef, SimState } from '../types'
+import type { AbilityDef, GearCatalogItemDef, GearItem, PerkEffect, RarityDef, SimState } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
 
@@ -895,18 +900,87 @@ describe('duplicate handling (keep / auto-salvage / gated auto-fuse)', () => {
 })
 
 describe('bulk salvage', () => {
-  test('only strictly-worse, un-augmented items are listed', () => {
-    const base = createInitialState()
+  const item = (instanceId: string, catalogId: string, level: number, augmentIds: string[] = []): GearItem => ({ instanceId, catalogId, level, augmentIds })
+  const base = createInitialState()
+  const state: SimState = {
+    ...base,
+    learnedAugmentIds: ['aug_might'],
+    gear: { ...base.gear, weapon: item('eq', 'woods_warden_fang', 100), trinket1: item('t1', 'lucky_charm', 50), trinket2: item('t2', 'tattered_pouch', 50) },
+    inventory: [
+      item('worse', 'woods_warden_fang', 1),
+      // Augments are learned, not lost on salvage, so they no longer protect an item
+      item('augmented', 'woods_warden_fang', 1, ['aug_might']),
+      item('setPiece', 'vanguard_sword', 1),
+      item('trinket', 'lucky_charm', 1),
+      item('otherSlot', 'vanguard_boots', 1),
+    ],
+  }
+
+  test('lists items that would improve nothing, keeping set pieces unless asked', () => {
+    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'trinket'])
+    expect(listWorseItems(state, true).map((i) => i.instanceId)).toEqual(['worse', 'augmented', 'setPiece', 'trinket'])
+  })
+
+  test('the salvage preview matches what salvaging pays', () => {
+    const preview = computeSalvageYield(state.inventory[0])
+    const after = salvageItem(state, 'worse').state
+    expect(after.focus - state.focus).toBe(preview.focus)
+    expect((after.materials[preview.materialId] ?? 0) - (state.materials[preview.materialId] ?? 0)).toBe(preview.materials)
+  })
+})
+
+describe('loadout-aware gear comparison (regression: the Upgrade badge ignored set bonuses and augments, and trinkets were locked to one of the two trinket slots)', () => {
+  const item = (instanceId: string, catalogId: string, level: number, augmentIds: string[] = []): GearItem => ({ instanceId, catalogId, level, augmentIds })
+  const base = createInitialState()
+
+  test('a trinket fits either trinket slot, preferring an empty one', () => {
+    const state: SimState = { ...base, gear: { ...base.gear, trinket1: item('t1', 'lucky_charm', 50) }, inventory: [item('charm', 'vanguard_charm', 1)] }
+    expect(equipSlotsFor('vanguard_charm')).toEqual(['trinket1', 'trinket2'])
+    expect(compareToEquipped(state, state.inventory[0])).toMatchObject({ slot: 'trinket2', verdict: 'emptySlot' })
+    const auto = equipItem(state, 'charm')
+    expect(auto.gear.trinket2?.instanceId).toBe('charm')
+    expect(auto.gear.trinket1?.instanceId).toBe('t1')
+    const chosen = equipItem(state, 'charm', 'trinket1')
+    expect(chosen.gear.trinket1?.instanceId).toBe('charm')
+    expect(chosen.inventory.map((i) => i.instanceId)).toEqual(['t1'])
+    // A slot the item doesn't fit is ignored
+    expect(equipItem(state, 'charm', 'weapon').gear.weapon).toBeNull()
+  })
+
+  test('breaking a set bonus counts against an item', () => {
+    // Two Vanguard pieces give +3 Might; the pouch has no Might itself, so only the lost set bonus can cost offense
     const state: SimState = {
       ...base,
-      gear: { ...base.gear, weapon: { instanceId: 'eq', catalogId: 'vanguard_sword', level: 50, augmentIds: [] } },
-      inventory: [
-        { instanceId: 'worse', catalogId: 'vanguard_sword', level: 1, augmentIds: [] },
-        { instanceId: 'augmented', catalogId: 'vanguard_sword', level: 1, augmentIds: ['x'] },
-        { instanceId: 'otherSlot', catalogId: 'vanguard_boots', level: 1, augmentIds: [] },
-      ],
+      gear: { ...base.gear, trinket1: item('charm', 'vanguard_charm', 1), trinket2: item('banner', 'vanguard_banner', 1) },
+      inventory: [item('pouch', 'tattered_pouch', 1)],
     }
-    expect(listWorseItems(state).map((i) => i.instanceId)).toEqual(['worse'])
+    const comparison = compareToEquipped(state, state.inventory[0])
+    expect(comparison.setChanges).toEqual([{ setId: 'woodland_vanguard', before: 2, after: 1 }])
+    expect(comparison.aspects.offense).toBeLessThan(0)
+    expect(comparison.aspects.economy).toBeGreaterThan(0)
+  })
+
+  test('equipping a replacement moves the old item\'s augments over, and they count in the comparison', () => {
+    const state: SimState = {
+      ...base,
+      learnedAugmentIds: ['aug_might'],
+      augmentRanks: {},
+      gear: { ...base.gear, weapon: item('old', 'woods_warden_fang', 1, ['aug_might']) },
+      inventory: [item('new', 'zealot_blade', 1)],
+    }
+    const after = equipItem(state, 'new')
+    expect(after.gear.weapon?.augmentIds).toEqual(['aug_might'])
+    expect(after.inventory.find((i) => i.instanceId === 'old')?.augmentIds).toEqual([])
+    // Same new weapon, but with nowhere to move the augment from: the gain is smaller
+    const withoutAugment = { ...state, gear: { ...state.gear, weapon: item('old', 'woods_warden_fang', 1) } }
+    expect(compareToEquipped(state, state.inventory[0]).aspects.offense).toBeGreaterThan(compareToEquipped(withoutAugment, state.inventory[0]).aspects.offense)
+  })
+
+  test('augments can be removed for free', () => {
+    const state: SimState = { ...base, learnedAugmentIds: ['aug_might'], gear: { ...base.gear, weapon: item('w', 'woods_warden_fang', 1, ['aug_might']) } }
+    const after = unsocketAugment(state, 'w', 'aug_might')
+    expect(after.gear.weapon?.augmentIds).toEqual([])
+    expect(after.learnedAugmentIds).toEqual(['aug_might'])
   })
 })
 

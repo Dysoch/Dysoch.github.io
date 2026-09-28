@@ -288,6 +288,166 @@ a {
   }
 }
 
+/* Inventory: compact lists on the left, one detail panel for the selected item on the right */
+.inv-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 16px;
+  align-items: start;
+}
+
+.inv-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.inv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inv-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+}
+
+.inv-row:hover {
+  background: var(--panel-alt);
+}
+
+.inv-row.selected {
+  background: var(--panel-alt);
+  border-color: var(--accent);
+}
+
+.inv-row-slot {
+  flex: 0 0 76px;
+  color: var(--text-dim);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.inv-row-verdict {
+  flex: 0 0 84px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.inv-row-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.inv-row-meta {
+  color: var(--text-dim);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.inv-row-kind {
+  flex: 0 0 64px;
+  text-align: right;
+}
+
+.inv-row-badge {
+  color: var(--hp);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.inv-detail {
+  position: sticky;
+  top: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+}
+
+.inv-detail-close {
+  display: none;
+  align-self: flex-end;
+  margin-bottom: -28px;
+}
+
+.detail-section {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-label {
+  color: var(--text-dim);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.aspect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 2px 10px;
+  font-size: 12.5px;
+}
+
+@media (max-width: 900px) {
+  .inv-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Narrow screens: the detail panel becomes a bottom sheet, shown only once something is tapped */
+  .inv-detail {
+    display: none;
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1040;
+    max-height: 65vh;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .inv-detail.open {
+    display: flex;
+  }
+
+  .inv-detail-close {
+    display: block !important;
+  }
+
+  .inv-row-slot {
+    flex-basis: 64px;
+  }
+
+  .inv-row-kind {
+    display: none;
+  }
+}
+
 .set-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

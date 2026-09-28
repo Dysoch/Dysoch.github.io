@@ -1,5 +1,19 @@
 [
   {
+    "version": "0.1.5",
+    "date": "2026-09-28",
+    "changes": [
+      "Inventory redesign: equipped gear and your inventory are compact lists, and selecting an item shows everything about it in one panel: stats, what equipping it would change, augments, fusing, reforging and salvage. On phones the panel opens from the bottom.",
+      "Upgrade / Sidegrade / Worse now judge your whole character, not just the item's own numbers. Set bonuses gained or broken and augments count, and each stat is valued by what it actually does for you. Items show the overall % change, and the panel breaks it down into Offense, Defense, Sustain, Resources and Economy.",
+      "Each equipped slot shows how many items in your inventory would improve it, and selecting a slot lists every candidate with an Equip button.",
+      "Trinkets now fit either trinket slot. Pick the slot yourself, or let Equip choose the better one.",
+      "Augments can be removed for free, and equipping a replacement moves the old item's augments over automatically.",
+      "Salvage buttons now show what you'll get, and single salvage asks for confirmation. Salvage all worse keeps set pieces unless you tick include set pieces.",
+      "Inventory can be searched, sorted (best first, rarity, level, name) and filtered to hide worse items.",
+      "Crafting cards say whether the piece would be an upgrade over what you wear, and Imbue has moved to its own tab on the Crafting page."
+    ]
+  },
+  {
     "version": "0.1.4",
     "date": "2026-09-25",
     "changes": [
