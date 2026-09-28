@@ -225,7 +225,8 @@ function ReforgeSection({ item, state, onReforge }: { item: GearItem; state: Sim
       </div>
       {depthReq && (
         <div className="small" style={{ color: depthMet ? 'var(--text-dim)' : missing }}>
-          {depthMet ? '✓ ' : ''}Needs depth {formatNumber(depthReq.depth)} in {getZoneDef(depthReq.zoneId).name}
+          {/* A zone the player hasn't unlocked stays unnamed, like everywhere else */}
+          {depthMet ? '✓ ' : ''}Needs depth {formatNumber(depthReq.depth)} in {state.unlockedZoneIds.includes(depthReq.zoneId) ? getZoneDef(depthReq.zoneId).name : '?????'}
           {!depthMet && ` (your deepest: ${formatNumber(depthReached)})`}
         </div>
       )}

@@ -4,10 +4,14 @@
   "version": "0.1.5",
   "type": "module",
   "scripts": {
+    "sync-version": "node scripts/sync-version.mjs",
+    "predev": "node scripts/sync-version.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/sync-version.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "pretest": "node scripts/sync-version.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "sim": "tsx scripts/simulate.ts"

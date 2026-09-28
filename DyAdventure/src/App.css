@@ -102,6 +102,37 @@ a {
   width: 130px;
 }
 
+/* Narrow screens: name and chips on top, the three bars share a full-width row underneath */
+@media (max-width: 760px) {
+  .hud-header {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    padding: 10px 16px;
+  }
+
+  .hud-divider {
+    display: none;
+  }
+
+  .hud-chips {
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  .hud-bars {
+    order: 3;
+    flex-basis: 100%;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+
+  .hud-bars .hud-bar {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+  }
+}
+
 .hud-bar-label {
   display: flex;
   justify-content: space-between;

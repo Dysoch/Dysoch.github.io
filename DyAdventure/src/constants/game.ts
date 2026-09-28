@@ -1,5 +1,9 @@
+import changelog from '../content/changelog.json'
+
 export const APP_NAME = 'DyAdventure'
-export const APP_VERSION = '0.1.5'
+
+/** The newest changelog entry is the version (scripts/sync-version.mjs copies it into package.json). */
+export const APP_VERSION = changelog[0].version
 
 export const TICK_MS = 100
 export const STATE_SYNC_MS = 250
