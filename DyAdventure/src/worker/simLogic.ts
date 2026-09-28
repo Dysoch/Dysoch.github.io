@@ -1593,6 +1593,27 @@ export function migrateSave<T extends SimState>(state: T): T {
   return next
 }
 
+/**
+ * Decodes an exported save string (base64 JSON, see the store's exportSave) into a migrated
+ * SimState, or null if it isn't one. Shared by the in-game import and the simulator's --load-save.
+ */
+export function decodeSaveString(data: string): SimState | null {
+  try {
+    const parsed = JSON.parse(atob(data.trim()))
+    if (typeof parsed !== 'object' || parsed === null) return null
+    if (typeof parsed.saveVersion !== 'number' || typeof parsed.focus !== 'number') return null
+    // Exports from before discovery tracking lack this field
+    if (!Array.isArray(parsed.discoveredItemIds)) parsed.discoveredItemIds = []
+    if (typeof parsed.maxDepthByZone !== 'object' || parsed.maxDepthByZone === null) {
+      parsed.maxDepthByZone = { [parsed.currentZoneId]: parsed.currentDepth }
+    }
+    // statLevels/automation left undefined for older saves, so migrateSave fills them from the save instead of fresh defaults
+    return migrateSave({ ...createInitialState(), statLevels: undefined, automation: undefined, ...parsed } as unknown as SimState)
+  } catch {
+    return null
+  }
+}
+
 // --- Automation ---------------------------------------------------------------------------------
 
 const AUTOMATION_UNLOCKS = automationData.unlockRecalls as Record<AutomationFeature, number>

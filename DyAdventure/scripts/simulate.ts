@@ -23,6 +23,11 @@
  *   npm run sim -- --hours 50 --auto-zone --load-state ./checkpoints/ember_caverns.json
  *                                             # resumes right after ember_caverns unlocked, to
  *                                             # tune just the ember_caverns -> frostbound_peaks gap
+ *
+ * Real saves — --load-save resumes from a string exported via Settings → Export (base64), run
+ * through the same decode/migration as the in-game import. Pass a file containing the string
+ * (Windows caps a command line at ~32k chars, so prefer a file) or the string itself:
+ *   npm run sim -- --hours 5 --auto-zone --load-save ./saves/mysave.txt
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -58,6 +63,7 @@ import {
   isAutomationUnlocked,
   getMilestone,
   describeMilestoneReward,
+  decodeSaveString,
 } from '../src/worker/simLogic.ts'
 import statsData from '../src/content/stats.json' with { type: 'json' }
 import abilitiesData from '../src/content/abilities.json' with { type: 'json' }
@@ -75,6 +81,7 @@ function parseArgs(): {
   autoZone: boolean
   checkpointDir: string | null
   loadState: string | null
+  loadSave: string | null
   automation: boolean
 } {
   const args = process.argv.slice(2)
@@ -85,6 +92,7 @@ function parseArgs(): {
   let autoZone = false
   let checkpointDir: string | null = null
   let loadState: string | null = null
+  let loadSave: string | null = null
   let automation = false
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
@@ -94,9 +102,10 @@ function parseArgs(): {
     if (args[i] === '--auto-zone') autoZone = true
     if (args[i] === '--checkpoint-dir') checkpointDir = args[++i]
     if (args[i] === '--load-state') loadState = args[++i]
+    if (args[i] === '--load-save') loadSave = args[++i]
     if (args[i] === '--automation') automation = true
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, automation }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation }
 }
 
 const {
@@ -107,6 +116,7 @@ const {
   autoZone: AUTO_ZONE,
   checkpointDir: CHECKPOINT_DIR,
   loadState: LOAD_STATE_PATH,
+  loadSave: LOAD_SAVE,
   automation: USE_AUTOMATION,
 } = parseArgs()
 if (CHECKPOINT_DIR) fs.mkdirSync(CHECKPOINT_DIR, { recursive: true })
@@ -125,7 +135,20 @@ const ASCEND_ECHOES_MULTIPLIER = 5
 // Cap the printed depth table at ~200 rows regardless of run length, so long horizons stay readable.
 const SNAPSHOT_INTERVAL_MIN = Math.max(5, Math.ceil((SIM_HOURS * 60) / 200))
 
-let state: SimState = LOAD_STATE_PATH ? JSON.parse(fs.readFileSync(LOAD_STATE_PATH, 'utf8')) : createInitialState()
+function loadInitialState(): SimState {
+  if (LOAD_SAVE) {
+    const saveString = fs.existsSync(LOAD_SAVE) ? fs.readFileSync(LOAD_SAVE, 'utf8') : LOAD_SAVE
+    const decoded = decodeSaveString(saveString)
+    if (!decoded) {
+      console.error(`--load-save: not a valid exported save (${fs.existsSync(LOAD_SAVE) ? 'file ' + LOAD_SAVE : 'inline string'})`)
+      process.exit(1)
+    }
+    return decoded
+  }
+  if (LOAD_STATE_PATH) return JSON.parse(fs.readFileSync(LOAD_STATE_PATH, 'utf8'))
+  return createInitialState()
+}
+let state: SimState = loadInitialState()
 let now = Date.now()
 let msSinceDecision = 0
 let firstDepth51At: number | null = null

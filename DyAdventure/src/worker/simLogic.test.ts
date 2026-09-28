@@ -44,6 +44,7 @@ import {
   getZoneDef,
   trainStat,
   migrateSave,
+  decodeSaveString,
   computeFuseRate,
   getTierChain,
   fuseAll,
@@ -750,6 +751,25 @@ describe('training cost (regression: cost was driven by the stat value, so every
     expect(migrated.statLevels.might).toBe(20) // 40 value / ×2 gain
     expect(migrated.statLevels.grit).toBe(0)
     expect(migrateSave(migrated)).toBe(migrated)
+  })
+
+  test('decodeSaveString round-trips an exported save and migrates older ones', () => {
+    const base = { ...createInitialState(), focus: 1234, currentDepth: 17 }
+    const decoded = decodeSaveString(btoa(JSON.stringify(base)))
+    expect(decoded?.focus).toBe(1234)
+    expect(decoded?.currentDepth).toBe(17)
+
+    const legacy: Partial<SimState> = { ...base }
+    delete legacy.statLevels
+    delete legacy.automation
+    delete legacy.discoveredItemIds
+    const migrated = decodeSaveString(btoa(JSON.stringify(legacy)))
+    expect(migrated?.statLevels).toBeDefined()
+    expect(migrated?.automation).toBeDefined()
+    expect(migrated?.discoveredItemIds).toEqual([])
+
+    expect(decodeSaveString('not base64 at all!')).toBeNull()
+    expect(decodeSaveString(btoa(JSON.stringify({ hello: 1 })))).toBeNull()
   })
 })
 

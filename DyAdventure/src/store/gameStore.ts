@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 import { SAVE_DEBOUNCE_MS, SAVE_VERSION, STORAGE_KEY } from '../constants'
-import { createInitialState, migrateSave } from '../worker/simLogic'
+import { createInitialState, decodeSaveString, migrateSave } from '../worker/simLogic'
 import type {
   AutomationSettings,
   CombatEvent,
@@ -130,22 +130,11 @@ export const useGameStore = create<GameStore>()(
       exportSave: () => btoa(JSON.stringify(omitUiFields(get()))),
 
       importSave: (data) => {
-        try {
-          const parsed = JSON.parse(atob(data))
-          if (typeof parsed !== 'object' || parsed === null) return false
-          if (typeof parsed.saveVersion !== 'number' || typeof parsed.focus !== 'number') return false
-          // Exports from before discovery tracking lack this field
-          if (!Array.isArray(parsed.discoveredItemIds)) parsed.discoveredItemIds = []
-          if (typeof parsed.maxDepthByZone !== 'object' || parsed.maxDepthByZone === null) {
-            parsed.maxDepthByZone = { [parsed.currentZoneId]: parsed.currentDepth }
-          }
-          const merged = migrateSave({ ...createInitialState(), statLevels: undefined, automation: undefined, ...parsed } as unknown as SimState)
-          set(merged)
-          post({ type: 'IMPORT_SAVE', state: merged })
-          return true
-        } catch {
-          return false
-        }
+        const merged = decodeSaveString(data)
+        if (!merged) return false
+        set(merged)
+        post({ type: 'IMPORT_SAVE', state: merged })
+        return true
       },
 
       resetGame: () => {
