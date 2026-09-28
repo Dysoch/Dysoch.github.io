@@ -33,6 +33,10 @@
  * on the Automation page (same weights: weight 0 is skipped, weight 3 gets three turns per weight-1 turn),
  * and with --automation the autobuyers get those weights too. Without it the bot trains everything evenly.
  *   npm run sim -- --hours 30 --auto-zone --preset physical
+ *
+ * Goals — --until <zoneId>:<depth> stops the run as soon as that depth is reached in that zone and reports
+ * the time, so --hours is only a cap. Beating Frostbound's first floor (i.e. reaching depth 2 there):
+ *   npm run sim -- --hours 400 --auto-zone --preset arcane --until frostbound_peaks:2
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -92,6 +96,7 @@ function parseArgs(): {
   loadSave: string | null
   automation: boolean
   preset: string | null
+  until: { zoneId: string; depth: number } | null
 } {
   const args = process.argv.slice(2)
   let hours = 6
@@ -104,6 +109,7 @@ function parseArgs(): {
   let loadSave: string | null = null
   let automation = false
   let preset: string | null = null
+  let until: { zoneId: string; depth: number } | null = null
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
@@ -115,8 +121,12 @@ function parseArgs(): {
     if (args[i] === '--load-save') loadSave = args[++i]
     if (args[i] === '--automation') automation = true
     if (args[i] === '--preset') preset = args[++i]
+    if (args[i] === '--until') {
+      const [zoneId, depth] = args[++i].split(':')
+      until = { zoneId, depth: Number(depth ?? 1) }
+    }
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation, preset }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation, preset, until }
 }
 
 const {
@@ -130,6 +140,7 @@ const {
   loadSave: LOAD_SAVE,
   automation: USE_AUTOMATION,
   preset: PRESET_ID,
+  until: UNTIL,
 } = parseArgs()
 if (CHECKPOINT_DIR) fs.mkdirSync(CHECKPOINT_DIR, { recursive: true })
 const STATS = statsData as StatDef[]
@@ -305,6 +316,9 @@ console.log(`Simulating ${SIM_HOURS}h, recall policy: ${RECALL_POLICY}, ascend p
 
 let lastMinuteLogged = -1
 
+let goalReachedAt: number | null = null
+let simulatedMs = TOTAL_MS
+
 for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
   const result = advanceTick(state, TICK_MS, now)
   state = result.state
@@ -407,6 +421,12 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
   }
 
   const reachedDepth = state.lifetime['deepest_' + state.currentZoneId] ?? 0
+  if (UNTIL && (state.lifetime['deepest_' + UNTIL.zoneId] ?? 0) >= UNTIL.depth) {
+    goalReachedAt = t
+    simulatedMs = t
+    process.stderr.write(`[goal] ${UNTIL.zoneId} depth ${UNTIL.depth} reached at ${(t / 60000).toFixed(0)} min\n`)
+    break
+  }
   if (firstDepth51At === null && reachedDepth >= 51) {
     firstDepth51At = t
     console.log(`*** First reached depth 51 at t=${(t / 60000).toFixed(1)} minutes ***\n`)
@@ -485,7 +505,7 @@ for (const zone of ZONES) {
     if (defeat) {
       console.log(`${zone.id}\t${depth}\tdefeated\t${reachedAt ?? '?'}\t${defeat.minutesStuck}\t${defeat.faints}`)
     } else if (reachedAt !== undefined) {
-      const stuckFor = Math.round(TOTAL_MS / 60000) - reachedAt
+      const stuckFor = Math.round(simulatedMs / 60000) - reachedAt
       console.log(`${zone.id}\t${depth}\tSTUCK (not defeated by end of run)\t${reachedAt}\t${stuckFor}\t${bossFaintCounts[key] ?? 0}`)
       break // deeper bosses in this zone were never reached
     } else {
@@ -529,3 +549,6 @@ for (const zone of ZONES) {
 }
 console.log(`Time to depth 51: ${firstDepth51At !== null ? (firstDepth51At / 60000).toFixed(1) + ' minutes' : 'NOT REACHED in ' + SIM_HOURS + 'h'}`)
 console.log(`Time to first Ascend: ${firstAscendAt !== null ? (firstAscendAt / 60000).toFixed(1) + ' minutes' : 'NOT REACHED in ' + SIM_HOURS + 'h'}`)
+if (UNTIL) {
+  console.log(`Goal ${UNTIL.zoneId} depth ${UNTIL.depth}: ${goalReachedAt !== null ? `reached at ${(goalReachedAt / 60000).toFixed(0)} minutes (${(goalReachedAt / 3600000).toFixed(1)}h)` : `NOT REACHED in ${SIM_HOURS}h`}`)
+}
