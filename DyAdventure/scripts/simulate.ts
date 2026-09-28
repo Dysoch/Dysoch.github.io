@@ -28,6 +28,11 @@
  * through the same decode/migration as the in-game import. Pass a file containing the string
  * (Windows caps a command line at ~32k chars, so prefer a file) or the string itself:
  *   npm run sim -- --hours 5 --auto-zone --load-save ./saves/mysave.txt
+ *
+ * Builds — --preset <physical|arcane|hybrid> makes the bot spend like a player who picked that Build preset
+ * on the Automation page (same weights: weight 0 is skipped, weight 3 gets three turns per weight-1 turn),
+ * and with --automation the autobuyers get those weights too. Without it the bot trains everything evenly.
+ *   npm run sim -- --hours 30 --auto-zone --preset physical
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -64,6 +69,8 @@ import {
   isAutomationUnlocked,
   getMilestone,
   describeMilestoneReward,
+  listBuildPresets,
+  buildPresetWeights,
   decodeSaveString,
 } from '../src/worker/simLogic.ts'
 import statsData from '../src/content/stats.json' with { type: 'json' }
@@ -84,6 +91,7 @@ function parseArgs(): {
   loadState: string | null
   loadSave: string | null
   automation: boolean
+  preset: string | null
 } {
   const args = process.argv.slice(2)
   let hours = 6
@@ -95,6 +103,7 @@ function parseArgs(): {
   let loadState: string | null = null
   let loadSave: string | null = null
   let automation = false
+  let preset: string | null = null
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
@@ -105,8 +114,9 @@ function parseArgs(): {
     if (args[i] === '--load-state') loadState = args[++i]
     if (args[i] === '--load-save') loadSave = args[++i]
     if (args[i] === '--automation') automation = true
+    if (args[i] === '--preset') preset = args[++i]
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation, preset }
 }
 
 const {
@@ -119,6 +129,7 @@ const {
   loadState: LOAD_STATE_PATH,
   loadSave: LOAD_SAVE,
   automation: USE_AUTOMATION,
+  preset: PRESET_ID,
 } = parseArgs()
 if (CHECKPOINT_DIR) fs.mkdirSync(CHECKPOINT_DIR, { recursive: true })
 const STATS = statsData as StatDef[]
@@ -190,11 +201,17 @@ function nextBossDepth(zone: ZoneDef, fromDepth: number): number {
   return Math.ceil(fromDepth / zone.bossEvery) * zone.bossEvery
 }
 
-// Round-robin spend targets: unlock/rank up every ability, train every stat, evenly —
-// approximates a diligent player who doesn't neglect any part of the kit.
+// --preset: the weights a player gets from that Build preset on the Automation page
+const PRESET = PRESET_ID ? listBuildPresets().find((p) => p.id === PRESET_ID) : undefined
+if (PRESET_ID && !PRESET) throw new Error(`Unknown --preset "${PRESET_ID}" (use ${listBuildPresets().map((p) => p.id).join(', ')})`)
+const PRESET_WEIGHTS = PRESET ? buildPresetWeights(PRESET) : null
+
+// Round-robin spend targets: unlock/rank up every ability, train every stat — evenly, approximating a
+// diligent player who doesn't neglect any part of the kit, or per the --preset weights (a target with
+// weight 3 appears three times, weight 0 not at all).
 const spendTargets: { kind: 'stat' | 'ability'; id: string }[] = [
-  ...STATS.map((s) => ({ kind: 'stat' as const, id: s.id })),
-  ...ABILITIES.map((a) => ({ kind: 'ability' as const, id: a.id })),
+  ...STATS.flatMap((s) => Array.from({ length: PRESET_WEIGHTS ? PRESET_WEIGHTS.statWeights[s.id] : 1 }, () => ({ kind: 'stat' as const, id: s.id }))),
+  ...ABILITIES.flatMap((a) => Array.from({ length: PRESET_WEIGHTS ? PRESET_WEIGHTS.abilityWeights[a.id] : 1 }, () => ({ kind: 'ability' as const, id: a.id }))),
 ]
 let spendIdx = 0
 
@@ -284,7 +301,7 @@ function spendReforges(minute: number) {
   }
 }
 
-console.log(`Simulating ${SIM_HOURS}h, recall policy: ${RECALL_POLICY}, ascend policy: ${ASCEND_POLICY}\n`)
+console.log(`Simulating ${SIM_HOURS}h, recall policy: ${RECALL_POLICY}, ascend policy: ${ASCEND_POLICY}, build: ${PRESET?.name ?? 'even'}\n`)
 
 let lastMinuteLogged = -1
 
@@ -346,7 +363,7 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
   if (msSinceDecision >= DECISION_INTERVAL_MS) {
     msSinceDecision = 0
     if (USE_AUTOMATION) {
-      state = setAutomation(state, { autoTrain: true, autoAbilities: true, duplicateMode: 'fuse' })
+      state = setAutomation(state, { autoTrain: true, autoAbilities: true, duplicateMode: 'fuse', ...(PRESET_WEIGHTS ?? {}) })
       for (const feature of AUTOMATION_FEATURES) {
         if (automationUnlockedAt[feature] === undefined && isAutomationUnlocked(state, feature)) automationUnlockedAt[feature] = Math.round(t / 60000)
       }
