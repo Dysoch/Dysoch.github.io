@@ -8,6 +8,7 @@ import materialsData from '../content/materials.json'
 import automationData from '../content/automation.json'
 import milestonesData from '../content/milestones.json'
 import balanceData from '../content/balance.json'
+import specsData from '../content/specs.json'
 import {
   BASE_HP_CAP,
   DEPTH_CLEARS_MAX,
@@ -43,6 +44,8 @@ import type {
   RarityDef,
   SetDef,
   SimState,
+  SpecDef,
+  SpecId,
   StatDef,
   StatId,
   ZoneDef,
@@ -51,6 +54,8 @@ import type {
 const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
 const RARITIES = gearData.rarities as RarityDef[]
+/** Rarity order (common = 0), for Collector's Memory */
+const RARITY_INDEX = new Map(RARITIES.map((r, i) => [r.id, i]))
 const GEAR_ITEMS = gearData.items as GearCatalogItemDef[]
 const BALANCE = balanceData
 const SETS = gearData.sets as SetDef[]
@@ -58,6 +63,10 @@ const AUGMENTS = augmentsData as AugmentDef[]
 const ZONES = zonesData as ZoneDef[]
 const PERKS = prestigeData.perks as PerkDef[]
 const MATERIALS = materialsData.materials as MaterialDef[]
+const SPECS = specsData as SpecDef[]
+const SPEC_BY_ID = new Map(SPECS.map((s) => [s.id, s]))
+const STAT_GROUP = new Map<string, string>(STATS.map((s) => [s.id, s.group]))
+const ABILITY_BY_ID = new Map(ABILITIES.map((a) => [a.id, a]))
 const SLOT_MATERIALS = materialsData.slotMaterials as Record<ItemSlot, [string, string]>
 const CRAFT_COSTS = materialsData.craftCostByRarity as Record<string, { materials: number; focus: number }>
 const IMBUE_CONFIG = materialsData.imbue
@@ -94,21 +103,90 @@ const BASE_STAMINA_CAP = 200
 const BASE_MANA_CAP = 200
 const REGEN_PCT_PER_SEC = 0.05
 
+/**
+ * Counter objects created during the current advanceTick, which later counter updates in that same tick may
+ * change in place. The lifetime record has hundreds of keys and a deep-zone tick bumps counters many times,
+ * so copying it on every update was most of the simulation's cost. Nothing outside the tick ever sees these
+ * objects before the tick returns, and a new tick starts a new set, so returned states are never mutated.
+ */
+let tickOwnedCounters: WeakSet<object> | null = null
+
+function writableCounters(counters: Record<string, number>): Record<string, number> {
+  if (tickOwnedCounters?.has(counters)) return counters
+  const copy = { ...counters }
+  tickOwnedCounters?.add(copy)
+  return copy
+}
+
 /** Adds to a statistics counter, both lifetime and for the current run (see the Statistics page). */
 export function addStat(state: SimState, key: string, amount: number): SimState {
-  return {
-    ...state,
-    lifetime: { ...state.lifetime, [key]: (state.lifetime[key] ?? 0) + amount },
-    runStats: { ...state.runStats, [key]: (state.runStats[key] ?? 0) + amount },
-  }
+  const lifetime = writableCounters(state.lifetime)
+  const runStats = writableCounters(state.runStats)
+  lifetime[key] = (lifetime[key] ?? 0) + amount
+  runStats[key] = (runStats[key] ?? 0) + amount
+  return { ...state, lifetime, runStats }
 }
 
 /** Raises a "best" counter (lifetime and current run) if the value is higher. */
 function maxStat(state: SimState, key: string, value: number): SimState {
-  const lifetime = (state.lifetime[key] ?? 0) >= value ? state.lifetime : { ...state.lifetime, [key]: value }
-  const runStats = (state.runStats[key] ?? 0) >= value ? state.runStats : { ...state.runStats, [key]: value }
-  if (lifetime === state.lifetime && runStats === state.runStats) return state
+  const raiseLifetime = (state.lifetime[key] ?? 0) < value
+  const raiseRun = (state.runStats[key] ?? 0) < value
+  if (!raiseLifetime && !raiseRun) return state
+  const lifetime = raiseLifetime ? writableCounters(state.lifetime) : state.lifetime
+  const runStats = raiseRun ? writableCounters(state.runStats) : state.runStats
+  if (raiseLifetime) lifetime[key] = value
+  if (raiseRun) runStats[key] = value
   return { ...state, lifetime, runStats }
+}
+
+// --- Specs ---------------------------------------------------------------------------------------
+
+export function listSpecs(): SpecDef[] {
+  return SPECS
+}
+
+export function getSpecDef(id: SpecId): SpecDef {
+  return SPEC_BY_ID.get(id) ?? SPECS[0]
+}
+
+/** A spec's description with its specialization multiplier filled in. */
+export function describeSpec(spec: SpecDef): string {
+  return spec.description.replace('{bonus}', String(Math.round((1 + BALANCE.specialization.maxBonus) * 100) / 100))
+}
+
+/** Whether the current spec locks a stat/ability group (content/groups.json id). */
+export function isGroupLocked(state: SimState, groupId: string): boolean {
+  return getSpecDef(state.spec).lockedGroups.includes(groupId)
+}
+
+export function isStatLocked(state: SimState, statId: PrimaryStat): boolean {
+  const group = STAT_GROUP.get(statId)
+  return group !== undefined && isGroupLocked(state, group)
+}
+
+/** Locked by the spec's school, or a signature ability of another spec / whose Sigil perk isn't owned yet. */
+export function isAbilityLocked(state: SimState, abilityId: string): boolean {
+  const def = getAbilityDef(abilityId)
+  if (def.spec && (def.spec !== state.spec || !((state.perkLevels[def.unlockPerkId ?? ''] ?? 0) > 0))) return true
+  return isGroupLocked(state, def.group)
+}
+
+/** The current spec's signature ability (owned or not). */
+export function getSignatureAbility(state: SimState): AbilityDef | undefined {
+  return ABILITIES.find((a) => a.spec === state.spec)
+}
+
+/** The school an ability fires as: its type, or for an adaptive one whichever school currently hits harder. */
+export function abilitySchool(state: SimState, def: AbilityDef): AbilityType {
+  if (!def.adaptive) return def.type
+  const physical = computePhysicalPower(state) * computeSchoolMultiplier(state, 'physical')
+  const spell = computeMagicPower(state) * computeSchoolMultiplier(state, 'spell')
+  return spell > physical ? 'spell' : 'physical'
+}
+
+/** Whether the player has ever found gear. Gates the gear tabs; discoveries can be wiped by Ascend, this can't. */
+export function hasEverFoundGear(state: SimState): boolean {
+  return state.discoveredItemIds.length > 0 || (state.lifetime.itemsFound ?? 0) > 0 || (state.lifetime.ascends ?? 0) > 0
 }
 
 export function getStatDef(id: StatId): StatDef {
@@ -118,7 +196,7 @@ export function getStatDef(id: StatId): StatDef {
 }
 
 export function getAbilityDef(id: string): AbilityDef {
-  const def = ABILITIES.find((a) => a.id === id)
+  const def = ABILITY_BY_ID.get(id)
   if (!def) throw new Error(`Unknown ability: ${id}`)
   return def
 }
@@ -237,14 +315,32 @@ export function listPerks(): PerkDef[] {
 
 /** Sum of every owned perk's bonus for one effect, plus every reached milestone's reward for it. */
 export function perkBonus(state: SimState, effect: PerkEffect): number {
+  let byMilestones = PERK_BONUS_CACHE.get(state.perkLevels)
+  let bySpec = byMilestones?.get(state.milestonesReached)
+  let cache = bySpec?.get(state.spec)
+  const cached = cache?.get(effect)
+  if (cached !== undefined) return cached
   let total = 0
   for (const perk of PERKS) {
-    if (perk.effect === effect) total += (state.perkLevels[perk.id] ?? 0) * perk.perLevel
+    if (perk.effect === effect && (!perk.spec || perk.spec === state.spec)) total += (state.perkLevels[perk.id] ?? 0) * perk.perLevel
   }
   for (const id of state.milestonesReached) {
     const reward = MILESTONE_REWARDS.get(id)
     if (reward?.effect === effect) total += reward.value
   }
+  if (!byMilestones) {
+    byMilestones = new WeakMap()
+    PERK_BONUS_CACHE.set(state.perkLevels, byMilestones)
+  }
+  if (!bySpec) {
+    bySpec = new Map()
+    byMilestones.set(state.milestonesReached, bySpec)
+  }
+  if (!cache) {
+    cache = new Map()
+    bySpec.set(state.spec, cache)
+  }
+  cache.set(effect, total)
   return total
 }
 
@@ -738,20 +834,32 @@ export function getStatLabel(statId: PrimaryStat): string {
   return STATS.find((s) => s.id === statId)?.name ?? statId
 }
 
+/** What gear adds to a stat. A stat your spec locks gets nothing from gear. */
 export function gearBonusForStat(state: SimState, statId: PrimaryStat): number {
-  let base = 0
-  let augmentMultiplier = 1
-  for (const item of Object.values(state.gear)) {
-    if (!item) continue
-    for (const stat of effectiveGearStats(item)) {
-      if (stat.statId === statId) base += stat.value
+  if (isStatLocked(state, statId)) return 0
+  // Cached per gear record and Imbue ranks (both replaced, never changed)
+  let byRanks = GEAR_BONUS_CACHE.get(state.gear)
+  let totals = byRanks?.get(state.augmentRanks)
+  if (!totals) {
+    const base = new Map<PrimaryStat, number>()
+    const augmentMultiplier = new Map<PrimaryStat, number>()
+    for (const item of Object.values(state.gear)) {
+      if (!item) continue
+      for (const stat of effectiveGearStats(item)) base.set(stat.statId, (base.get(stat.statId) ?? 0) + stat.value)
+      for (const augId of item.augmentIds) {
+        const aug = getAugmentDef(augId)
+        if (aug.statId === 'focusGain') continue
+        augmentMultiplier.set(aug.statId, (augmentMultiplier.get(aug.statId) ?? 1) + computeAugmentMagnitude(state, augId))
+      }
     }
-    for (const augId of item.augmentIds) {
-      const aug = getAugmentDef(augId)
-      if (aug.statId === statId && statId !== 'focusGain') augmentMultiplier += computeAugmentMagnitude(state, augId)
+    totals = new Map([...base].map(([id, value]) => [id, value * (augmentMultiplier.get(id) ?? 1)]))
+    if (!byRanks) {
+      byRanks = new WeakMap()
+      GEAR_BONUS_CACHE.set(state.gear, byRanks)
     }
+    byRanks.set(state.augmentRanks, totals)
   }
-  return base * augmentMultiplier
+  return totals.get(statId) ?? 0
 }
 
 export function focusGainMultiplier(state: SimState): number {
@@ -766,7 +874,17 @@ export function focusGainMultiplier(state: SimState): number {
   return multiplier
 }
 
+// Gear and perk records are replaced, never changed, so derived totals can be cached per record object
+const SET_COUNTS_CACHE = new WeakMap<object, Record<string, number>>()
+const SET_BONUS_CACHE = new WeakMap<object, Map<PrimaryStat, number>>()
+// gear -> augmentRanks -> stat -> total
+const GEAR_BONUS_CACHE = new WeakMap<object, WeakMap<object, Map<PrimaryStat, number>>>()
+// perkLevels -> milestonesReached -> spec -> effect -> total
+const PERK_BONUS_CACHE = new WeakMap<object, WeakMap<object, Map<string, Map<PerkEffect, number>>>>()
+
 export function computeEquippedSetCounts(state: SimState): Record<string, number> {
+  const cached = SET_COUNTS_CACHE.get(state.gear)
+  if (cached) return cached
   const counts: Record<string, number> = {}
   for (const item of Object.values(state.gear)) {
     if (!item) continue
@@ -774,19 +892,25 @@ export function computeEquippedSetCounts(state: SimState): Record<string, number
     if (!catalogDef.setId) continue
     counts[catalogDef.setId] = (counts[catalogDef.setId] ?? 0) + 1
   }
+  SET_COUNTS_CACHE.set(state.gear, counts)
   return counts
 }
 
 export function computeSetBonusForStat(state: SimState, statId: PrimaryStat): number {
-  const counts = computeEquippedSetCounts(state)
-  let bonus = 0
-  for (const set of SETS) {
-    const equipped = counts[set.id] ?? 0
-    for (const tier of set.bonuses) {
-      if (equipped >= tier.pieces && tier.statId === statId) bonus += tier.magnitude
+  if (isStatLocked(state, statId)) return 0
+  let bonuses = SET_BONUS_CACHE.get(state.gear)
+  if (!bonuses) {
+    bonuses = new Map()
+    const counts = computeEquippedSetCounts(state)
+    for (const set of SETS) {
+      const equipped = counts[set.id] ?? 0
+      for (const tier of set.bonuses) {
+        if (equipped >= tier.pieces) bonuses.set(tier.statId, (bonuses.get(tier.statId) ?? 0) + tier.magnitude)
+      }
     }
+    SET_BONUS_CACHE.set(state.gear, bonuses)
   }
-  return bonus
+  return bonuses.get(statId) ?? 0
 }
 
 /** Sum of active temporary buffs (from 'buff'-kind abilities) for one stat. */
@@ -899,28 +1023,18 @@ export function computeAbilityDamage(state: SimState, abilityId: string): number
   const progress = state.abilities[abilityId]
   const rank = progress ? progress.rank : 0
   if (rank <= 0) return 0
-  const power = def.type === 'physical' ? computePhysicalPower(state) : computeMagicPower(state)
+  const school = abilitySchool(state, def)
+  const power = school === 'physical' ? computePhysicalPower(state) : computeMagicPower(state)
   const effect = def.baseEffect + def.effectPerRank * (rank - 1)
-  return effect * power * computeSchoolMultiplier(state, def.type) * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004) * computeBossPowerMultiplier(state)
+  return effect * power * computeSchoolMultiplier(state, school) * (1 + perkBonus(state, 'damage') + state.bestRecallDepth * 0.004) * computeBossPowerMultiplier(state)
 }
 
-/** Stat group each ability school draws its specialization from (content/groups.json ids). */
-const SCHOOL_GROUP: Record<AbilityType, string> = { physical: 'physical', spell: 'arcane' }
-
 /**
- * Specialization: x1 for an even split of Physical vs Arcane attribute levels (Utility doesn't count),
- * rising to x(1 + maxBonus) for the school you've gone all-in on. Hybrid builds get no bonus.
+ * Specialization: the spec's own school deals x(1 + maxBonus). Adventurers (master of none) get x1 for
+ * both schools, and a spec never fires the other school's abilities in the first place.
  */
 export function computeSpecializationMultiplier(state: SimState, type: AbilityType): number {
-  let physical = 0
-  let arcane = 0
-  for (const stat of STATS) {
-    if (stat.group === 'physical') physical += state.statLevels[stat.id] ?? 0
-    if (stat.group === 'arcane') arcane += state.statLevels[stat.id] ?? 0
-  }
-  if (physical + arcane <= 0) return 1
-  const share = (SCHOOL_GROUP[type] === 'physical' ? physical : arcane) / (physical + arcane)
-  return 1 + BALANCE.specialization.maxBonus * Math.max(0, share * 2 - 1)
+  return getSpecDef(state.spec).bonusSchool === type ? 1 + BALANCE.specialization.maxBonus : 1
 }
 
 /** How much of a school's damage the current zone lets through (content/zones.json resistances). */
@@ -934,8 +1048,12 @@ export function computeZoneResistance(zone: ZoneDef, type: AbilityType): number 
  */
 export function computeSchoolMultiplier(state: SimState, type: AbilityType): number {
   const resist = computeZoneResistance(getZoneDef(state.currentZoneId), type)
-  const mastery = type === 'spell' ? BALANCE.spellMastery.baseMultiplier * (1 + totalStat(state, 'arcana') * BALANCE.spellMastery.perArcana) : 1
-  return computeSpecializationMultiplier(state, type) * (1 - resist) * mastery
+  const mastery =
+    type === 'spell'
+      ? BALANCE.spellMastery.baseMultiplier * (1 + totalStat(state, 'arcana') * BALANCE.spellMastery.perArcana)
+      : BALANCE.weaponMastery.baseMultiplier * (1 + totalStat(state, 'might') * BALANCE.weaponMastery.perMight)
+  const perk = 1 + perkBonus(state, type === 'physical' ? 'physicalDamage' : 'spellDamage')
+  return computeSpecializationMultiplier(state, type) * (1 - resist) * mastery * perk
 }
 
 export function computeMonsterMaxHp(zone: ZoneDef, depth: number, isBoss: boolean): number {
@@ -960,7 +1078,10 @@ export function computeMonsterAttackIntervalMs(zone: ZoneDef, isBoss: boolean): 
 
 /** Deepest depth the player has reached in a zone (never below the zone's first floor). */
 export function getMaxDepthReached(state: SimState, zone: ZoneDef): number {
-  return Math.max(zone.minDepth, state.maxDepthByZone[zone.id] ?? zone.minDepth, state.currentDepth)
+  // The current depth only counts for the zone you're in (it used to count for every zone, so a Recall was
+  // paid at the best zone's Echo multiplier no matter where you were)
+  const current = zone.id === state.currentZoneId ? state.currentDepth : zone.minDepth
+  return Math.max(zone.minDepth, state.maxDepthByZone[zone.id] ?? zone.minDepth, current)
 }
 
 /** Deepest depth ever reached in a zone, across every run (maxDepthByZone only covers the current one, and Recall wipes it). */
@@ -1476,10 +1597,11 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
   if (state.fainted || !state.currentMonster) return state
   const def = getAbilityDef(abilityId)
   const progress = state.abilities[abilityId]
-  if (!progress || progress.rank <= 0) return state
+  if (!progress || progress.rank <= 0 || isAbilityLocked(state, abilityId)) return state
   if ((state.abilityCooldowns[abilityId] ?? 0) > 0) return state
 
-  const pool = def.type === 'physical' ? state.stamina : state.mana
+  const school = abilitySchool(state, def)
+  const pool = school === 'physical' ? state.stamina : state.mana
   if (pool.current < def.resourceCost) {
     return state
   }
@@ -1488,7 +1610,7 @@ function fireAbility(state: SimState, abilityId: string, now: number, events: Co
   const cooldownMs = computeEffectiveCooldownMs(state, abilityId)
   const abilityCooldowns = { ...state.abilityCooldowns, [abilityId]: cooldownMs }
   let next: SimState =
-    def.type === 'physical'
+    school === 'physical'
       ? { ...state, stamina: spentPool, abilityCooldowns }
       : { ...state, mana: spentPool, abilityCooldowns }
   next = addStat(addStat(next, 'abilityUses', 1), `ability_${abilityId}_uses`, 1)
@@ -1558,6 +1680,16 @@ function tickMonsterDot(state: SimState, deltaMs: number, now: number, events: C
 }
 
 export function advanceTick(state: SimState, deltaMs: number, now: number): TickResult {
+  const outer = tickOwnedCounters
+  tickOwnedCounters = new WeakSet()
+  try {
+    return advanceTickInner(state, deltaMs, now)
+  } finally {
+    tickOwnedCounters = outer
+  }
+}
+
+function advanceTickInner(state: SimState, deltaMs: number, now: number): TickResult {
   const events: CombatEvent[] = []
   let next = checkMilestones(state, now, events)
   next = runAutobuyers(decayBuffs(addStat(applyRegen(next, deltaMs / 1000), 'timeMs', deltaMs), deltaMs))
@@ -1681,7 +1813,7 @@ export function createInitialState(): SimState {
   const zone = getZoneDef(zoneId)
   const stats = Object.fromEntries(STATS.map((s) => [s.id, 0])) as Record<StatId, number>
   const statLevels = { ...stats }
-  const abilities = Object.fromEntries(ABILITIES.map((a) => [a.id, { rank: a.id === 'strike' || a.id === 'bolt' ? 1 : 0 }]))
+  const abilities = startingAbilities(null)
   const gear = {
     head: null,
     body: null,
@@ -1717,6 +1849,7 @@ export function createInitialState(): SimState {
     discoveredItemIds: [],
     recallCount: 0,
     ascendCount: 0,
+    spec: 'adventurer',
     materials: {},
     lifetime: {},
     runStats: {},
@@ -1739,12 +1872,16 @@ export function createInitialState(): SimState {
   }
 }
 
+/** Every run starts with Strike, Bolt and an owned signature ability at rank 1, minus whatever the spec locks. */
+function startingAbilities(state: SimState | null): Record<string, { rank: number }> {
+  const starts = (a: AbilityDef) => (a.id === 'strike' || a.id === 'bolt' || !!a.spec) && !(state ? isAbilityLocked(state, a.id) : a.spec)
+  return Object.fromEntries(ABILITIES.map((a) => [a.id, { rank: starts(a) ? 1 : 0 }]))
+}
+
 /** Resets everything a run builds up (stats, abilities, focus, depth). Gear, discoveries and zone unlocks are kept. */
 function resetRun(state: SimState): SimState {
   const zone = getZoneDef(state.currentZoneId)
-  const resetAbilities = Object.fromEntries(
-    Object.keys(state.abilities).map((id) => [id, { rank: id === 'strike' || id === 'bolt' ? 1 : 0 }]),
-  )
+  const resetAbilities = startingAbilities(state)
   return {
     ...state,
     stats: Object.fromEntries(Object.keys(state.stats).map((id) => [id, 0])) as Record<StatId, number>,
@@ -1793,7 +1930,8 @@ function sigilsForEchoesEarned(echoesEarned: number): number {
 /** Sigils an Ascend would grant right now, based on all Echoes earned since the last Ascend. */
 export function computeAscendSigils(state: SimState): number {
   if (state.echoesEarned < ASCEND_CONFIG.minEchoesEarned) return 0
-  return sigilsForEchoesEarned(state.echoesEarned)
+  const sigils = Math.sqrt(state.echoesEarned / ASCEND_CONFIG.echoesPerSigilSquared) * ASCEND_CONFIG.sigilPayoutMultiplier
+  return Math.floor(sigils * (1 + perkBonus(state, 'sigilGain')))
 }
 
 export function canAscend(state: SimState): boolean {
@@ -1820,16 +1958,34 @@ export function recall(state: SimState): SimState {
   }
 }
 
-export function ascend(state: SimState): SimState {
+/**
+ * Ascend: trades all Echoes earned this Ascension for Sigils, starts over with no gear, and sets the
+ * spec for the next Ascension (Warrior, Mage or Adventurer). Choosing a different spec also points the
+ * autobuyers at it, since weights for a locked school would just sit unused.
+ */
+export function ascend(state: SimState, specId: SpecId = state.spec): SimState {
   const sigils = computeAscendSigils(state)
   if (sigils <= 0) return state
+  const spec = SPEC_BY_ID.get(specId) ?? getSpecDef(state.spec)
+  const preset = listBuildPresets().find((p) => p.id === spec.presetId)
+  const automation = spec.id !== state.spec && preset ? { ...state.automation, ...buildPresetWeights(preset) } : state.automation
   // Echo perks and unspent Echoes are lost; Sigil perks stay
   const keptPerks = Object.fromEntries(
     Object.entries(state.perkLevels).filter(([id]) => PERKS.find((p) => p.id === id)?.currency === 'sigils'),
   )
   const counted = addStat(addStat(state, 'ascends', 1), 'sigilsEarnedTotal', sigils)
   return {
-    ...resetRun(counted),
+    ...resetRun({ ...counted, spec: spec.id }),
+    spec: spec.id,
+    automation,
+    // A clean slate: gear, materials, learned augments (with their Imbue ranks) and discoveries all go,
+    // except what the keep/starting Sigil perks hold on to. Zone unlocks and milestones stay.
+    gear: createInitialState().gear,
+    inventory: [],
+    materials: Object.fromEntries(perkBonus(counted, 'startingMaterials') > 0 ? MATERIALS.map((m) => [m.id, perkBonus(counted, 'startingMaterials')]) : []),
+    learnedAugmentIds: perkBonus(counted, 'keepAugments') > 0 ? state.learnedAugmentIds : [],
+    augmentRanks: {},
+    discoveredItemIds: state.discoveredItemIds.filter((id) => RARITY_INDEX.get(getGearCatalogItem(id).rarity)! < perkBonus(counted, 'keepDiscoveries')),
     recallCount: 0,
     echoes: 0,
     echoesEarned: 0,
@@ -1851,12 +2007,18 @@ export function buyPerk(state: SimState, perkId: string, count: number = 1): Sim
   const actual = Math.min(count, computeMaxPerkCount(perk, level, balance))
   if (actual <= 0) return state
   const cost = computePerkCostN(perk, level, actual)
-  return {
+  const next = {
     ...state,
     echoes: perk.currency === 'echoes' ? state.echoes - cost : state.echoes,
     sigils: perk.currency === 'sigils' ? state.sigils - cost : state.sigils,
     perkLevels: { ...state.perkLevels, [perkId]: level + actual },
   }
+  // A newly unlocked signature ability for the current spec is ready to fire right away, like Strike and Bolt
+  const signature = ABILITIES.find((a) => a.unlockPerkId === perkId)
+  if (signature && !isAbilityLocked(next, signature.id) && (next.abilities[signature.id]?.rank ?? 0) === 0) {
+    return { ...next, abilities: { ...next.abilities, [signature.id]: { rank: 1 } } }
+  }
+  return next
 }
 
 /**
@@ -1864,6 +2026,7 @@ export function buyPerk(state: SimState, perkId: string, count: number = 1): Sim
  * bonus would raise the next cost exactly as much as the stat, and cancel itself out.
  */
 export function trainStat(state: SimState, statId: StatId, count: number = 1): SimState {
+  if (isStatLocked(state, statId)) return state
   const level = state.statLevels[statId] ?? 0
   const actual = Math.min(count, computeMaxTrainCount(statId, level, state.focus))
   if (actual <= 0) return state
@@ -2084,7 +2247,7 @@ export function runAutobuyers(state: SimState): SimState {
     if (train) {
       for (const stat of STATS) {
         const weight = a.statWeights[stat.id] ?? 0
-        if (weight <= 0) continue
+        if (weight <= 0 || isStatLocked(next, stat.id)) continue
         const cost = computeTrainCost(stat.id, next.statLevels[stat.id] ?? 0)
         if (cost <= budget && (!best || cost / weight < best.score)) best = { kind: 'stat', id: stat.id, score: cost / weight }
       }
@@ -2093,7 +2256,7 @@ export function runAutobuyers(state: SimState): SimState {
       for (const ability of ABILITIES) {
         const weight = a.abilityWeights[ability.id] ?? 0
         const rank = next.abilities[ability.id]?.rank ?? 0
-        if (weight <= 0 || rank >= ability.maxRank) continue
+        if (weight <= 0 || rank >= ability.maxRank || isAbilityLocked(next, ability.id)) continue
         const cost = computeAbilityRankCost(ability.id, rank)
         if (cost <= budget && (!best || cost / weight < best.score)) best = { kind: 'ability', id: ability.id, score: cost / weight }
       }
@@ -2105,6 +2268,7 @@ export function runAutobuyers(state: SimState): SimState {
 }
 
 export function upgradeAbility(state: SimState, abilityId: string, count: number = 1): SimState {
+  if (isAbilityLocked(state, abilityId)) return state
   const progress = state.abilities[abilityId] ?? { rank: 0 }
   const actual = Math.min(count, computeMaxAbilityCount(abilityId, progress.rank, state.focus))
   if (actual <= 0) return state

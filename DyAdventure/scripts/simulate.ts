@@ -29,10 +29,17 @@
  * (Windows caps a command line at ~32k chars, so prefer a file) or the string itself:
  *   npm run sim -- --hours 5 --auto-zone --load-save ./saves/mysave.txt
  *
- * Builds — --preset <physical|arcane|hybrid> makes the bot spend like a player who picked that Build preset
+ * Builds — --preset <warrior|mage|adventurer> makes the bot spend like a player who picked that Build preset
  * on the Automation page (same weights: weight 0 is skipped, weight 3 gets three turns per weight-1 turn),
  * and with --automation the autobuyers get those weights too. Without it the bot trains everything evenly.
- *   npm run sim -- --hours 30 --auto-zone --preset physical
+ *   npm run sim -- --hours 30 --auto-zone --preset warrior
+ *
+ * Specs — every real game starts as an Adventurer and picks a spec on each Ascend. --ascend-spec <id> is
+ * that journey: start as an Adventurer and pick <id> on every Ascend (use with --ascend). --spec <id> is a
+ * what-if that starts the bot as <id> right away (and keeps it on Ascend), to compare build strength from
+ * a fresh start. Either one also sets --preset to the spec's preset unless --preset is given.
+ *   npm run sim -- --hours 400 --auto-zone --spec mage --until frostbound_peaks:2
+ *   npm run sim -- --hours 400 --auto-zone --ascend threshold --ascend-spec warrior --until frostbound_peaks:2
  *
  * Goals — --until <zoneId>:<depth> stops the run as soon as that depth is reached in that zone and reports
  * the time, so --hours is only a cap. Beating Frostbound's first floor (i.e. reaching depth 2 there):
@@ -62,6 +69,7 @@ import {
   buyPerk,
   selectZone,
   getZoneDef,
+  getMaxDepthReached,
   isBossDepth,
   reforgeItem,
   computeReforgeCost,
@@ -76,11 +84,13 @@ import {
   listBuildPresets,
   buildPresetWeights,
   decodeSaveString,
+  listSpecs,
+  getSpecDef,
 } from '../src/worker/simLogic.ts'
 import statsData from '../src/content/stats.json' with { type: 'json' }
 import abilitiesData from '../src/content/abilities.json' with { type: 'json' }
 import zonesData from '../src/content/zones.json' with { type: 'json' }
-import type { AbilityDef, AutomationFeature, SimState, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
+import type { AbilityDef, AutomationFeature, SimState, SpecId, StatDef, StatId, ZoneDef } from '../src/types/index.ts'
 
 type RecallPolicy = 'never' | 'threshold' | 'asap'
 type AscendPolicy = 'never' | 'threshold' | 'asap'
@@ -96,7 +106,10 @@ function parseArgs(): {
   loadSave: string | null
   automation: boolean
   preset: string | null
+  spec: SpecId | null
+  ascendSpec: SpecId | null
   until: { zoneId: string; depth: number } | null
+  tickMs: number
 } {
   const args = process.argv.slice(2)
   let hours = 6
@@ -109,7 +122,10 @@ function parseArgs(): {
   let loadSave: string | null = null
   let automation = false
   let preset: string | null = null
+  let spec: SpecId | null = null
+  let ascendSpec: SpecId | null = null
   let until: { zoneId: string; depth: number } | null = null
+  let tickMs = 100
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--hours') hours = Number(args[++i])
     if (args[i] === '--recall') recallPolicy = args[++i] as RecallPolicy
@@ -121,12 +137,15 @@ function parseArgs(): {
     if (args[i] === '--load-save') loadSave = args[++i]
     if (args[i] === '--automation') automation = true
     if (args[i] === '--preset') preset = args[++i]
+    if (args[i] === '--spec') spec = args[++i] as SpecId
+    if (args[i] === '--ascend-spec') ascendSpec = args[++i] as SpecId
+    if (args[i] === '--tick-ms') tickMs = Number(args[++i])
     if (args[i] === '--until') {
       const [zoneId, depth] = args[++i].split(':')
       until = { zoneId, depth: Number(depth ?? 1) }
     }
   }
-  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation, preset, until }
+  return { hours, recall: recallPolicy, ascend: ascendPolicy, recallThreshold, autoZone, checkpointDir, loadState, loadSave, automation, preset, spec, ascendSpec, until, tickMs }
 }
 
 const {
@@ -139,16 +158,32 @@ const {
   loadState: LOAD_STATE_PATH,
   loadSave: LOAD_SAVE,
   automation: USE_AUTOMATION,
-  preset: PRESET_ID,
+  preset: PRESET_FLAG,
+  spec: SPEC_ID,
+  ascendSpec: ASCEND_SPEC_FLAG,
+  tickMs: TICK_MS_FLAG,
   until: UNTIL,
 } = parseArgs()
 if (CHECKPOINT_DIR) fs.mkdirSync(CHECKPOINT_DIR, { recursive: true })
 const STATS = statsData as StatDef[]
 const ABILITIES = abilitiesData as AbilityDef[]
 const ZONES = zonesData as ZoneDef[]
+// --zone <zoneId>.<field>=<number>: a what-if override of one zone number (repeatable), to try zone tunings in
+// parallel without editing zones.json, e.g. --zone frostbound_peaks.perDepthGrowthPct=6
+for (let i = 0; i < process.argv.length; i++) {
+  if (process.argv[i] !== '--zone') continue
+  const [key, value] = process.argv[i + 1].split('=')
+  const [zoneId, field] = key.split('.')
+  // The game logic has its own copy of zones.json, so both copies get the override
+  const copies = [ZONES.find((z) => z.id === zoneId), ZONES.some((z) => z.id === zoneId) ? getZoneDef(zoneId) : undefined]
+  if (!copies[0] || !(field in copies[0])) throw new Error(`--zone: unknown zone or field "${key}"`)
+  for (const zone of copies) (zone as unknown as Record<string, number>)[field] = Number(value)
+  console.log(`[zone override] ${key} = ${value}`)
+}
 const PERKS = listPerks()
 
-const TICK_MS = 100
+// --tick-ms: 100 matches the game worker; 1000 (the step offline catch-up uses) is ~10x faster for long horizons
+const TICK_MS = TICK_MS_FLAG
 const DECISION_INTERVAL_MS = 5000
 const TOTAL_MS = SIM_HOURS * 60 * 60 * 1000
 // 'threshold' Ascend policy: earn this multiple of the minimum required Echoes before Ascending,
@@ -171,11 +206,31 @@ function loadInitialState(): SimState {
   if (LOAD_STATE_PATH) return JSON.parse(fs.readFileSync(LOAD_STATE_PATH, 'utf8'))
   return createInitialState()
 }
+for (const id of [SPEC_ID, ASCEND_SPEC_FLAG]) {
+  if (id && !listSpecs().some((s) => s.id === id)) throw new Error(`Unknown spec "${id}" (use ${listSpecs().map((s) => s.id).join(', ')})`)
+}
+// The spec picked on every Ascend; --spec also starts the bot as it (a what-if, see the header)
+const ASCEND_SPEC: SpecId | null = ASCEND_SPEC_FLAG ?? SPEC_ID
+const PRESET_ID = PRESET_FLAG ?? (ASCEND_SPEC ? getSpecDef(ASCEND_SPEC).presetId : null)
 let state: SimState = loadInitialState()
+if (SPEC_ID) {
+  // As if chosen: the other school's starting ability goes too
+  const locked = getSpecDef(SPEC_ID).lockedGroups
+  const abilities = Object.fromEntries(Object.entries(state.abilities).map(([id, a]) => [id, ABILITIES.find((d) => d.id === id && locked.includes(d.group)) ? { rank: 0 } : a]))
+  state = { ...state, spec: SPEC_ID, abilities }
+}
 let now = Date.now()
 let msSinceDecision = 0
 let firstDepth51At: number | null = null
 let depthAtLastRecall = 0
+// Deepest depth in the current zone this Ascension (the 'threshold' Recall growth check). Not the lifetime
+// record: after an Ascend that record sits at the old wall, so the bot would never Recall again.
+let ascensionDeepest = 0
+// ...and a player who needs Echoes to Ascend Recalls at a wall they can't pass: once that depth hasn't grown for
+// this long, so does the bot. Only when Ascending: without that, grinding through a slow patch beats Recalling
+// (tried in npm run balance: it cost the no-Ascend builds 25-50h), so those runs keep their old behavior.
+const STALL_RECALL_MINUTES = 12 * 60
+let deepestGrewAt = 0
 let recallCount = 0
 let ascendCountLocal = 0
 let firstAscendAt: number | null = null
@@ -270,6 +325,8 @@ function spendPerks() {
     for (const perk of PERKS) {
       const level = state.perkLevels[perk.id] ?? 0
       if (level >= perk.maxLevel) continue
+      // Spec perks only for the spec the bot plays (or is heading for)
+      if (perk.spec && perk.spec !== (ASCEND_SPEC ?? state.spec)) continue
       const balance = perk.currency === 'echoes' ? state.echoes : state.sigils
       const cost = computePerkCost(perk, level)
       if (balance < cost) continue
@@ -312,7 +369,7 @@ function spendReforges(minute: number) {
   }
 }
 
-console.log(`Simulating ${SIM_HOURS}h, recall policy: ${RECALL_POLICY}, ascend policy: ${ASCEND_POLICY}, build: ${PRESET?.name ?? 'even'}\n`)
+console.log(`Simulating ${SIM_HOURS}h, recall policy: ${RECALL_POLICY}, ascend policy: ${ASCEND_POLICY}, build: ${PRESET?.name ?? 'even'}, spec: ${state.spec}${ASCEND_SPEC ? ` (${ASCEND_SPEC} on Ascend)` : ''}\n`)
 
 let lastMinuteLogged = -1
 
@@ -356,6 +413,8 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
         // This zone's own deepest-reached counter starts at 0 — without resetting, the recall
         // growth check (deepestNow - depthAtLastRecall) would stay deeply negative for a long time.
         depthAtLastRecall = 0
+        ascensionDeepest = 0
+        deepestGrewAt = t
       }
       if (CHECKPOINT_DIR) {
         const checkpointPath = path.join(CHECKPOINT_DIR, `${event.zoneId}.json`)
@@ -389,24 +448,36 @@ for (let t = 0; t < TOTAL_MS; t += TICK_MS) {
     spendReforges(Math.round(t / 60000))
 
     if (RECALL_POLICY !== 'never') {
-      const deepestNow = state.lifetime['deepest_' + state.currentZoneId] ?? 0
+      const runDeepest = getMaxDepthReached(state, getZoneDef(state.currentZoneId))
+      if (runDeepest > ascensionDeepest) {
+        ascensionDeepest = runDeepest
+        deepestGrewAt = t
+      }
+      const deepestNow = ascensionDeepest
       const requiredGrowth = RECALL_POLICY === 'asap' ? 0 : RECALL_DEPTH_THRESHOLD
-      if (canRecall(state) && deepestNow - depthAtLastRecall >= requiredGrowth) {
+      const stalled = RECALL_POLICY === 'threshold' && ASCEND_POLICY !== 'never' && t - deepestGrewAt >= STALL_RECALL_MINUTES * 60_000
+      if (canRecall(state) && (deepestNow - depthAtLastRecall >= requiredGrowth || stalled)) {
         const echoes = Math.round(computeRecallEchoes(state))
         state = recall(state)
         spendPerks()
         recallCount++
         depthAtLastRecall = deepestNow
+        deepestGrewAt = t
         recallLog.push({ minute: Math.round(t / 60000), depth: deepestNow, echoes })
       }
     }
 
     if (ASCEND_POLICY !== 'never') {
-      const requiredEchoes = ASCEND_POLICY === 'asap' ? ascendRequiredEchoes() : ascendRequiredEchoes() * ASCEND_ECHOES_MULTIPLIER
+      // 'threshold': hoard, and only Ascend for at least double the best Ascend so far (Sigils grow with the
+      // square root, so smaller Ascends are a treadmill that never leaves time to push deeper)
+      const requiredEchoes = ASCEND_POLICY === 'asap' ? ascendRequiredEchoes() : Math.max(ascendRequiredEchoes() * ASCEND_ECHOES_MULTIPLIER, state.bestAscendEchoes * 2)
       if (canAscend(state) && state.echoesEarned >= requiredEchoes) {
         const echoesEarned = state.echoesEarned
         const sigils = computeAscendSigils(state)
-        state = ascend(state)
+        state = ascend(state, ASCEND_SPEC ?? state.spec)
+        ascensionDeepest = 0
+        depthAtLastRecall = 0
+        deepestGrewAt = t
         spendPerks()
         ascendCountLocal++
         if (firstAscendAt === null) firstAscendAt = t

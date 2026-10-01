@@ -1,5 +1,23 @@
 [
   {
+    "version": "0.1.6",
+    "date": "2026-09-29",
+    "changes": [
+      "Specs. Every new game starts as an Adventurer, a master of none: both Physical and Arcane are open, but neither gets a specialization bonus. Each Ascend now asks you to pick your spec for the next Ascension.",
+      "Warrior: weapon abilities deal x2.25 damage. Arcane attributes and spells are locked, and Arcane stats on gear do nothing. Mage: spells deal x2.25 damage, with Physical attributes, weapon abilities and Physical gear stats locked. Your spec is shown in the top bar.",
+      "Ascend is now a clean slate: it removes your gear, materials, learned augments (and their Imbue ranks) and discoveries. Zone unlocks and milestones are kept.",
+      "Ascend pays off more: 2.5x the Sigils, and 16 new Sigil perks. General ones for more Sigils, starting materials, keeping discovered gear by rarity and keeping learned augments; and four per spec (damage, defense and more) that count while you are that spec.",
+      "Signature abilities, one per spec, unlocked with Sigils: Whirlwind (Warrior), Arcane Nova (Mage) and Spellblade (Adventurer, strikes with whichever school hits harder).",
+      "Six new zones after Frostbound Peaks: Stormspire Heights, Abyssal Depths, Verdant Maw, Obsidian Citadel, Astral Rift and The Hollow Throne. Each is much tougher than the last, and they take turns resisting weapons or spells, so neither spec has it easy everywhere.",
+      "Frostbound Peaks now goes to depth 400 and has a gate boss at depth 300, and gains a Warrior set (Glacier Warden). Every new zone has a Warrior set and a Mage set.",
+      "The Build presets are renamed Warrior, Mage and Adventurer, and picking a new spec on Ascend switches the autobuyers to it.",
+      "Weapon mastery: weapon abilities now also grow stronger with every point of Might, the way spells do with Arcana, so Warriors keep up in the deep zones.",
+      "Recall now pays the Echo multiplier of the zone you actually reached; it used to pay the best zone's multiplier wherever you were. Zone Echo multipliers now run from x5 in Whispering Woods to x35 in The Hollow Throne.",
+      "Offline progress and long sessions run much faster: counting statistics no longer slows the game down in deep zones.",
+      "The game is much longer: reaching zones 7-8 takes around 500-900 hours of play, and beating the Hollow King at the end of The Hollow Throne around 1,500-2,000."
+    ]
+  },
+  {
     "version": "0.1.5",
     "date": "2026-09-28",
     "changes": [

@@ -1,6 +1,8 @@
 /**
- * Build-balance check: runs the simulator once per build (even/hybrid, physical, arcane) in parallel,
- * each climbing through the zones until a goal, and prints the hours at which each zone unlocked.
+ * Build-balance check: runs the simulator once per spec (Adventurer, Warrior, Mage) in parallel, each
+ * from a fresh start as that spec (the simulator's --spec what-if; real games start as an Adventurer and
+ * pick a spec on Ascend), climbing through the zones until a goal, and prints the hours at which each
+ * zone unlocked.
  *   npm run balance                                   # goal: beat Frostbound Peaks' first floor, 400h cap
  *   npm run balance -- --until ember_caverns:2 --hours 200
  * Extra simulator flags are passed through (e.g. --ascend threshold).
@@ -16,9 +18,9 @@ const until = flag('--until', 'frostbound_peaks:2')
 const hours = flag('--hours', '400')
 const passThrough = args.filter((a, i) => !['--until', '--hours'].includes(a) && !['--until', '--hours'].includes(args[i - 1]))
 const BUILDS = [
-  { name: 'Hybrid', flags: [] },
-  { name: 'Physical', flags: ['--preset', 'physical'] },
-  { name: 'Arcane', flags: ['--preset', 'arcane'] },
+  { name: 'Adventurer', flags: [] },
+  { name: 'Warrior', flags: ['--spec', 'warrior'] },
+  { name: 'Mage', flags: ['--spec', 'mage'] },
 ]
 
 function run(build) {

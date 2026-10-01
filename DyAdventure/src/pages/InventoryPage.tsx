@@ -33,9 +33,11 @@ import {
   type GearComparison,
   type GearVerdict,
   type LoadoutAspect,
+  isStatLocked,
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
+import { GearStatList } from '../components/GearStatList'
 import type { AugmentDef, GearCatalogItemDef, GearItem, GearSlot, PrimaryStat, SimState } from '../types'
 
 const AUGMENTS = augmentsData as AugmentDef[]
@@ -498,7 +500,7 @@ export default function InventoryPage() {
             Inventory · {slotKindLabel(def)}{def.setId ? ` · ${getSetDef(def.setId).name}` : ''}
           </div>
           <ItemHeader item={item} />
-          <div className="small">{effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(' · ')}</div>
+          <div className="small"><GearStatList stats={effectiveGearStats(item)} /></div>
           {slots.length > 1 && (
             <div className="d-flex align-items-center gap-1 small">
               <span style={{ color: 'var(--text-dim)' }}>Compare with:</span>
@@ -548,7 +550,7 @@ export default function InventoryPage() {
           {item ? (
             <>
               <ItemHeader item={item} />
-              <div className="small">{effectiveGearStats(item).map((st) => `+${formatNumber(st.value)} ${statLabel(st.statId)}`).join(' · ')}</div>
+              <div className="small"><GearStatList stats={effectiveGearStats(item)} /></div>
               <PendingFuse item={item} onFuse={fuseItem} />
               <MaxedNote item={item} lifetime={state.lifetime} />
               <AugmentSection key={item.instanceId} item={item} state={state} onSocket={socketAugment} onUnsocket={unsocketAugment} />
@@ -799,7 +801,7 @@ export default function InventoryPage() {
       <div className="panel" style={{ padding: '16px' }}>
         <div style={{ fontFamily: 'Cinzel, serif', fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>Gear Stats Overview <span style={{ color: 'var(--text-dim)', fontSize: '12px', fontWeight: 400 }}>· includes set bonuses</span></div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
-          {OVERVIEW_STATS.map((statId) => (
+          {OVERVIEW_STATS.filter((statId) => !isStatLocked(state, statId)).map((statId) => (
             <div key={statId} style={{ fontSize: '12.5px' }}>
               <div style={{ color: 'var(--text-dim)' }}>{statLabel(statId)}</div>
               <div style={{ fontWeight: 600 }}>+{formatNumber(gearBonusForStat(state, statId) + computeSetBonusForStat(state, statId))}</div>

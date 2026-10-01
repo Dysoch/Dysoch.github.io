@@ -292,6 +292,643 @@
           "description": "+30 Arcana"
         }
       ]
+    },
+    {
+      "id": "glacier_warden",
+      "name": "Glacier Warden",
+      "description": "Ice-rimed plate of the giants' old enemies.",
+      "itemIds": [
+        "glacier_warden_mainhand",
+        "glacier_warden_offhand",
+        "glacier_warden_head",
+        "glacier_warden_body",
+        "glacier_warden_legs",
+        "glacier_warden_feet",
+        "glacier_warden_hands",
+        "glacier_warden_neck",
+        "glacier_warden_back",
+        "glacier_warden_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 20,
+          "description": "+20 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 30,
+          "description": "+30 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 80,
+          "description": "+80 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 60,
+          "description": "+60 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 80,
+          "description": "+80 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "thunderguard",
+      "name": "Thunderguard",
+      "description": "Storm-forged plate that hums with every blow.",
+      "itemIds": [
+        "thunderguard_mainhand",
+        "thunderguard_offhand",
+        "thunderguard_head",
+        "thunderguard_body",
+        "thunderguard_legs",
+        "thunderguard_feet",
+        "thunderguard_hands",
+        "thunderguard_neck",
+        "thunderguard_back",
+        "thunderguard_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 29,
+          "description": "+29 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 44,
+          "description": "+44 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 120,
+          "description": "+120 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 87,
+          "description": "+87 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 120,
+          "description": "+120 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "stormcaller",
+      "name": "Stormcaller",
+      "description": "Robes that drink the lightning and give it back.",
+      "itemIds": [
+        "stormcaller_mainhand",
+        "stormcaller_offhand",
+        "stormcaller_head",
+        "stormcaller_body",
+        "stormcaller_legs",
+        "stormcaller_feet",
+        "stormcaller_hands",
+        "stormcaller_neck",
+        "stormcaller_back",
+        "stormcaller_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 29,
+          "description": "+29 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 44,
+          "description": "+44 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 120,
+          "description": "+120 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 87,
+          "description": "+87 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "spirit",
+          "magnitude": 120,
+          "description": "+120 Spirit"
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker",
+      "name": "Tidebreaker",
+      "description": "Barnacled plate that holds against the crushing deep.",
+      "itemIds": [
+        "tidebreaker_mainhand",
+        "tidebreaker_offhand",
+        "tidebreaker_head",
+        "tidebreaker_body",
+        "tidebreaker_legs",
+        "tidebreaker_feet",
+        "tidebreaker_hands",
+        "tidebreaker_neck",
+        "tidebreaker_back",
+        "tidebreaker_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 42,
+          "description": "+42 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 63,
+          "description": "+63 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 170,
+          "description": "+170 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 130,
+          "description": "+130 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 170,
+          "description": "+170 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "deepseer",
+      "name": "Deepseer",
+      "description": "Vestments of the seers who listen to the abyss.",
+      "itemIds": [
+        "deepseer_mainhand",
+        "deepseer_offhand",
+        "deepseer_head",
+        "deepseer_body",
+        "deepseer_legs",
+        "deepseer_feet",
+        "deepseer_hands",
+        "deepseer_neck",
+        "deepseer_back",
+        "deepseer_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 42,
+          "description": "+42 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 63,
+          "description": "+63 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 170,
+          "description": "+170 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 130,
+          "description": "+130 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "spirit",
+          "magnitude": 170,
+          "description": "+170 Spirit"
+        }
+      ]
+    },
+    {
+      "id": "thornwarden",
+      "name": "Thornwarden",
+      "description": "Bark-bound armor of the jungle's last wardens.",
+      "itemIds": [
+        "thornwarden_mainhand",
+        "thornwarden_offhand",
+        "thornwarden_head",
+        "thornwarden_body",
+        "thornwarden_legs",
+        "thornwarden_feet",
+        "thornwarden_hands",
+        "thornwarden_neck",
+        "thornwarden_back",
+        "thornwarden_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 61,
+          "description": "+61 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 91,
+          "description": "+91 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 240,
+          "description": "+240 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 180,
+          "description": "+180 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 240,
+          "description": "+240 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "rootweaver",
+      "name": "Rootweaver",
+      "description": "Living garments woven from singing roots.",
+      "itemIds": [
+        "rootweaver_mainhand",
+        "rootweaver_offhand",
+        "rootweaver_head",
+        "rootweaver_body",
+        "rootweaver_legs",
+        "rootweaver_feet",
+        "rootweaver_hands",
+        "rootweaver_neck",
+        "rootweaver_back",
+        "rootweaver_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 61,
+          "description": "+61 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 91,
+          "description": "+91 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 240,
+          "description": "+240 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 180,
+          "description": "+180 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "spirit",
+          "magnitude": 240,
+          "description": "+240 Spirit"
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion",
+      "name": "Obsidian Legion",
+      "description": "The volcanic-glass harness of the citadel's legion.",
+      "itemIds": [
+        "obsidian_legion_mainhand",
+        "obsidian_legion_offhand",
+        "obsidian_legion_head",
+        "obsidian_legion_body",
+        "obsidian_legion_legs",
+        "obsidian_legion_feet",
+        "obsidian_legion_hands",
+        "obsidian_legion_neck",
+        "obsidian_legion_back",
+        "obsidian_legion_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 88,
+          "description": "+88 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 130,
+          "description": "+130 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 350,
+          "description": "+350 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 270,
+          "description": "+270 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 350,
+          "description": "+350 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister",
+      "name": "Ashen Magister",
+      "description": "Soot-dark regalia of the citadel's fire-mages.",
+      "itemIds": [
+        "ashen_magister_mainhand",
+        "ashen_magister_offhand",
+        "ashen_magister_head",
+        "ashen_magister_body",
+        "ashen_magister_legs",
+        "ashen_magister_feet",
+        "ashen_magister_hands",
+        "ashen_magister_neck",
+        "ashen_magister_back",
+        "ashen_magister_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 88,
+          "description": "+88 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 130,
+          "description": "+130 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 350,
+          "description": "+350 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 270,
+          "description": "+270 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "spirit",
+          "magnitude": 350,
+          "description": "+350 Spirit"
+        }
+      ]
+    },
+    {
+      "id": "starforged",
+      "name": "Starforged",
+      "description": "Armor hammered from fallen stars.",
+      "itemIds": [
+        "starforged_mainhand",
+        "starforged_offhand",
+        "starforged_head",
+        "starforged_body",
+        "starforged_legs",
+        "starforged_feet",
+        "starforged_hands",
+        "starforged_neck",
+        "starforged_back",
+        "starforged_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 130,
+          "description": "+130 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 190,
+          "description": "+190 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 510,
+          "description": "+510 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 380,
+          "description": "+380 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 510,
+          "description": "+510 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "voidweaver",
+      "name": "Voidweaver",
+      "description": "Threads spun from the nothing between stars.",
+      "itemIds": [
+        "voidweaver_mainhand",
+        "voidweaver_offhand",
+        "voidweaver_head",
+        "voidweaver_body",
+        "voidweaver_legs",
+        "voidweaver_feet",
+        "voidweaver_hands",
+        "voidweaver_neck",
+        "voidweaver_back",
+        "voidweaver_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 130,
+          "description": "+130 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 190,
+          "description": "+190 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 510,
+          "description": "+510 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 380,
+          "description": "+380 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "spirit",
+          "magnitude": 510,
+          "description": "+510 Spirit"
+        }
+      ]
+    },
+    {
+      "id": "kingslayer",
+      "name": "Kingslayer",
+      "description": "Worn by the ones who came to end the Hollow King.",
+      "itemIds": [
+        "kingslayer_mainhand",
+        "kingslayer_offhand",
+        "kingslayer_head",
+        "kingslayer_body",
+        "kingslayer_legs",
+        "kingslayer_feet",
+        "kingslayer_hands",
+        "kingslayer_neck",
+        "kingslayer_back",
+        "kingslayer_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "might",
+          "magnitude": 190,
+          "description": "+190 Might"
+        },
+        {
+          "pieces": 4,
+          "statId": "grit",
+          "magnitude": 280,
+          "description": "+280 Grit"
+        },
+        {
+          "pieces": 6,
+          "statId": "hpCap",
+          "magnitude": 740,
+          "description": "+740 Max HP"
+        },
+        {
+          "pieces": 8,
+          "statId": "might",
+          "magnitude": 560,
+          "description": "+560 Might"
+        },
+        {
+          "pieces": 10,
+          "statId": "endurance",
+          "magnitude": 740,
+          "description": "+740 Endurance"
+        }
+      ]
+    },
+    {
+      "id": "crownless",
+      "name": "Crownless",
+      "description": "Regalia of a court that outlived its crown.",
+      "itemIds": [
+        "crownless_mainhand",
+        "crownless_offhand",
+        "crownless_head",
+        "crownless_body",
+        "crownless_legs",
+        "crownless_feet",
+        "crownless_hands",
+        "crownless_neck",
+        "crownless_back",
+        "crownless_ring"
+      ],
+      "bonuses": [
+        {
+          "pieces": 2,
+          "statId": "arcana",
+          "magnitude": 190,
+          "description": "+190 Arcana"
+        },
+        {
+          "pieces": 4,
+          "statId": "willpower",
+          "magnitude": 280,
+          "description": "+280 Willpower"
+        },
+        {
+          "pieces": 6,
+          "statId": "manaCap",
+          "magnitude": 740,
+          "description": "+740 Mana Cap"
+        },
+        {
+          "pieces": 8,
+          "statId": "arcana",
+          "magnitude": 560,
+          "description": "+560 Arcana"
+        },
+        {
+          "pieces": 10,
+          "statId": "spirit",
+          "magnitude": 740,
+          "description": "+740 Spirit"
+        }
+      ]
     }
   ],
   "items": [
@@ -5016,6 +5653,6766 @@
       "minDepth": 238,
       "zoneId": "frostbound_peaks",
       "bossOnly": true
+    },
+    {
+      "id": "glacier_warden_mainhand",
+      "name": "Glacier Warden Cleaver",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 1,
+      "nextTierId": "glacier_warden_mainhand_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 32
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_mainhand_legendary",
+      "name": "Glacier Warden Cleaver of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 74.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_offhand",
+      "name": "Glacier Warden Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 1,
+      "nextTierId": "glacier_warden_offhand_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 32
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 44.8
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_offhand_legendary",
+      "name": "Glacier Warden Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 74.6
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 104
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_head",
+      "name": "Glacier Warden Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 1,
+      "nextTierId": "glacier_warden_head_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 23
+        },
+        {
+          "statId": "might",
+          "value": 10.2
+        },
+        {
+          "statId": "hpCap",
+          "value": 48
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_head_legendary",
+      "name": "Glacier Warden Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 53.7
+        },
+        {
+          "statId": "might",
+          "value": 23.9
+        },
+        {
+          "statId": "hpCap",
+          "value": 112
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_body",
+      "name": "Glacier Warden Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 1,
+      "nextTierId": "glacier_warden_body_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 32
+        },
+        {
+          "statId": "hpCap",
+          "value": 35.2
+        },
+        {
+          "statId": "endurance",
+          "value": 19.2
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_body_legendary",
+      "name": "Glacier Warden Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 74.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 82.1
+        },
+        {
+          "statId": "endurance",
+          "value": 44.8
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_legs",
+      "name": "Glacier Warden Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 1,
+      "nextTierId": "glacier_warden_legs_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 32
+        },
+        {
+          "statId": "grit",
+          "value": 14.4
+        },
+        {
+          "statId": "staminaCap",
+          "value": 23
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_legs_legendary",
+      "name": "Glacier Warden Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 74.6
+        },
+        {
+          "statId": "grit",
+          "value": 33.6
+        },
+        {
+          "statId": "staminaCap",
+          "value": 53.7
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_feet",
+      "name": "Glacier Warden Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 10,
+      "nextTierId": "glacier_warden_feet_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 76.8
+        },
+        {
+          "statId": "speed",
+          "value": 14.4
+        },
+        {
+          "statId": "endurance",
+          "value": 19.2
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_feet_legendary",
+      "name": "Glacier Warden Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 179
+        },
+        {
+          "statId": "speed",
+          "value": 33.6
+        },
+        {
+          "statId": "endurance",
+          "value": 44.8
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_hands",
+      "name": "Glacier Warden Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 10,
+      "nextTierId": "glacier_warden_hands_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 23
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_hands_legendary",
+      "name": "Glacier Warden Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 53.7
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_neck",
+      "name": "Glacier Warden Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 25,
+      "nextTierId": "glacier_warden_neck_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 23
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_neck_legendary",
+      "name": "Glacier Warden Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 53.7
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_back",
+      "name": "Glacier Warden Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 25,
+      "nextTierId": "glacier_warden_back_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 23
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_back_legendary",
+      "name": "Glacier Warden Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 53.7
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_ring",
+      "name": "Glacier Warden Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "glacier_warden",
+      "minDepth": 50,
+      "nextTierId": "glacier_warden_ring_legendary",
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 23
+        },
+        {
+          "statId": "speed",
+          "value": 10.2
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "glacier_warden_ring_legendary",
+      "name": "Glacier Warden Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "glacier_warden",
+      "minDepth": 250,
+      "bossOnly": true,
+      "zoneId": "frostbound_peaks",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 53.7
+        },
+        {
+          "statId": "speed",
+          "value": 23.9
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_mainhand",
+      "name": "Thunderguard Maul",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 1,
+      "nextTierId": "thunderguard_mainhand_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 46.4
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 13.9
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_mainhand_legendary",
+      "name": "Thunderguard Maul of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 108
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 32.5
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_offhand",
+      "name": "Thunderguard Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 1,
+      "nextTierId": "thunderguard_offhand_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 46.4
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 65
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_offhand_legendary",
+      "name": "Thunderguard Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 108
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 151
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_head",
+      "name": "Thunderguard Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 1,
+      "nextTierId": "thunderguard_head_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 33.4
+        },
+        {
+          "statId": "might",
+          "value": 14.8
+        },
+        {
+          "statId": "hpCap",
+          "value": 69.6
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_head_legendary",
+      "name": "Thunderguard Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 77.9
+        },
+        {
+          "statId": "might",
+          "value": 34.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 162
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_body",
+      "name": "Thunderguard Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 1,
+      "nextTierId": "thunderguard_body_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 46.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 51
+        },
+        {
+          "statId": "endurance",
+          "value": 27.8
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_body_legendary",
+      "name": "Thunderguard Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 108
+        },
+        {
+          "statId": "hpCap",
+          "value": 119
+        },
+        {
+          "statId": "endurance",
+          "value": 64.9
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_legs",
+      "name": "Thunderguard Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 1,
+      "nextTierId": "thunderguard_legs_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 46.4
+        },
+        {
+          "statId": "grit",
+          "value": 20.9
+        },
+        {
+          "statId": "staminaCap",
+          "value": 33.4
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_legs_legendary",
+      "name": "Thunderguard Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 108
+        },
+        {
+          "statId": "grit",
+          "value": 48.7
+        },
+        {
+          "statId": "staminaCap",
+          "value": 77.9
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_feet",
+      "name": "Thunderguard Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 10,
+      "nextTierId": "thunderguard_feet_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 111
+        },
+        {
+          "statId": "speed",
+          "value": 20.9
+        },
+        {
+          "statId": "endurance",
+          "value": 27.8
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_feet_legendary",
+      "name": "Thunderguard Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 260
+        },
+        {
+          "statId": "speed",
+          "value": 48.7
+        },
+        {
+          "statId": "endurance",
+          "value": 64.9
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_hands",
+      "name": "Thunderguard Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 10,
+      "nextTierId": "thunderguard_hands_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 33.4
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 20.9
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_hands_legendary",
+      "name": "Thunderguard Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 77.9
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 48.7
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_neck",
+      "name": "Thunderguard Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 25,
+      "nextTierId": "thunderguard_neck_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 33.4
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_neck_legendary",
+      "name": "Thunderguard Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 77.9
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_back",
+      "name": "Thunderguard Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 25,
+      "nextTierId": "thunderguard_back_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 33.4
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 20.9
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_back_legendary",
+      "name": "Thunderguard Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 77.9
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 48.7
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_ring",
+      "name": "Thunderguard Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thunderguard",
+      "minDepth": 50,
+      "nextTierId": "thunderguard_ring_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 33.4
+        },
+        {
+          "statId": "speed",
+          "value": 14.8
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "thunderguard_ring_legendary",
+      "name": "Thunderguard Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thunderguard",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 77.9
+        },
+        {
+          "statId": "speed",
+          "value": 34.6
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_mainhand",
+      "name": "Stormcaller Scepter",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 1,
+      "nextTierId": "stormcaller_mainhand_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 46.4
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_mainhand_legendary",
+      "name": "Stormcaller Scepter of Legend",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 108
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_offhand",
+      "name": "Stormcaller Tome",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 1,
+      "nextTierId": "stormcaller_offhand_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 46.4
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 33.4
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_offhand_legendary",
+      "name": "Stormcaller Tome of Legend",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 108
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 77.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_head",
+      "name": "Stormcaller Circlet",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 1,
+      "nextTierId": "stormcaller_head_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 33.4
+        },
+        {
+          "statId": "arcana",
+          "value": 14.8
+        },
+        {
+          "statId": "spirit",
+          "value": 20.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_head_legendary",
+      "name": "Stormcaller Circlet of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 77.9
+        },
+        {
+          "statId": "arcana",
+          "value": 34.6
+        },
+        {
+          "statId": "spirit",
+          "value": 48.7
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_body",
+      "name": "Stormcaller Vestments",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 1,
+      "nextTierId": "stormcaller_body_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 46.4
+        },
+        {
+          "statId": "speed",
+          "value": 20.9
+        },
+        {
+          "statId": "spirit",
+          "value": 27.8
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_body_legendary",
+      "name": "Stormcaller Vestments of Legend",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 108
+        },
+        {
+          "statId": "speed",
+          "value": 48.7
+        },
+        {
+          "statId": "spirit",
+          "value": 64.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_legs",
+      "name": "Stormcaller Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 1,
+      "nextTierId": "stormcaller_legs_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 111
+        },
+        {
+          "statId": "willpower",
+          "value": 20.9
+        },
+        {
+          "statId": "spirit",
+          "value": 27.8
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_legs_legendary",
+      "name": "Stormcaller Legwraps of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 260
+        },
+        {
+          "statId": "willpower",
+          "value": 48.7
+        },
+        {
+          "statId": "spirit",
+          "value": 64.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_feet",
+      "name": "Stormcaller Slippers",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 10,
+      "nextTierId": "stormcaller_feet_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 27.8
+        },
+        {
+          "statId": "spirit",
+          "value": 20.9
+        },
+        {
+          "statId": "willpower",
+          "value": 27.8
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_feet_legendary",
+      "name": "Stormcaller Slippers of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 64.9
+        },
+        {
+          "statId": "spirit",
+          "value": 48.7
+        },
+        {
+          "statId": "willpower",
+          "value": 64.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_hands",
+      "name": "Stormcaller Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 10,
+      "nextTierId": "stormcaller_hands_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 33.4
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 24.1
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_hands_legendary",
+      "name": "Stormcaller Wraps of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 77.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 56.2
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_neck",
+      "name": "Stormcaller Pendant",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 25,
+      "nextTierId": "stormcaller_neck_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 111
+        },
+        {
+          "statId": "spirit",
+          "value": 41.8
+        },
+        {
+          "statId": "speed",
+          "value": 13.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_neck_legendary",
+      "name": "Stormcaller Pendant of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 260
+        },
+        {
+          "statId": "spirit",
+          "value": 97.4
+        },
+        {
+          "statId": "speed",
+          "value": 32.5
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_back",
+      "name": "Stormcaller Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 25,
+      "nextTierId": "stormcaller_back_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 46.4
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 13.9
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_back_legendary",
+      "name": "Stormcaller Mantle of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 108
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 32.5
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_ring",
+      "name": "Stormcaller Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "stormcaller",
+      "minDepth": 50,
+      "nextTierId": "stormcaller_ring_legendary",
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 33.4
+        },
+        {
+          "statId": "speed",
+          "value": 14.8
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "stormcaller_ring_legendary",
+      "name": "Stormcaller Signet of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "stormcaller",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "stormspire_heights",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 77.9
+        },
+        {
+          "statId": "speed",
+          "value": 34.6
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_mainhand",
+      "name": "Tidebreaker Warblade",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 1,
+      "nextTierId": "tidebreaker_mainhand_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 67.3
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 20.2
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_mainhand_legendary",
+      "name": "Tidebreaker Warblade of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 157
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 47.1
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_offhand",
+      "name": "Tidebreaker Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 1,
+      "nextTierId": "tidebreaker_offhand_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 67.3
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 94.2
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_offhand_legendary",
+      "name": "Tidebreaker Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 157
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 220
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_head",
+      "name": "Tidebreaker Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 1,
+      "nextTierId": "tidebreaker_head_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 48.4
+        },
+        {
+          "statId": "might",
+          "value": 21.5
+        },
+        {
+          "statId": "hpCap",
+          "value": 101
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_head_legendary",
+      "name": "Tidebreaker Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 113
+        },
+        {
+          "statId": "might",
+          "value": 50.2
+        },
+        {
+          "statId": "hpCap",
+          "value": 235
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_body",
+      "name": "Tidebreaker Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 1,
+      "nextTierId": "tidebreaker_body_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 67.3
+        },
+        {
+          "statId": "hpCap",
+          "value": 74
+        },
+        {
+          "statId": "endurance",
+          "value": 40.4
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_body_legendary",
+      "name": "Tidebreaker Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 157
+        },
+        {
+          "statId": "hpCap",
+          "value": 173
+        },
+        {
+          "statId": "endurance",
+          "value": 94.1
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_legs",
+      "name": "Tidebreaker Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 1,
+      "nextTierId": "tidebreaker_legs_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 67.3
+        },
+        {
+          "statId": "grit",
+          "value": 30.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 48.4
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_legs_legendary",
+      "name": "Tidebreaker Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 157
+        },
+        {
+          "statId": "grit",
+          "value": 70.6
+        },
+        {
+          "statId": "staminaCap",
+          "value": 113
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_feet",
+      "name": "Tidebreaker Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 10,
+      "nextTierId": "tidebreaker_feet_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 161
+        },
+        {
+          "statId": "speed",
+          "value": 30.3
+        },
+        {
+          "statId": "endurance",
+          "value": 40.4
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_feet_legendary",
+      "name": "Tidebreaker Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 376
+        },
+        {
+          "statId": "speed",
+          "value": 70.6
+        },
+        {
+          "statId": "endurance",
+          "value": 94.1
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_hands",
+      "name": "Tidebreaker Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 10,
+      "nextTierId": "tidebreaker_hands_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 48.4
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 30.3
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_hands_legendary",
+      "name": "Tidebreaker Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 113
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 70.6
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_neck",
+      "name": "Tidebreaker Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 25,
+      "nextTierId": "tidebreaker_neck_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 48.4
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_neck_legendary",
+      "name": "Tidebreaker Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 113
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_back",
+      "name": "Tidebreaker Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 25,
+      "nextTierId": "tidebreaker_back_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 48.4
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 30.3
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_back_legendary",
+      "name": "Tidebreaker Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 113
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 70.6
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_ring",
+      "name": "Tidebreaker Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "tidebreaker",
+      "minDepth": 50,
+      "nextTierId": "tidebreaker_ring_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 48.4
+        },
+        {
+          "statId": "speed",
+          "value": 21.5
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "tidebreaker_ring_legendary",
+      "name": "Tidebreaker Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "tidebreaker",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 113
+        },
+        {
+          "statId": "speed",
+          "value": 50.2
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "deepseer_mainhand",
+      "name": "Deepseer Rod",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 1,
+      "nextTierId": "deepseer_mainhand_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 67.3
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "deepseer_mainhand_legendary",
+      "name": "Deepseer Rod of Legend",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 157
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "deepseer_offhand",
+      "name": "Deepseer Tome",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 1,
+      "nextTierId": "deepseer_offhand_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 67.3
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 48.4
+        }
+      ]
+    },
+    {
+      "id": "deepseer_offhand_legendary",
+      "name": "Deepseer Tome of Legend",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 157
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 113
+        }
+      ]
+    },
+    {
+      "id": "deepseer_head",
+      "name": "Deepseer Circlet",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 1,
+      "nextTierId": "deepseer_head_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 48.4
+        },
+        {
+          "statId": "arcana",
+          "value": 21.5
+        },
+        {
+          "statId": "spirit",
+          "value": 30.3
+        }
+      ]
+    },
+    {
+      "id": "deepseer_head_legendary",
+      "name": "Deepseer Circlet of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 113
+        },
+        {
+          "statId": "arcana",
+          "value": 50.2
+        },
+        {
+          "statId": "spirit",
+          "value": 70.6
+        }
+      ]
+    },
+    {
+      "id": "deepseer_body",
+      "name": "Deepseer Vestments",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 1,
+      "nextTierId": "deepseer_body_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 67.3
+        },
+        {
+          "statId": "speed",
+          "value": 30.3
+        },
+        {
+          "statId": "spirit",
+          "value": 40.4
+        }
+      ]
+    },
+    {
+      "id": "deepseer_body_legendary",
+      "name": "Deepseer Vestments of Legend",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 157
+        },
+        {
+          "statId": "speed",
+          "value": 70.6
+        },
+        {
+          "statId": "spirit",
+          "value": 94.1
+        }
+      ]
+    },
+    {
+      "id": "deepseer_legs",
+      "name": "Deepseer Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 1,
+      "nextTierId": "deepseer_legs_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 161
+        },
+        {
+          "statId": "willpower",
+          "value": 30.3
+        },
+        {
+          "statId": "spirit",
+          "value": 40.4
+        }
+      ]
+    },
+    {
+      "id": "deepseer_legs_legendary",
+      "name": "Deepseer Legwraps of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 376
+        },
+        {
+          "statId": "willpower",
+          "value": 70.6
+        },
+        {
+          "statId": "spirit",
+          "value": 94.1
+        }
+      ]
+    },
+    {
+      "id": "deepseer_feet",
+      "name": "Deepseer Slippers",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 10,
+      "nextTierId": "deepseer_feet_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 40.4
+        },
+        {
+          "statId": "spirit",
+          "value": 30.3
+        },
+        {
+          "statId": "willpower",
+          "value": 40.4
+        }
+      ]
+    },
+    {
+      "id": "deepseer_feet_legendary",
+      "name": "Deepseer Slippers of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 94.1
+        },
+        {
+          "statId": "spirit",
+          "value": 70.6
+        },
+        {
+          "statId": "willpower",
+          "value": 94.1
+        }
+      ]
+    },
+    {
+      "id": "deepseer_hands",
+      "name": "Deepseer Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 10,
+      "nextTierId": "deepseer_hands_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 48.4
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 35
+        }
+      ]
+    },
+    {
+      "id": "deepseer_hands_legendary",
+      "name": "Deepseer Wraps of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 113
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 81.6
+        }
+      ]
+    },
+    {
+      "id": "deepseer_neck",
+      "name": "Deepseer Pendant",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 25,
+      "nextTierId": "deepseer_neck_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 161
+        },
+        {
+          "statId": "spirit",
+          "value": 60.6
+        },
+        {
+          "statId": "speed",
+          "value": 20.2
+        }
+      ]
+    },
+    {
+      "id": "deepseer_neck_legendary",
+      "name": "Deepseer Pendant of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 376
+        },
+        {
+          "statId": "spirit",
+          "value": 141
+        },
+        {
+          "statId": "speed",
+          "value": 47.1
+        }
+      ]
+    },
+    {
+      "id": "deepseer_back",
+      "name": "Deepseer Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 25,
+      "nextTierId": "deepseer_back_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 67.3
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 20.2
+        }
+      ]
+    },
+    {
+      "id": "deepseer_back_legendary",
+      "name": "Deepseer Mantle of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 157
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 47.1
+        }
+      ]
+    },
+    {
+      "id": "deepseer_ring",
+      "name": "Deepseer Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "deepseer",
+      "minDepth": 50,
+      "nextTierId": "deepseer_ring_legendary",
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 48.4
+        },
+        {
+          "statId": "speed",
+          "value": 21.5
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "deepseer_ring_legendary",
+      "name": "Deepseer Signet of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "deepseer",
+      "minDepth": 350,
+      "bossOnly": true,
+      "zoneId": "abyssal_depths",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 113
+        },
+        {
+          "statId": "speed",
+          "value": 50.2
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_mainhand",
+      "name": "Thornwarden Cleaver",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 1,
+      "nextTierId": "thornwarden_mainhand_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 97.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 29.3
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_mainhand_legendary",
+      "name": "Thornwarden Cleaver of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 227
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 68.2
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_offhand",
+      "name": "Thornwarden Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 1,
+      "nextTierId": "thornwarden_offhand_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 97.6
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 137
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_offhand_legendary",
+      "name": "Thornwarden Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 227
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 318
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_head",
+      "name": "Thornwarden Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 1,
+      "nextTierId": "thornwarden_head_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 70.2
+        },
+        {
+          "statId": "might",
+          "value": 31.2
+        },
+        {
+          "statId": "hpCap",
+          "value": 146
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_head_legendary",
+      "name": "Thornwarden Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 164
+        },
+        {
+          "statId": "might",
+          "value": 72.8
+        },
+        {
+          "statId": "hpCap",
+          "value": 341
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_body",
+      "name": "Thornwarden Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 1,
+      "nextTierId": "thornwarden_body_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 97.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 107
+        },
+        {
+          "statId": "endurance",
+          "value": 58.5
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_body_legendary",
+      "name": "Thornwarden Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 227
+        },
+        {
+          "statId": "hpCap",
+          "value": 250
+        },
+        {
+          "statId": "endurance",
+          "value": 136
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_legs",
+      "name": "Thornwarden Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 1,
+      "nextTierId": "thornwarden_legs_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 97.6
+        },
+        {
+          "statId": "grit",
+          "value": 43.9
+        },
+        {
+          "statId": "staminaCap",
+          "value": 70.2
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_legs_legendary",
+      "name": "Thornwarden Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 227
+        },
+        {
+          "statId": "grit",
+          "value": 102
+        },
+        {
+          "statId": "staminaCap",
+          "value": 164
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_feet",
+      "name": "Thornwarden Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 10,
+      "nextTierId": "thornwarden_feet_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 234
+        },
+        {
+          "statId": "speed",
+          "value": 43.9
+        },
+        {
+          "statId": "endurance",
+          "value": 58.5
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_feet_legendary",
+      "name": "Thornwarden Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 546
+        },
+        {
+          "statId": "speed",
+          "value": 102
+        },
+        {
+          "statId": "endurance",
+          "value": 136
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_hands",
+      "name": "Thornwarden Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 10,
+      "nextTierId": "thornwarden_hands_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 70.2
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 43.9
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_hands_legendary",
+      "name": "Thornwarden Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 164
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 102
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_neck",
+      "name": "Thornwarden Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 25,
+      "nextTierId": "thornwarden_neck_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 70.2
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_neck_legendary",
+      "name": "Thornwarden Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 164
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_back",
+      "name": "Thornwarden Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 25,
+      "nextTierId": "thornwarden_back_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 70.2
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 43.9
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_back_legendary",
+      "name": "Thornwarden Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 164
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 102
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_ring",
+      "name": "Thornwarden Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "thornwarden",
+      "minDepth": 50,
+      "nextTierId": "thornwarden_ring_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 70.2
+        },
+        {
+          "statId": "speed",
+          "value": 31.2
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "thornwarden_ring_legendary",
+      "name": "Thornwarden Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "thornwarden",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 164
+        },
+        {
+          "statId": "speed",
+          "value": 72.8
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_mainhand",
+      "name": "Rootweaver Staff",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 1,
+      "nextTierId": "rootweaver_mainhand_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 97.6
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_mainhand_legendary",
+      "name": "Rootweaver Staff of Legend",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 227
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_offhand",
+      "name": "Rootweaver Tome",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 1,
+      "nextTierId": "rootweaver_offhand_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 97.6
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 70.2
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_offhand_legendary",
+      "name": "Rootweaver Tome of Legend",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 227
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 164
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_head",
+      "name": "Rootweaver Circlet",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 1,
+      "nextTierId": "rootweaver_head_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 70.2
+        },
+        {
+          "statId": "arcana",
+          "value": 31.2
+        },
+        {
+          "statId": "spirit",
+          "value": 43.9
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_head_legendary",
+      "name": "Rootweaver Circlet of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 164
+        },
+        {
+          "statId": "arcana",
+          "value": 72.8
+        },
+        {
+          "statId": "spirit",
+          "value": 102
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_body",
+      "name": "Rootweaver Vestments",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 1,
+      "nextTierId": "rootweaver_body_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 97.6
+        },
+        {
+          "statId": "speed",
+          "value": 43.9
+        },
+        {
+          "statId": "spirit",
+          "value": 58.5
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_body_legendary",
+      "name": "Rootweaver Vestments of Legend",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 227
+        },
+        {
+          "statId": "speed",
+          "value": 102
+        },
+        {
+          "statId": "spirit",
+          "value": 136
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_legs",
+      "name": "Rootweaver Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 1,
+      "nextTierId": "rootweaver_legs_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 234
+        },
+        {
+          "statId": "willpower",
+          "value": 43.9
+        },
+        {
+          "statId": "spirit",
+          "value": 58.5
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_legs_legendary",
+      "name": "Rootweaver Legwraps of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 546
+        },
+        {
+          "statId": "willpower",
+          "value": 102
+        },
+        {
+          "statId": "spirit",
+          "value": 136
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_feet",
+      "name": "Rootweaver Slippers",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 10,
+      "nextTierId": "rootweaver_feet_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 58.5
+        },
+        {
+          "statId": "spirit",
+          "value": 43.9
+        },
+        {
+          "statId": "willpower",
+          "value": 58.5
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_feet_legendary",
+      "name": "Rootweaver Slippers of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 136
+        },
+        {
+          "statId": "spirit",
+          "value": 102
+        },
+        {
+          "statId": "willpower",
+          "value": 136
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_hands",
+      "name": "Rootweaver Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 10,
+      "nextTierId": "rootweaver_hands_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 70.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 50.7
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_hands_legendary",
+      "name": "Rootweaver Wraps of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 164
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 118
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_neck",
+      "name": "Rootweaver Pendant",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 25,
+      "nextTierId": "rootweaver_neck_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 234
+        },
+        {
+          "statId": "spirit",
+          "value": 87.8
+        },
+        {
+          "statId": "speed",
+          "value": 29.3
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_neck_legendary",
+      "name": "Rootweaver Pendant of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 546
+        },
+        {
+          "statId": "spirit",
+          "value": 205
+        },
+        {
+          "statId": "speed",
+          "value": 68.2
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_back",
+      "name": "Rootweaver Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 25,
+      "nextTierId": "rootweaver_back_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 97.6
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 29.3
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_back_legendary",
+      "name": "Rootweaver Mantle of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 227
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 68.2
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_ring",
+      "name": "Rootweaver Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "rootweaver",
+      "minDepth": 50,
+      "nextTierId": "rootweaver_ring_legendary",
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 70.2
+        },
+        {
+          "statId": "speed",
+          "value": 31.2
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "rootweaver_ring_legendary",
+      "name": "Rootweaver Signet of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "rootweaver",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "verdant_maw",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 164
+        },
+        {
+          "statId": "speed",
+          "value": 72.8
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_mainhand",
+      "name": "Obsidian Legion Maul",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 1,
+      "nextTierId": "obsidian_legion_mainhand_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 141
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 42.4
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_mainhand_legendary",
+      "name": "Obsidian Legion Maul of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 330
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 98.9
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_offhand",
+      "name": "Obsidian Legion Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 1,
+      "nextTierId": "obsidian_legion_offhand_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 141
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 198
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_offhand_legendary",
+      "name": "Obsidian Legion Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 330
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 462
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_head",
+      "name": "Obsidian Legion Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 1,
+      "nextTierId": "obsidian_legion_head_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 102
+        },
+        {
+          "statId": "might",
+          "value": 45.3
+        },
+        {
+          "statId": "hpCap",
+          "value": 212
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_head_legendary",
+      "name": "Obsidian Legion Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 237
+        },
+        {
+          "statId": "might",
+          "value": 106
+        },
+        {
+          "statId": "hpCap",
+          "value": 495
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_body",
+      "name": "Obsidian Legion Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 1,
+      "nextTierId": "obsidian_legion_body_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 141
+        },
+        {
+          "statId": "hpCap",
+          "value": 156
+        },
+        {
+          "statId": "endurance",
+          "value": 84.9
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_body_legendary",
+      "name": "Obsidian Legion Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 330
+        },
+        {
+          "statId": "hpCap",
+          "value": 363
+        },
+        {
+          "statId": "endurance",
+          "value": 198
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_legs",
+      "name": "Obsidian Legion Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 1,
+      "nextTierId": "obsidian_legion_legs_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 141
+        },
+        {
+          "statId": "grit",
+          "value": 63.7
+        },
+        {
+          "statId": "staminaCap",
+          "value": 102
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_legs_legendary",
+      "name": "Obsidian Legion Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 330
+        },
+        {
+          "statId": "grit",
+          "value": 148
+        },
+        {
+          "statId": "staminaCap",
+          "value": 237
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_feet",
+      "name": "Obsidian Legion Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 10,
+      "nextTierId": "obsidian_legion_feet_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 339
+        },
+        {
+          "statId": "speed",
+          "value": 63.7
+        },
+        {
+          "statId": "endurance",
+          "value": 84.9
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_feet_legendary",
+      "name": "Obsidian Legion Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 791
+        },
+        {
+          "statId": "speed",
+          "value": 148
+        },
+        {
+          "statId": "endurance",
+          "value": 198
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_hands",
+      "name": "Obsidian Legion Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 10,
+      "nextTierId": "obsidian_legion_hands_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 102
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 63.7
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_hands_legendary",
+      "name": "Obsidian Legion Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 237
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 148
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_neck",
+      "name": "Obsidian Legion Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 25,
+      "nextTierId": "obsidian_legion_neck_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 102
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_neck_legendary",
+      "name": "Obsidian Legion Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 237
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_back",
+      "name": "Obsidian Legion Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 25,
+      "nextTierId": "obsidian_legion_back_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 102
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 63.7
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_back_legendary",
+      "name": "Obsidian Legion Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 237
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 148
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_ring",
+      "name": "Obsidian Legion Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "obsidian_legion",
+      "minDepth": 50,
+      "nextTierId": "obsidian_legion_ring_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 102
+        },
+        {
+          "statId": "speed",
+          "value": 45.3
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "obsidian_legion_ring_legendary",
+      "name": "Obsidian Legion Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "obsidian_legion",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 237
+        },
+        {
+          "statId": "speed",
+          "value": 106
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_mainhand",
+      "name": "Ashen Magister Scepter",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 1,
+      "nextTierId": "ashen_magister_mainhand_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 141
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_mainhand_legendary",
+      "name": "Ashen Magister Scepter of Legend",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 330
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_offhand",
+      "name": "Ashen Magister Tome",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 1,
+      "nextTierId": "ashen_magister_offhand_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 141
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 102
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_offhand_legendary",
+      "name": "Ashen Magister Tome of Legend",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 330
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 237
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_head",
+      "name": "Ashen Magister Circlet",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 1,
+      "nextTierId": "ashen_magister_head_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 102
+        },
+        {
+          "statId": "arcana",
+          "value": 45.3
+        },
+        {
+          "statId": "spirit",
+          "value": 63.7
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_head_legendary",
+      "name": "Ashen Magister Circlet of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 237
+        },
+        {
+          "statId": "arcana",
+          "value": 106
+        },
+        {
+          "statId": "spirit",
+          "value": 148
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_body",
+      "name": "Ashen Magister Vestments",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 1,
+      "nextTierId": "ashen_magister_body_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 141
+        },
+        {
+          "statId": "speed",
+          "value": 63.7
+        },
+        {
+          "statId": "spirit",
+          "value": 84.9
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_body_legendary",
+      "name": "Ashen Magister Vestments of Legend",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 330
+        },
+        {
+          "statId": "speed",
+          "value": 148
+        },
+        {
+          "statId": "spirit",
+          "value": 198
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_legs",
+      "name": "Ashen Magister Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 1,
+      "nextTierId": "ashen_magister_legs_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 339
+        },
+        {
+          "statId": "willpower",
+          "value": 63.7
+        },
+        {
+          "statId": "spirit",
+          "value": 84.9
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_legs_legendary",
+      "name": "Ashen Magister Legwraps of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 791
+        },
+        {
+          "statId": "willpower",
+          "value": 148
+        },
+        {
+          "statId": "spirit",
+          "value": 198
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_feet",
+      "name": "Ashen Magister Slippers",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 10,
+      "nextTierId": "ashen_magister_feet_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 84.9
+        },
+        {
+          "statId": "spirit",
+          "value": 63.7
+        },
+        {
+          "statId": "willpower",
+          "value": 84.9
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_feet_legendary",
+      "name": "Ashen Magister Slippers of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 198
+        },
+        {
+          "statId": "spirit",
+          "value": 148
+        },
+        {
+          "statId": "willpower",
+          "value": 198
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_hands",
+      "name": "Ashen Magister Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 10,
+      "nextTierId": "ashen_magister_hands_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 102
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 73.6
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_hands_legendary",
+      "name": "Ashen Magister Wraps of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 237
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 171
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_neck",
+      "name": "Ashen Magister Pendant",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 25,
+      "nextTierId": "ashen_magister_neck_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 339
+        },
+        {
+          "statId": "spirit",
+          "value": 127
+        },
+        {
+          "statId": "speed",
+          "value": 42.4
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_neck_legendary",
+      "name": "Ashen Magister Pendant of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 791
+        },
+        {
+          "statId": "spirit",
+          "value": 297
+        },
+        {
+          "statId": "speed",
+          "value": 98.9
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_back",
+      "name": "Ashen Magister Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 25,
+      "nextTierId": "ashen_magister_back_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 141
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 42.4
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_back_legendary",
+      "name": "Ashen Magister Mantle of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 330
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 98.9
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_ring",
+      "name": "Ashen Magister Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "ashen_magister",
+      "minDepth": 50,
+      "nextTierId": "ashen_magister_ring_legendary",
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 102
+        },
+        {
+          "statId": "speed",
+          "value": 45.3
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "ashen_magister_ring_legendary",
+      "name": "Ashen Magister Signet of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "ashen_magister",
+      "minDepth": 400,
+      "bossOnly": true,
+      "zoneId": "obsidian_citadel",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 237
+        },
+        {
+          "statId": "speed",
+          "value": 106
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "starforged_mainhand",
+      "name": "Starforged Warblade",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 1,
+      "nextTierId": "starforged_mainhand_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 205
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 61.5
+        }
+      ]
+    },
+    {
+      "id": "starforged_mainhand_legendary",
+      "name": "Starforged Warblade of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 478
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 143
+        }
+      ]
+    },
+    {
+      "id": "starforged_offhand",
+      "name": "Starforged Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 1,
+      "nextTierId": "starforged_offhand_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 205
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 287
+        }
+      ]
+    },
+    {
+      "id": "starforged_offhand_legendary",
+      "name": "Starforged Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 478
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 669
+        }
+      ]
+    },
+    {
+      "id": "starforged_head",
+      "name": "Starforged Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 1,
+      "nextTierId": "starforged_head_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 148
+        },
+        {
+          "statId": "might",
+          "value": 65.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 308
+        }
+      ]
+    },
+    {
+      "id": "starforged_head_legendary",
+      "name": "Starforged Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 344
+        },
+        {
+          "statId": "might",
+          "value": 153
+        },
+        {
+          "statId": "hpCap",
+          "value": 717
+        }
+      ]
+    },
+    {
+      "id": "starforged_body",
+      "name": "Starforged Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 1,
+      "nextTierId": "starforged_body_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 205
+        },
+        {
+          "statId": "hpCap",
+          "value": 226
+        },
+        {
+          "statId": "endurance",
+          "value": 123
+        }
+      ]
+    },
+    {
+      "id": "starforged_body_legendary",
+      "name": "Starforged Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 478
+        },
+        {
+          "statId": "hpCap",
+          "value": 526
+        },
+        {
+          "statId": "endurance",
+          "value": 287
+        }
+      ]
+    },
+    {
+      "id": "starforged_legs",
+      "name": "Starforged Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 1,
+      "nextTierId": "starforged_legs_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 205
+        },
+        {
+          "statId": "grit",
+          "value": 92.3
+        },
+        {
+          "statId": "staminaCap",
+          "value": 148
+        }
+      ]
+    },
+    {
+      "id": "starforged_legs_legendary",
+      "name": "Starforged Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 478
+        },
+        {
+          "statId": "grit",
+          "value": 215
+        },
+        {
+          "statId": "staminaCap",
+          "value": 344
+        }
+      ]
+    },
+    {
+      "id": "starforged_feet",
+      "name": "Starforged Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 10,
+      "nextTierId": "starforged_feet_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 492
+        },
+        {
+          "statId": "speed",
+          "value": 92.3
+        },
+        {
+          "statId": "endurance",
+          "value": 123
+        }
+      ]
+    },
+    {
+      "id": "starforged_feet_legendary",
+      "name": "Starforged Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 1150
+        },
+        {
+          "statId": "speed",
+          "value": 215
+        },
+        {
+          "statId": "endurance",
+          "value": 287
+        }
+      ]
+    },
+    {
+      "id": "starforged_hands",
+      "name": "Starforged Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 10,
+      "nextTierId": "starforged_hands_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 148
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 92.3
+        }
+      ]
+    },
+    {
+      "id": "starforged_hands_legendary",
+      "name": "Starforged Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 344
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 215
+        }
+      ]
+    },
+    {
+      "id": "starforged_neck",
+      "name": "Starforged Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 25,
+      "nextTierId": "starforged_neck_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 148
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "starforged_neck_legendary",
+      "name": "Starforged Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 344
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "starforged_back",
+      "name": "Starforged Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 25,
+      "nextTierId": "starforged_back_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 148
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 92.3
+        }
+      ]
+    },
+    {
+      "id": "starforged_back_legendary",
+      "name": "Starforged Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 344
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 215
+        }
+      ]
+    },
+    {
+      "id": "starforged_ring",
+      "name": "Starforged Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "starforged",
+      "minDepth": 50,
+      "nextTierId": "starforged_ring_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 148
+        },
+        {
+          "statId": "speed",
+          "value": 65.6
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "starforged_ring_legendary",
+      "name": "Starforged Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "starforged",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 344
+        },
+        {
+          "statId": "speed",
+          "value": 153
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_mainhand",
+      "name": "Voidweaver Rod",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 1,
+      "nextTierId": "voidweaver_mainhand_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 205
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_mainhand_legendary",
+      "name": "Voidweaver Rod of Legend",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 478
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_offhand",
+      "name": "Voidweaver Tome",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 1,
+      "nextTierId": "voidweaver_offhand_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 205
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 148
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_offhand_legendary",
+      "name": "Voidweaver Tome of Legend",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 478
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 344
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_head",
+      "name": "Voidweaver Circlet",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 1,
+      "nextTierId": "voidweaver_head_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 148
+        },
+        {
+          "statId": "arcana",
+          "value": 65.6
+        },
+        {
+          "statId": "spirit",
+          "value": 92.3
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_head_legendary",
+      "name": "Voidweaver Circlet of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 344
+        },
+        {
+          "statId": "arcana",
+          "value": 153
+        },
+        {
+          "statId": "spirit",
+          "value": 215
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_body",
+      "name": "Voidweaver Vestments",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 1,
+      "nextTierId": "voidweaver_body_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 205
+        },
+        {
+          "statId": "speed",
+          "value": 92.3
+        },
+        {
+          "statId": "spirit",
+          "value": 123
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_body_legendary",
+      "name": "Voidweaver Vestments of Legend",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 478
+        },
+        {
+          "statId": "speed",
+          "value": 215
+        },
+        {
+          "statId": "spirit",
+          "value": 287
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_legs",
+      "name": "Voidweaver Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 1,
+      "nextTierId": "voidweaver_legs_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 492
+        },
+        {
+          "statId": "willpower",
+          "value": 92.3
+        },
+        {
+          "statId": "spirit",
+          "value": 123
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_legs_legendary",
+      "name": "Voidweaver Legwraps of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 1150
+        },
+        {
+          "statId": "willpower",
+          "value": 215
+        },
+        {
+          "statId": "spirit",
+          "value": 287
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_feet",
+      "name": "Voidweaver Slippers",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 10,
+      "nextTierId": "voidweaver_feet_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 123
+        },
+        {
+          "statId": "spirit",
+          "value": 92.3
+        },
+        {
+          "statId": "willpower",
+          "value": 123
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_feet_legendary",
+      "name": "Voidweaver Slippers of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 287
+        },
+        {
+          "statId": "spirit",
+          "value": 215
+        },
+        {
+          "statId": "willpower",
+          "value": 287
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_hands",
+      "name": "Voidweaver Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 10,
+      "nextTierId": "voidweaver_hands_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 148
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 107
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_hands_legendary",
+      "name": "Voidweaver Wraps of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 344
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 249
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_neck",
+      "name": "Voidweaver Pendant",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 25,
+      "nextTierId": "voidweaver_neck_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 492
+        },
+        {
+          "statId": "spirit",
+          "value": 185
+        },
+        {
+          "statId": "speed",
+          "value": 61.5
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_neck_legendary",
+      "name": "Voidweaver Pendant of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 1150
+        },
+        {
+          "statId": "spirit",
+          "value": 430
+        },
+        {
+          "statId": "speed",
+          "value": 143
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_back",
+      "name": "Voidweaver Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 25,
+      "nextTierId": "voidweaver_back_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 205
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 61.5
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_back_legendary",
+      "name": "Voidweaver Mantle of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 478
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 143
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_ring",
+      "name": "Voidweaver Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "voidweaver",
+      "minDepth": 50,
+      "nextTierId": "voidweaver_ring_legendary",
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 148
+        },
+        {
+          "statId": "speed",
+          "value": 65.6
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "voidweaver_ring_legendary",
+      "name": "Voidweaver Signet of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "voidweaver",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "astral_rift",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 344
+        },
+        {
+          "statId": "speed",
+          "value": 153
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_mainhand",
+      "name": "Kingslayer Cleaver",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 1,
+      "nextTierId": "kingslayer_mainhand_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 297
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "precision",
+          "value": 89.2
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_mainhand_legendary",
+      "name": "Kingslayer Cleaver of Legend",
+      "icon": "axe",
+      "slot": "mainHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 693
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "precision",
+          "value": 208
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_offhand",
+      "name": "Kingslayer Bulwark",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 1,
+      "nextTierId": "kingslayer_offhand_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 297
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "hpCap",
+          "value": 416
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_offhand_legendary",
+      "name": "Kingslayer Bulwark of Legend",
+      "icon": "shield",
+      "slot": "offHand",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 693
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "hpCap",
+          "value": 971
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_head",
+      "name": "Kingslayer Helm",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 1,
+      "nextTierId": "kingslayer_head_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 214
+        },
+        {
+          "statId": "might",
+          "value": 95.2
+        },
+        {
+          "statId": "hpCap",
+          "value": 446
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_head_legendary",
+      "name": "Kingslayer Helm of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 499
+        },
+        {
+          "statId": "might",
+          "value": 222
+        },
+        {
+          "statId": "hpCap",
+          "value": 1040
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_body",
+      "name": "Kingslayer Plate",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 1,
+      "nextTierId": "kingslayer_body_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 297
+        },
+        {
+          "statId": "hpCap",
+          "value": 327
+        },
+        {
+          "statId": "endurance",
+          "value": 178
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_body_legendary",
+      "name": "Kingslayer Plate of Legend",
+      "icon": "armor",
+      "slot": "body",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "grit",
+          "value": 693
+        },
+        {
+          "statId": "hpCap",
+          "value": 763
+        },
+        {
+          "statId": "endurance",
+          "value": 416
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_legs",
+      "name": "Kingslayer Greaves",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 1,
+      "nextTierId": "kingslayer_legs_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 297
+        },
+        {
+          "statId": "grit",
+          "value": 134
+        },
+        {
+          "statId": "staminaCap",
+          "value": 214
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_legs_legendary",
+      "name": "Kingslayer Greaves of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 693
+        },
+        {
+          "statId": "grit",
+          "value": 312
+        },
+        {
+          "statId": "staminaCap",
+          "value": 499
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_feet",
+      "name": "Kingslayer Sabatons",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 10,
+      "nextTierId": "kingslayer_feet_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 714
+        },
+        {
+          "statId": "speed",
+          "value": 134
+        },
+        {
+          "statId": "endurance",
+          "value": 178
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_feet_legendary",
+      "name": "Kingslayer Sabatons of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "staminaCap",
+          "value": 1660
+        },
+        {
+          "statId": "speed",
+          "value": 312
+        },
+        {
+          "statId": "endurance",
+          "value": 416
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_hands",
+      "name": "Kingslayer Gauntlets",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 10,
+      "nextTierId": "kingslayer_hands_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 214
+        },
+        {
+          "statId": "critChance",
+          "value": 10.2
+        },
+        {
+          "statId": "precision",
+          "value": 134
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_hands_legendary",
+      "name": "Kingslayer Gauntlets of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 499
+        },
+        {
+          "statId": "critChance",
+          "value": 23.9
+        },
+        {
+          "statId": "precision",
+          "value": 312
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_neck",
+      "name": "Kingslayer Torc",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 25,
+      "nextTierId": "kingslayer_neck_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 214
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 10.2
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_neck_legendary",
+      "name": "Kingslayer Torc of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 499
+        },
+        {
+          "statId": "lifeSteal",
+          "value": 23.9
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_back",
+      "name": "Kingslayer Warcloak",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 25,
+      "nextTierId": "kingslayer_back_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 214
+        },
+        {
+          "statId": "regen",
+          "value": 10.2
+        },
+        {
+          "statId": "grit",
+          "value": 134
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_back_legendary",
+      "name": "Kingslayer Warcloak of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "endurance",
+          "value": 499
+        },
+        {
+          "statId": "regen",
+          "value": 23.9
+        },
+        {
+          "statId": "grit",
+          "value": 312
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_ring",
+      "name": "Kingslayer Band",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "epic",
+      "setId": "kingslayer",
+      "minDepth": 50,
+      "nextTierId": "kingslayer_ring_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 214
+        },
+        {
+          "statId": "speed",
+          "value": 95.2
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "kingslayer_ring_legendary",
+      "name": "Kingslayer Band of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "physical",
+      "rarity": "legendary",
+      "setId": "kingslayer",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "might",
+          "value": 499
+        },
+        {
+          "statId": "speed",
+          "value": 222
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
+    },
+    {
+      "id": "crownless_mainhand",
+      "name": "Crownless Staff",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 1,
+      "nextTierId": "crownless_mainhand_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 297
+        },
+        {
+          "statId": "critDamage",
+          "value": 14.4
+        },
+        {
+          "statId": "focusGain",
+          "value": 9.6
+        }
+      ]
+    },
+    {
+      "id": "crownless_mainhand_legendary",
+      "name": "Crownless Staff of Legend",
+      "icon": "wand",
+      "slot": "mainHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 693
+        },
+        {
+          "statId": "critDamage",
+          "value": 33.6
+        },
+        {
+          "statId": "focusGain",
+          "value": 22.4
+        }
+      ]
+    },
+    {
+      "id": "crownless_offhand",
+      "name": "Crownless Tome",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 1,
+      "nextTierId": "crownless_offhand_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 297
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 214
+        }
+      ]
+    },
+    {
+      "id": "crownless_offhand_legendary",
+      "name": "Crownless Tome of Legend",
+      "icon": "sparkles",
+      "slot": "offHand",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "spirit",
+          "value": 693
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 499
+        }
+      ]
+    },
+    {
+      "id": "crownless_head",
+      "name": "Crownless Circlet",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 1,
+      "nextTierId": "crownless_head_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 214
+        },
+        {
+          "statId": "arcana",
+          "value": 95.2
+        },
+        {
+          "statId": "spirit",
+          "value": 134
+        }
+      ]
+    },
+    {
+      "id": "crownless_head_legendary",
+      "name": "Crownless Circlet of Legend",
+      "icon": "helm",
+      "slot": "head",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 499
+        },
+        {
+          "statId": "arcana",
+          "value": 222
+        },
+        {
+          "statId": "spirit",
+          "value": 312
+        }
+      ]
+    },
+    {
+      "id": "crownless_body",
+      "name": "Crownless Vestments",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 1,
+      "nextTierId": "crownless_body_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 297
+        },
+        {
+          "statId": "speed",
+          "value": 134
+        },
+        {
+          "statId": "spirit",
+          "value": 178
+        }
+      ]
+    },
+    {
+      "id": "crownless_body_legendary",
+      "name": "Crownless Vestments of Legend",
+      "icon": "robe",
+      "slot": "body",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 693
+        },
+        {
+          "statId": "speed",
+          "value": 312
+        },
+        {
+          "statId": "spirit",
+          "value": 416
+        }
+      ]
+    },
+    {
+      "id": "crownless_legs",
+      "name": "Crownless Legwraps",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 1,
+      "nextTierId": "crownless_legs_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 714
+        },
+        {
+          "statId": "willpower",
+          "value": 134
+        },
+        {
+          "statId": "spirit",
+          "value": 178
+        }
+      ]
+    },
+    {
+      "id": "crownless_legs_legendary",
+      "name": "Crownless Legwraps of Legend",
+      "icon": "legs",
+      "slot": "legs",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 1660
+        },
+        {
+          "statId": "willpower",
+          "value": 312
+        },
+        {
+          "statId": "spirit",
+          "value": 416
+        }
+      ]
+    },
+    {
+      "id": "crownless_feet",
+      "name": "Crownless Slippers",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 10,
+      "nextTierId": "crownless_feet_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 178
+        },
+        {
+          "statId": "spirit",
+          "value": 134
+        },
+        {
+          "statId": "willpower",
+          "value": 178
+        }
+      ]
+    },
+    {
+      "id": "crownless_feet_legendary",
+      "name": "Crownless Slippers of Legend",
+      "icon": "boots",
+      "slot": "feet",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "speed",
+          "value": 416
+        },
+        {
+          "statId": "spirit",
+          "value": 312
+        },
+        {
+          "statId": "willpower",
+          "value": 416
+        }
+      ]
+    },
+    {
+      "id": "crownless_hands",
+      "name": "Crownless Wraps",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 10,
+      "nextTierId": "crownless_hands_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 214
+        },
+        {
+          "statId": "critDamage",
+          "value": 10.2
+        },
+        {
+          "statId": "manaCap",
+          "value": 155
+        }
+      ]
+    },
+    {
+      "id": "crownless_hands_legendary",
+      "name": "Crownless Wraps of Legend",
+      "icon": "gloves",
+      "slot": "hands",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 499
+        },
+        {
+          "statId": "critDamage",
+          "value": 23.9
+        },
+        {
+          "statId": "manaCap",
+          "value": 361
+        }
+      ]
+    },
+    {
+      "id": "crownless_neck",
+      "name": "Crownless Pendant",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 25,
+      "nextTierId": "crownless_neck_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 714
+        },
+        {
+          "statId": "spirit",
+          "value": 268
+        },
+        {
+          "statId": "speed",
+          "value": 89.2
+        }
+      ]
+    },
+    {
+      "id": "crownless_neck_legendary",
+      "name": "Crownless Pendant of Legend",
+      "icon": "amulet",
+      "slot": "neck",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "manaCap",
+          "value": 1660
+        },
+        {
+          "statId": "spirit",
+          "value": 624
+        },
+        {
+          "statId": "speed",
+          "value": 208
+        }
+      ]
+    },
+    {
+      "id": "crownless_back",
+      "name": "Crownless Mantle",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 25,
+      "nextTierId": "crownless_back_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 297
+        },
+        {
+          "statId": "resistance",
+          "value": 14.4
+        },
+        {
+          "statId": "manaCap",
+          "value": 89.2
+        }
+      ]
+    },
+    {
+      "id": "crownless_back_legendary",
+      "name": "Crownless Mantle of Legend",
+      "icon": "cloak",
+      "slot": "back",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "willpower",
+          "value": 693
+        },
+        {
+          "statId": "resistance",
+          "value": 33.6
+        },
+        {
+          "statId": "manaCap",
+          "value": 208
+        }
+      ]
+    },
+    {
+      "id": "crownless_ring",
+      "name": "Crownless Signet",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "epic",
+      "setId": "crownless",
+      "minDepth": 50,
+      "nextTierId": "crownless_ring_legendary",
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 214
+        },
+        {
+          "statId": "speed",
+          "value": 95.2
+        },
+        {
+          "statId": "critChance",
+          "value": 7.04
+        }
+      ]
+    },
+    {
+      "id": "crownless_ring_legendary",
+      "name": "Crownless Signet of Legend",
+      "icon": "ring",
+      "slot": "ring",
+      "track": "arcane",
+      "rarity": "legendary",
+      "setId": "crownless",
+      "minDepth": 450,
+      "bossOnly": true,
+      "zoneId": "hollow_throne",
+      "stats": [
+        {
+          "statId": "arcana",
+          "value": 499
+        },
+        {
+          "statId": "speed",
+          "value": 222
+        },
+        {
+          "statId": "critChance",
+          "value": 16.4
+        }
+      ]
     }
   ]
 }

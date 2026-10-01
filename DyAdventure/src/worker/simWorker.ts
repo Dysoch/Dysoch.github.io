@@ -184,7 +184,7 @@ ctx.onmessage = (e: MessageEvent<MainToWorkerMessage>) => {
       state = recall(state)
       break
     case 'ASCEND':
-      state = ascend(state)
+      state = ascend(state, msg.spec)
       break
     case 'CRAFT_ITEM': {
       const result = craftItem(state, msg.catalogId, now, msg.count)

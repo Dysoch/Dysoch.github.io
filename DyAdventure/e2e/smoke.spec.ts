@@ -73,3 +73,43 @@ test.describe('phone width', () => {
     }
   })
 })
+
+test('Ascending as a Mage locks the Physical path and wipes gear and discoveries', async ({ page }) => {
+  const errors = await openWithSave(page, 'ascend-ready')
+  await expect(page.locator('.hud-header')).toContainText('Adventurer')
+  await openTab(page, 'Prestige')
+  await page.getByRole('button', { name: /^Ascend ·/ }).click()
+  await page.getByRole('radio', { name: /Mage/ }).click()
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.getByRole('button', { name: 'Ascend as Mage' }).click()
+
+  await expect(page.locator('.hud-header')).toContainText('Mage')
+  await expect(page.locator('.hud-header')).not.toContainText('Stamina')
+  await openTab(page, 'Training')
+  await expect(page.getByText('Arcana', { exact: true })).toBeVisible()
+  await expect(page.getByText('Might', { exact: true })).toHaveCount(0)
+  await expect(page.getByText(/Physical is locked for a Mage/)).toBeVisible()
+  await openTab(page, 'Abilities')
+  await expect(page.getByText('Bolt', { exact: true })).toBeVisible()
+  await expect(page.getByText('Strike', { exact: true })).toHaveCount(0)
+  // The Mage signature ability is shown only as a locked ????? until its Sigil perk is bought
+  await expect(page.getByText('?????')).toBeVisible()
+  await expect(page.getByText('Arcane Nova')).toHaveCount(0)
+  // Discoveries are wiped, but the gear tabs stay open
+  await expect(page.getByRole('button', { name: /^Crafting/ })).toBeVisible()
+  await openTab(page, 'Inventory')
+  await expect(equippedRow(page, 'Main Hand')).not.toContainText('Vanguard Sword')
+  expect(errors).toEqual([])
+})
+
+test('late zones: all ten are listed and their huge numbers stay readable', async ({ page }) => {
+  const errors = await openWithSave(page, 'late-game')
+  await expect(page.locator('.combat-main')).toContainText(/Hollow/)
+  await expect(page.locator('body')).not.toContainText(/e\+\d|Infinity|NaN/)
+  await openTab(page, 'Zones')
+  for (const name of ['Stormspire Heights', 'Abyssal Depths', 'Verdant Maw', 'Obsidian Citadel', 'Astral Rift', 'The Hollow Throne']) {
+    await expect(page.getByText(name, { exact: true }).first()).toBeVisible()
+  }
+  await expect(page.locator('body')).not.toContainText(/e\+\d|Infinity|NaN/)
+  expect(errors).toEqual([])
+})

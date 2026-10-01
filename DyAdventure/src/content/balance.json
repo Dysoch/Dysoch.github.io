@@ -1,12 +1,17 @@
 {
   "specialization": {
     "maxBonus": 1.25,
-    "description": "Abilities deal more damage the more of your Physical-vs-Arcane attribute levels sit in their school. An even split gives x1 to both; all-in on one school gives x(1 + maxBonus) to it."
+    "description": "A Warrior's Physical abilities and a Mage's spells deal x(1 + maxBonus); an Adventurer gets x1 for both (content/specs.json)."
   },
   "spellMastery": {
     "perArcana": 0.0013,
     "description": "Spells deal baseMultiplier x (1 + Arcana x perArcana) on top of Arcana's normal +8%: weak early, large late. Arcane's zero-to-hero curve.",
     "baseMultiplier": 0.4
+  },
+  "weaponMastery": {
+    "baseMultiplier": 1,
+    "perMight": 0.0005,
+    "description": "Weapon abilities deal baseMultiplier x (1 + Might x perMight) on top of Might's normal +8%: strong from the start and growing with Might, so Warriors keep up in the deep zones. Which spec has the edge late is set by each zone's resistances."
   },
   "willpowerHpPerPoint": 0.75
 }

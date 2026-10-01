@@ -7,8 +7,8 @@
   "maxPurchasesPerTick": 200,
   "buildPresets": [
     {
-      "id": "physical",
-      "name": "Physical",
+      "id": "warrior",
+      "name": "Warrior",
       "description": "Weapon build: trains Physical and Utility stats and upgrades Physical abilities only.",
       "statGroupWeights": {
         "physical": 3,
@@ -21,8 +21,8 @@
       }
     },
     {
-      "id": "arcane",
-      "name": "Arcane",
+      "id": "mage",
+      "name": "Mage",
       "description": "Caster build: trains Arcane and Utility stats and upgrades Arcane abilities only.",
       "statGroupWeights": {
         "physical": 0,
@@ -35,8 +35,8 @@
       }
     },
     {
-      "id": "hybrid",
-      "name": "Hybrid",
+      "id": "adventurer",
+      "name": "Adventurer",
       "description": "Everything evenly, like the default.",
       "statGroupWeights": {
         "physical": 1,

@@ -78,6 +78,29 @@ export interface AbilityDef {
   /** kind: 'buff' */
   buffStatId?: PrimaryStat
   buffDurationMs?: number
+  /** Signature abilities: only usable by this spec... */
+  spec?: SpecId
+  /** ...once this Sigil perk is owned */
+  unlockPerkId?: string
+  /** Fires as whichever school currently hits harder (physical: Stamina, spell: Mana); `type` is only the fallback */
+  adaptive?: boolean
+}
+
+export type SpecId = 'adventurer' | 'warrior' | 'mage'
+
+/** A class chosen on Ascend (content/specs.json): locks the other school's groups and boosts its own. */
+export interface SpecDef {
+  id: SpecId
+  name: string
+  icon: string
+  /** {bonus} is replaced by the specialization multiplier */
+  description: string
+  /** Stat and ability group ids (content/groups.json) this spec can't train, rank or benefit from on gear */
+  lockedGroups: string[]
+  /** School whose abilities get the specialization bonus; null = none */
+  bonusSchool: AbilityType | null
+  /** Build preset (content/automation.json) the autobuyers switch to when this spec is chosen */
+  presetId: string
 }
 
 export interface AbilityProgress {
@@ -268,6 +291,13 @@ export type PerkEffect =
   | 'bonusDotTicks'
   | 'overkillPower'
   | 'executeThreshold'
+  | 'physicalDamage'
+  | 'spellDamage'
+  | 'sigilGain'
+  | 'startingMaterials'
+  | 'keepDiscoveries'
+  | 'keepAugments'
+  | 'unlockAbility'
 
 export interface PerkDef {
   id: string
@@ -279,6 +309,8 @@ export interface PerkDef {
   costMultiplier: number
   effect: PerkEffect
   perLevel: number
+  /** Spec perks only count while you are that spec (they can be bought any time) */
+  spec?: SpecId
 }
 
 export interface ChangelogEntry {
@@ -349,6 +381,8 @@ export interface SimState {
   discoveredItemIds: string[]
   recallCount: number
   ascendCount: number
+  /** Chosen on each Ascend; every new game starts as an Adventurer */
+  spec: SpecId
   materials: Record<string, number>
   /** Lifetime counters for the Statistics page (never reset by Recall or Ascend) */
   lifetime: Record<string, number>
@@ -398,7 +432,7 @@ export type MainToWorkerMessage =
   | { type: 'IMBUE_AUGMENT'; augmentId: string; count?: number }
   | { type: 'REFORGE_ITEM'; instanceId: string }
   | { type: 'RECALL' }
-  | { type: 'ASCEND' }
+  | { type: 'ASCEND'; spec: SpecId }
   | { type: 'BUY_PERK'; perkId: string; count?: number }
   | { type: 'CRAFT_ITEM'; catalogId: string; count?: number }
   | { type: 'IMPORT_SAVE'; state: SimState }

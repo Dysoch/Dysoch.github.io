@@ -1,7 +1,8 @@
 import statsData from '../content/stats.json'
 import groupsData from '../content/groups.json'
 import { useGameStore } from '../store/gameStore'
-import { computeMaxTrainCount, computeStatGainPerTrain, computeTrainCostN } from '../worker/simLogic'
+import { computeMaxTrainCount, computeStatGainPerTrain, computeTrainCostN, getSpecDef } from '../worker/simLogic'
+import { LockedGroupsNote } from '../components/LockedGroupsNote'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
 import { BuyButtonRow, type BuyRowOption } from '../components/BuyButtonRow'
@@ -17,6 +18,7 @@ export default function TrainingPage() {
   const gainPerTrain = useGameStore(computeStatGainPerTrain)
   const focus = useGameStore((s) => s.focus)
   const trainStat = useGameStore((s) => s.trainStat)
+  const lockedGroups = useGameStore((s) => getSpecDef(s.spec).lockedGroups)
 
   return (
     <div style={{ padding: '24px' }}>
@@ -26,10 +28,12 @@ export default function TrainingPage() {
         {' · '}Each training grants <strong style={{ color: 'var(--text)' }}>+{formatNumber(gainPerTrain)}</strong> to the stat; its cost depends on how many times you've trained it.
       </p>
 
+      <LockedGroupsNote groups={GROUPS} />
+
       <div className="group-columns">
         {GROUPS.map((group) => {
           const members = STATS.filter((s) => s.group === group.id)
-          if (members.length === 0) return null
+          if (members.length === 0 || lockedGroups.includes(group.id)) return null
           return (
             <section key={group.id} className="group-section">
               <div className="group-header" style={{ borderColor: group.color }}>

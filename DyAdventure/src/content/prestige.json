@@ -7,7 +7,8 @@
   "ascend": {
     "minEchoesEarned": 100,
     "echoesPerSigilSquared": 25,
-    "trainGainPerBestSigil": 0.15
+    "trainGainPerBestSigil": 0.15,
+    "sigilPayoutMultiplier": 2.5
   },
   "perks": [
     { "id": "swift_learner", "name": "Swift Learner", "description": "+10% stat gain per training, per level.", "currency": "echoes", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.5, "effect": "trainGain", "perLevel": 0.1 },
@@ -32,6 +33,22 @@
     { "id": "eternal_wisdom", "name": "Eternal Wisdom", "description": "+5% stat gain per training, per level. Survives Ascend.", "currency": "sigils", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.7, "effect": "trainGain", "perLevel": 0.05 },
     { "id": "eternal_fortune", "name": "Eternal Fortune", "description": "+5% Focus from kills, per level. Survives Ascend.", "currency": "sigils", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.7, "effect": "focusGain", "perLevel": 0.05 },
     { "id": "eternal_vitality", "name": "Eternal Vitality", "description": "+15 max HP per level. Survives Ascend.", "currency": "sigils", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.7, "effect": "hpCap", "perLevel": 15 },
-    { "id": "eternal_luck", "name": "Eternal Luck", "description": "+1% gear drop chance per level. Survives Ascend.", "currency": "sigils", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.7, "effect": "dropChance", "perLevel": 0.01 }
+    { "id": "eternal_luck", "name": "Eternal Luck", "description": "+1% gear drop chance per level. Survives Ascend.", "currency": "sigils", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.7, "effect": "dropChance", "perLevel": 0.01 },
+    { "id": "sigil_attunement", "name": "Sigil Attunement", "description": "+10% Sigils from Ascend per level.", "currency": "sigils", "maxLevel": 10, "baseCost": 3, "costMultiplier": 1.8, "effect": "sigilGain", "perLevel": 0.1 },
+    { "id": "hidden_cache", "name": "Hidden Cache", "description": "Start every Ascension with 100 of each material per level.", "currency": "sigils", "maxLevel": 10, "baseCost": 1, "costMultiplier": 1.6, "effect": "startingMaterials", "perLevel": 100 },
+    { "id": "collectors_memory", "name": "Collector's Memory", "description": "Ascend keeps your discovered gear, one rarity per level: Common, then Uncommon, Rare and Epic.", "currency": "sigils", "maxLevel": 4, "baseCost": 3, "costMultiplier": 2.5, "effect": "keepDiscoveries", "perLevel": 1 },
+    { "id": "augment_lore", "name": "Augment Lore", "description": "Ascend keeps your learned augments (their Imbue ranks still reset).", "currency": "sigils", "maxLevel": 1, "baseCost": 10, "costMultiplier": 1, "effect": "keepAugments", "perLevel": 1 },
+    { "id": "sig_whirlwind", "name": "Signature: Whirlwind", "description": "Unlocks Whirlwind, a Warrior-only ability. Survives Ascend.", "currency": "sigils", "maxLevel": 1, "baseCost": 4, "costMultiplier": 1, "effect": "unlockAbility", "perLevel": 1, "spec": "warrior" },
+    { "id": "weapon_mastery", "name": "Weapon Mastery", "description": "+15% Physical ability damage per level while you are a Warrior.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "physicalDamage", "perLevel": 0.15, "spec": "warrior" },
+    { "id": "battle_hardened", "name": "Battle Hardened", "description": "+2% damage reduction per level while you are a Warrior.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "resistance", "perLevel": 0.02, "spec": "warrior" },
+    { "id": "bloodthirst", "name": "Bloodthirst", "description": "+0.2% of max HP healed per hit, per level, while you are a Warrior.", "currency": "sigils", "maxLevel": 5, "baseCost": 3, "costMultiplier": 1.8, "effect": "lifeSteal", "perLevel": 0.002, "spec": "warrior" },
+    { "id": "sig_arcane_nova", "name": "Signature: Arcane Nova", "description": "Unlocks Arcane Nova, a Mage-only ability. Survives Ascend.", "currency": "sigils", "maxLevel": 1, "baseCost": 4, "costMultiplier": 1, "effect": "unlockAbility", "perLevel": 1, "spec": "mage" },
+    { "id": "arcane_attunement", "name": "Arcane Attunement", "description": "+15% spell damage per level while you are a Mage.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "spellDamage", "perLevel": 0.15, "spec": "mage" },
+    { "id": "arcane_ward", "name": "Arcane Ward", "description": "+2% damage reduction per level while you are a Mage.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "resistance", "perLevel": 0.02, "spec": "mage" },
+    { "id": "mana_font", "name": "Mana Font", "description": "+30 max Mana per level while you are a Mage.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "manaCap", "perLevel": 30, "spec": "mage" },
+    { "id": "sig_spellblade", "name": "Signature: Spellblade", "description": "Unlocks Spellblade, an Adventurer-only ability. Survives Ascend.", "currency": "sigils", "maxLevel": 1, "baseCost": 4, "costMultiplier": 1, "effect": "unlockAbility", "perLevel": 1, "spec": "adventurer" },
+    { "id": "jack_of_all_trades", "name": "Jack of All Trades", "description": "+10% damage per level while you are an Adventurer.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "damage", "perLevel": 0.1, "spec": "adventurer" },
+    { "id": "wanderers_wit", "name": "Wanderer's Wit", "description": "+8% stat gain per training, per level, while you are an Adventurer.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "trainGain", "perLevel": 0.08, "spec": "adventurer" },
+    { "id": "well_traveled", "name": "Well Traveled", "description": "+8% Focus from kills per level while you are an Adventurer.", "currency": "sigils", "maxLevel": 10, "baseCost": 2, "costMultiplier": 1.6, "effect": "focusGain", "perLevel": 0.08, "spec": "adventurer" }
   ]
 }

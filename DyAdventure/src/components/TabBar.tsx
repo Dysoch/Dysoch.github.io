@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { canRecall } from '../worker/simLogic'
+import { canRecall, hasEverFoundGear } from '../worker/simLogic'
 import type { SimState, TabId } from '../types'
 import { Icon } from './icons'
 
@@ -22,9 +22,9 @@ const TABS: { id: TabId; icon: string; label: string }[] = [
 // flickers away again — canRecall alone would switch off right after every Recall/Ascend (both wipe
 // maxDepthByZone), so the lifetime Recall counter backs it up.
 const TAB_GATES: Partial<Record<TabId, (s: SimState) => boolean>> = {
-  inventory: (s) => s.discoveredItemIds.length > 0,
-  crafting: (s) => s.discoveredItemIds.length > 0,
-  automation: (s) => s.discoveredItemIds.length > 0,
+  inventory: hasEverFoundGear,
+  crafting: hasEverFoundGear,
+  automation: hasEverFoundGear,
   zones: (s) => s.unlockedZoneIds.length > 1,
   prestige: (s) => canRecall(s) || (s.lifetime.recalls ?? 0) > 0,
 }

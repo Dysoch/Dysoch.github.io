@@ -16,7 +16,6 @@ import {
   getGearCatalogItem,
   getOwnedItem,
   getRarityDef,
-  getStatLabel,
   getSetDef,
   getTierChain,
   listCraftableItems,
@@ -26,6 +25,7 @@ import {
 } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
+import { GearStatList } from '../components/GearStatList'
 import { BuyButtonRow, type BuyRowOption } from '../components/BuyButtonRow'
 import type { CraftCost } from '../worker/simLogic'
 import type { GearCatalogItemDef, SimState } from '../types'
@@ -78,7 +78,7 @@ function ImbuePanel({ state, onImbue }: { state: SimState; onImbue: (augmentId: 
     <div>
       <h6>Imbue augments</h6>
       <p className="text-body-secondary small" style={{ maxWidth: '900px' }}>
-        Spend materials to permanently strengthen an augment you've learned. Every item with that augment socketed benefits, and Imbue ranks are never reset.
+        Spend materials to permanently strengthen an augment you've learned. Every item with that augment socketed benefits. Imbue ranks last until you Ascend.
       </p>
       <div className="inventory-grid">
         {state.learnedAugmentIds.map((augmentId) => {
@@ -209,7 +209,7 @@ function CraftLineCard({ tiers, state, base, onCraft }: { tiers: GearCatalogItem
       <ComparisonLine comparison={compareCraftResult(state, item.id, base)} owned={!!fuseTargetId} />
 
       <div className="small text-body-secondary">
-        <span style={{ color: rarity.color }}>{rarity.name}</span>: {item.stats.map((st) => `+${formatNumber(st.value)} ${getStatLabel(st.statId)}`).join(', ')}
+        <span style={{ color: rarity.color }}>{rarity.name}</span>: <GearStatList stats={item.stats} separator=", " />
       </div>
 
       <div className="small">

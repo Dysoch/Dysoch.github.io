@@ -1,7 +1,7 @@
 import abilitiesData from '../content/abilities.json'
 import groupsData from '../content/groups.json'
 import { useGameStore } from '../store/gameStore'
-import { computeEffectiveCooldownMs } from '../worker/simLogic'
+import { computeEffectiveCooldownMs, isAbilityLocked, isGroupLocked } from '../worker/simLogic'
 import type { AbilityDef, GroupDef } from '../types'
 import { Icon } from './icons'
 
@@ -14,8 +14,9 @@ export default function AbilityBar() {
   return (
     <div className="ability-bar">
       {GROUPS.map((group) => {
-        const members = ABILITIES.filter((a) => a.group === group.id)
-        if (members.length === 0) return null
+        // Signature abilities only show once owned
+        const members = ABILITIES.filter((a) => a.group === group.id && !(a.spec && isAbilityLocked(state, a.id)))
+        if (members.length === 0 || isGroupLocked(state, group.id)) return null
         return (
           <div key={group.id} className="ability-bar-group" style={{ borderColor: group.color }}>
             <div className="ability-bar-label" style={{ color: group.color }}>

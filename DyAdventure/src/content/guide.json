@@ -35,7 +35,7 @@
     "paragraphs": [
       "Focus is your main currency. You earn it from kills (more on deeper floors) and by salvaging gear. Spend it on the Training page to raise stats permanently for the current run.",
       "Each stat costs more than the last, so spread your training out sensibly. Stats come in three groups: Physical ones help weapon abilities (which use Stamina), Arcane ones help spells (which use Mana), and Utility ones help every build. The Build preset on the Automation page sets the autobuyers up for one of them.",
-      "Builds: your abilities deal more damage the more your Physical-vs-Arcane training leans toward their school (Utility stats don't count). Going all-in on one school gives its abilities up to x2.25 damage; an even split gets no bonus at all. Physical builds hit hard from the start but slow down in later zones, whose monsters resist weapons. Arcane builds start slow, but spells grow stronger with every point of Arcana and finish strong. Hybrid builds get everywhere too, just much more slowly."
+      "Specs: every new game starts as an Adventurer, a master of none who can train and use both Physical and Arcane but gets no specialization bonus. Each time you Ascend you choose your spec for the next Ascension. A Warrior's weapon abilities deal x2.25 damage, but Arcane attributes and spells are locked and Arcane stats on gear do nothing. A Mage is the same the other way round. Both schools grow with their attribute: weapon abilities get stronger with every point of Might and spells with every point of Arcana (spells start weaker but grow faster). Warriors hit hard from the start; Mages start slow and catch up. Deeper zones take turns resisting weapons or spells, so each spec has zones that suit it. Adventurers get everywhere too, just more slowly."
     ],
     "bullets": [
       "Might: +8% physical damage per point.",
@@ -91,7 +91,7 @@
       "On the Crafting page you can craft any gear piece you have already discovered. Each piece costs Focus plus two materials, and the price rises with rarity. Crafting a piece you already own fuses it into a level, exactly like a duplicate drop.",
       "Each item has one card with a rarity picker for every rarity you've discovered.",
       "Crafting is how you finish a set when luck runs out — but you still have to find a piece once to unlock its recipe. Boss-only uniques cannot be crafted.",
-      "Once you've learned augments, the Crafting page also lets you Imbue them: spend surplus materials to permanently strengthen an augment everywhere it's socketed. Imbue ranks are never reset, and each rank costs more than the last."
+      "Once you've learned augments, the Crafting page also lets you Imbue them: spend surplus materials to permanently strengthen an augment everywhere it's socketed. Imbue ranks last until you Ascend, and each rank costs more than the last."
     ]
   },
   {
@@ -117,8 +117,9 @@
     "paragraphs": [
       "Recall resets your stats, ability ranks, Focus and depth, but keeps your gear, discoveries and zone unlocks. It is available once you reach depth {recallDepth} in any zone, and rewards Echoes — the deeper you went, the more you earn (and deeper zones multiply it).",
       "Echoes buy Echo perks: faster training, more Focus, extra HP and better drop chance. Each Recall also permanently gives a small stat-gain bonus for the current Ascension.",
-      "Ascend is the next layer. After earning {ascendEchoes} Echoes in total, you can Ascend to earn Sigils — the more Echoes you earned since your last Ascend, the more Sigils you get. Ascending resets your Echoes and Echo perks.",
-      "Sigils buy permanent perks that survive every Ascend, such as bigger Echo rewards and a global damage bonus. Each Ascension also boosts your stat gain.",
+      "Ascend is the next layer. After earning {ascendEchoes} Echoes in total, you can Ascend to earn Sigils — the more Echoes you earned since your last Ascend, the more Sigils you get. Ascending is a clean slate: it resets your Echoes and Echo perks and removes your gear (equipped and in your inventory), materials, learned augments with their Imbue ranks, and discoveries. Zone unlocks and milestones are kept.",
+      "Every Ascend also asks you to choose your spec for the next Ascension: Warrior, Mage or Adventurer (see Training & Focus). It is the only time a spec can change.",
+      "Sigils buy permanent perks that survive every Ascend, so each Ascension starts stronger than the last: more damage, Echoes and Sigils, perks that soften the clean slate (starting materials, keeping discovered gear of low rarities, keeping learned augments), and a set of perks for each spec that only count while you are that spec. Each spec also has a signature ability bought with Sigils: Whirlwind for Warriors, Arcane Nova for Mages and Spellblade for Adventurers, which strikes with steel or spell, whichever hits harder. Each Ascension also boosts your stat gain.",
       "The Recall timing panel shows your Echoes per hour if you Recall now. It climbs while you push deeper and sags once progress slows, and that sag is usually a good moment to Recall."
     ]
   },

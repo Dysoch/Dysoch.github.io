@@ -85,10 +85,20 @@ import {
   computeSpecializationMultiplier,
   computeSchoolMultiplier,
   buildPresetWeights,
+  isGroupLocked,
+  upgradeAbility,
+  computeSetBonusForStat,
+  getSetDef,
+  computeAscendSigils,
+  buyPerk,
+  isAbilityLocked,
+  abilitySchool,
+  getAbilityDef,
 } from './simLogic'
 import abilitiesData from '../content/abilities.json'
 import gearData from '../content/gear.json'
 import balanceData from '../content/balance.json'
+import prestigeData from '../content/prestige.json'
 import type { AbilityDef, GearCatalogItemDef, GearItem, PerkEffect, RarityDef, SimState } from '../types'
 
 const ABILITIES = abilitiesData as AbilityDef[]
@@ -100,7 +110,8 @@ function zeroedAbilities(state: SimState): SimState['abilities'] {
 
 describe('ability firing fairness (regression: fixed-order firing let cheap abilities starve the rest)', () => {
   test('every ranked ability in a pool eventually fires, not just the first ones in abilities.json', () => {
-    const physicalIds = ABILITIES.filter((a) => a.type === 'physical').map((a) => a.id)
+    // Signature abilities need a spec and a Sigil perk; they have their own tests under 'specs'
+    const physicalIds = ABILITIES.filter((a) => a.type === 'physical' && !a.spec).map((a) => a.id)
     let state: SimState = {
       ...createInitialState(),
       abilities: Object.fromEntries(Object.keys(createInitialState().abilities).map((id) => [id, { rank: physicalIds.includes(id) ? 5 : 0 }])),
@@ -527,6 +538,13 @@ describe('perk effect wiring coverage (regression: a perk added without hooking 
     trainGain: computeStatGainPerTrain,
     focusGain: focusGainMultiplier,
     echoGain: (state) => computeRecallEchoes({ ...state, currentDepth: 60, maxDepthByZone: { [state.currentZoneId]: 60 } }),
+    // Spec perks: probed as the spec they belong to
+    physicalDamage: (state) => computeSchoolMultiplier({ ...state, spec: 'warrior' }, 'physical'),
+    spellDamage: (state) => computeSchoolMultiplier({ ...state, spec: 'mage' }, 'spell'),
+    sigilGain: (state) => computeAscendSigils({ ...state, echoesEarned: 100_000 }),
+    startingMaterials: (state) => ascend({ ...state, echoesEarned: 10_000 }).materials.wood ?? 0,
+    keepDiscoveries: (state) => ascend({ ...state, echoesEarned: 10_000, discoveredItemIds: ['vanguard_sword'] }).discoveredItemIds.length,
+    keepAugments: (state) => ascend({ ...state, echoesEarned: 10_000, learnedAugmentIds: ['aug_might'] }).learnedAugmentIds.length,
   }
 
   test.each(Object.entries(probes))('perk effect "%s" changes its formula output when a perk with that effect is leveled', (effect, probe) => {
@@ -560,6 +578,13 @@ describe('Recall economy (regression: bonus scaled with recall count, so spam-sh
     state = recall({ ...state, currentDepth: 120, maxDepthByZone: { [state.currentZoneId]: 120 } })
     expect(state.bestRecallDepth).toBeGreaterThan(60)
     expect(computeStatGainPerTrain(state)).toBeGreaterThan(gainAfter1)
+  })
+
+  test("a Recall pays the Echo multiplier of the zone you reached, not the best zone's (regression)", () => {
+    const woods = computeRecallEchoes(atDepth(102))
+    const crypt = computeRecallEchoes({ ...atDepth(102), currentZoneId: 'sunken_crypt', maxDepthByZone: { sunken_crypt: 102 } })
+    const cryptMultiplier = getZoneDef('sunken_crypt').echoMultiplier / getZoneDef('whispering_woods').echoMultiplier
+    expect(crypt).toBeCloseTo(woods * cryptMultiplier, -1)
   })
 
   test('Ascend resets bestRecallDepth to 0', () => {
@@ -1342,7 +1367,7 @@ describe('Endurance, Spirit and Precision', () => {
   })
 
   test('build presets weight stats and abilities by group', () => {
-    const physical = buildPresetWeights(listBuildPresets().find((p) => p.id === 'physical')!)
+    const physical = buildPresetWeights(listBuildPresets().find((p) => p.id === 'warrior')!)
     expect(physical.statWeights).toMatchObject({ might: 3, endurance: 3, arcana: 0, spirit: 0, precision: 1 })
     expect(physical.abilityWeights).toMatchObject({ strike: 1, bolt: 0 })
   })
@@ -1393,16 +1418,15 @@ describe('long ticks (regression: offline catch-up steps 1s at a time and lost e
 
 describe('build balance mechanics', () => {
   const base = createInitialState()
-  const levels = (might: number, arcana: number): SimState => ({ ...base, statLevels: { ...base.statLevels, might, arcana } })
 
-  test('specialization: an even Physical/Arcane split gets no bonus, all-in boosts that school only', () => {
+  test('specialization: only a Warrior or Mage gets it, for their own school; an Adventurer gets none', () => {
     const full = 1 + balanceData.specialization.maxBonus
-    expect(computeSpecializationMultiplier(levels(0, 0), 'physical')).toBe(1)
-    expect(computeSpecializationMultiplier(levels(50, 50), 'physical')).toBe(1)
-    expect(computeSpecializationMultiplier(levels(50, 50), 'spell')).toBe(1)
-    expect(computeSpecializationMultiplier(levels(100, 0), 'physical')).toBeCloseTo(full)
-    expect(computeSpecializationMultiplier(levels(100, 0), 'spell')).toBe(1)
-    expect(computeSpecializationMultiplier(levels(75, 25), 'physical')).toBeCloseTo(1 + (full - 1) / 2)
+    const leaning = { ...base, statLevels: { ...base.statLevels, might: 100, arcana: 0 } }
+    expect(computeSpecializationMultiplier(leaning, 'physical')).toBe(1)
+    expect(computeSpecializationMultiplier({ ...base, spec: 'warrior' }, 'physical')).toBeCloseTo(full)
+    expect(computeSpecializationMultiplier({ ...base, spec: 'warrior' }, 'spell')).toBe(1)
+    expect(computeSpecializationMultiplier({ ...base, spec: 'mage' }, 'spell')).toBeCloseTo(full)
+    expect(computeSpecializationMultiplier({ ...base, spec: 'mage' }, 'physical')).toBe(1)
   })
 
   test('zone resistances cut that school\'s damage', () => {
@@ -1411,9 +1435,192 @@ describe('build balance mechanics', () => {
     expect(computeSchoolMultiplier(frost, 'physical')).toBeLessThan(computeSchoolMultiplier(woods, 'physical'))
   })
 
+  test('Weapon mastery makes weapon abilities scale up with Might, from a stronger start than spells', () => {
+    const warrior = { ...base, stats: { ...base.stats, might: 5000 } }
+    expect(computeSchoolMultiplier(warrior, 'physical')).toBeGreaterThan(computeSchoolMultiplier(base, 'physical'))
+    expect(computeSchoolMultiplier(base, 'physical')).toBeGreaterThan(computeSchoolMultiplier(base, 'spell'))
+  })
+
   test('Arcane mastery makes spells scale up with Arcana; Willpower adds HP', () => {
     const arcane = { ...base, stats: { ...base.stats, arcana: 1000, willpower: 100 } }
     expect(computeSchoolMultiplier(arcane, 'spell')).toBeGreaterThan(computeSchoolMultiplier(base, 'spell'))
     expect(computeHpCap(arcane)).toBeGreaterThan(computeHpCap(base))
+  })
+})
+
+describe('specs', () => {
+  const base = createInitialState()
+  const now = Date.now()
+  const warrior: SimState = { ...base, spec: 'warrior', focus: 1e9 }
+  const readyToAscend = (state: SimState): SimState => ({ ...state, echoesEarned: ascendRequiredEchoes() })
+  const wand: GearItem = { instanceId: 'wand', catalogId: 'adept_wand', level: 1, augmentIds: [] }
+
+  test('a new game starts as an Adventurer with both schools open', () => {
+    expect(base.spec).toBe('adventurer')
+    expect(isGroupLocked(base, 'physical')).toBe(false)
+    expect(isGroupLocked(base, 'arcane')).toBe(false)
+    expect(base.abilities.strike.rank).toBe(1)
+    expect(base.abilities.bolt.rank).toBe(1)
+  })
+
+  test('a Warrior cannot train Arcane attributes or rank spells, but can train Physical and Utility', () => {
+    expect(trainStat(warrior, 'arcana')).toBe(warrior)
+    expect(upgradeAbility(warrior, 'meteor')).toBe(warrior)
+    expect(trainStat(warrior, 'might').statLevels.might).toBe(1)
+    expect(trainStat(warrior, 'speed').statLevels.speed).toBe(1)
+    expect(upgradeAbility(warrior, 'cleave').abilities.cleave.rank).toBe(1)
+  })
+
+  test('Arcane stats and set bonuses on gear do nothing for a Warrior', () => {
+    const geared = (spec: SimState['spec']): SimState => ({ ...base, spec, gear: { ...base.gear, mainHand: wand } })
+    expect(gearBonusForStat(geared('adventurer'), 'arcana')).toBeGreaterThan(0)
+    expect(gearBonusForStat(geared('warrior'), 'arcana')).toBe(0)
+    const setIds = getSetDef('woodland_adept').itemIds.slice(0, 2)
+    const slots = setIds.map((id) => equipSlotsFor(id)[0])
+    const withSet = (spec: SimState['spec']): SimState => ({
+      ...base,
+      spec,
+      gear: { ...base.gear, ...Object.fromEntries(setIds.map((id, i) => [slots[i], { instanceId: id, catalogId: id, level: 1, augmentIds: [] }])) },
+    })
+    expect(computeSetBonusForStat(withSet('adventurer'), 'arcana')).toBeGreaterThan(0)
+    expect(computeSetBonusForStat(withSet('warrior'), 'arcana')).toBe(0)
+  })
+
+  test('a Warrior never fires a spell, even one with ranks', () => {
+    let state: SimState = { ...warrior, abilities: { ...warrior.abilities, strike: { rank: 0 }, bolt: { rank: 5 } } }
+    for (let i = 1; i <= 50; i++) state = advanceTick(state, 100, now + i * 100).state
+    expect(state.lifetime.ability_bolt_uses ?? 0).toBe(0)
+  })
+
+  test('the autobuyers skip what the spec locks', () => {
+    const state: SimState = {
+      ...base,
+      spec: 'mage',
+      focus: 1e6,
+      lifetime: { recalls: 100 },
+      automation: { ...defaultAutomation(), autoTrain: true, autoAbilities: true },
+    }
+    const after = runAutobuyers(state)
+    expect(after.statLevels.might).toBe(0)
+    expect(after.abilities.cleave.rank).toBe(0)
+    expect(after.statLevels.arcana).toBeGreaterThan(0)
+  })
+
+  test("Ascend sets the chosen spec, drops the other school's starting ability and wipes gear, materials, augments and discoveries", () => {
+    const state: SimState = readyToAscend({
+      ...base,
+      gear: { ...base.gear, mainHand: wand },
+      inventory: [{ ...wand, instanceId: 'wand2' }],
+      materials: { wood: 10 },
+      learnedAugmentIds: ['aug_might'],
+      augmentRanks: { aug_might: 3 },
+      discoveredItemIds: ['adept_wand'],
+      unlockedZoneIds: ['whispering_woods', 'sunken_crypt'],
+    })
+    const after = ascend(state, 'mage')
+    expect(after.spec).toBe('mage')
+    expect(Object.values(after.gear).every((item) => item === null)).toBe(true)
+    expect(after.inventory).toEqual([])
+    expect(after.materials).toEqual({})
+    expect(after.learnedAugmentIds).toEqual([])
+    expect(after.augmentRanks).toEqual({})
+    expect(after.discoveredItemIds).toEqual([])
+    expect(after.unlockedZoneIds).toContain('sunken_crypt')
+    expect(after.abilities.strike.rank).toBe(0)
+    expect(after.abilities.bolt.rank).toBe(1)
+    expect(after.automation.statWeights.might).toBe(0)
+    expect(after.automation.statWeights.arcana).toBeGreaterThan(0)
+  })
+
+  test('the spec can only change by Ascending, and Ascending keeps it when none is given', () => {
+    expect(ascend(warrior, 'mage')).toBe(warrior)
+    expect(ascend(readyToAscend(warrior)).spec).toBe('warrior')
+  })
+})
+
+describe('Ascend payoff', () => {
+  const base = createInitialState()
+  const now = Date.now()
+  const ready = (state: SimState): SimState => ({ ...state, echoesEarned: 1000 })
+  const owning = (state: SimState, perks: Record<string, number>): SimState => ({ ...state, perkLevels: { ...state.perkLevels, ...perks } })
+
+  test('Ascend pays more Sigils than the square-root scale alone, and Sigil Attunement adds to it', () => {
+    const plain = Math.floor(Math.sqrt(1000 / prestigeData.ascend.echoesPerSigilSquared))
+    expect(computeAscendSigils(ready(base))).toBeGreaterThan(plain)
+    expect(computeAscendSigils(owning(ready(base), { sigil_attunement: 5 }))).toBeGreaterThan(computeAscendSigils(ready(base)))
+  })
+
+  test('the keep perks soften the wipe', () => {
+    const state = owning(ready({
+      ...base,
+      learnedAugmentIds: ['aug_might'],
+      augmentRanks: { aug_might: 3 },
+      discoveredItemIds: ['vanguard_sword', 'woods_warden_fang'],
+    }), { hidden_cache: 2, collectors_memory: 1, augment_lore: 1 })
+    const after = ascend(state)
+    expect(after.materials.wood).toBe(200)
+    expect(after.learnedAugmentIds).toEqual(['aug_might'])
+    expect(after.augmentRanks).toEqual({})
+    const kept = after.discoveredItemIds.map((id) => getGearCatalogItem(id).rarity)
+    expect(kept.length).toBeGreaterThan(0)
+    expect(kept.every((r) => r === 'common')).toBe(true)
+  })
+
+  test('spec perks only count while you are that spec', () => {
+    const state = owning(base, { weapon_mastery: 2 })
+    expect(perkBonus({ ...state, spec: 'warrior' }, 'physicalDamage')).toBeCloseTo(0.3)
+    expect(perkBonus({ ...state, spec: 'mage' }, 'physicalDamage')).toBe(0)
+  })
+
+  test('a signature ability is locked until its perk is owned, and only for its own spec', () => {
+    const warrior: SimState = { ...base, spec: 'warrior' }
+    expect(isAbilityLocked(warrior, 'whirlwind')).toBe(true)
+    expect(isAbilityLocked(owning(warrior, { sig_whirlwind: 1 }), 'whirlwind')).toBe(false)
+    expect(isAbilityLocked(owning({ ...base, spec: 'mage' }, { sig_whirlwind: 1 }), 'whirlwind')).toBe(true)
+  })
+
+  test('buying the signature perk readies the ability at rank 1, and every run after starts with it', () => {
+    const warrior: SimState = { ...base, spec: 'warrior', sigils: 100 }
+    const bought = buyPerk(warrior, 'sig_whirlwind')
+    expect(bought.abilities.whirlwind.rank).toBe(1)
+    const next = ascend(ready(bought), 'warrior')
+    expect(next.abilities.whirlwind.rank).toBe(1)
+    expect(ascend(ready(bought), 'mage').abilities.whirlwind.rank).toBe(0)
+  })
+
+  test('Spellblade fires as whichever school hits harder, paying that resource', () => {
+    const adventurer = owning({ ...base, abilities: { ...zeroedAbilities(base), spellblade: { rank: 5 } } }, { sig_spellblade: 1 })
+    const run = (state: SimState) => {
+      let s = state
+      for (let i = 1; i <= 20; i++) s = advanceTick(s, 100, now + i * 100).state
+      return s
+    }
+    const caster = run({ ...adventurer, stats: { ...adventurer.stats, arcana: 500 } })
+    expect(caster.lifetime.ability_spellblade_uses ?? 0).toBeGreaterThan(0)
+    expect(caster.mana.current).toBeLessThan(caster.mana.max)
+    expect(abilitySchool(caster, getAbilityDef('spellblade'))).toBe('spell')
+    const fighter = { ...adventurer, stats: { ...adventurer.stats, might: 500 } }
+    expect(abilitySchool(fighter, getAbilityDef('spellblade'))).toBe('physical')
+  })
+})
+
+describe('statistics counters (the per-tick copy-on-write that keeps the simulation fast)', () => {
+  test('a tick never changes the state it was given, and the next tick never changes the previous result', () => {
+    const start: SimState = { ...createInitialState(), lifetime: { kills: 5 }, runStats: { kills: 5 } }
+    const now = Date.now()
+    const first = advanceTick(start, 1000, now + 1000).state
+    expect(start.lifetime).toEqual({ kills: 5 })
+    expect(start.runStats).toEqual({ kills: 5 })
+    const firstLifetime = { ...first.lifetime }
+    const second = advanceTick(first, 1000, now + 2000).state
+    expect(first.lifetime).toEqual(firstLifetime)
+    expect(second.lifetime.timeMs).toBe((firstLifetime.timeMs ?? 0) + 1000)
+  })
+
+  test('counter updates outside a tick copy as before', () => {
+    const start: SimState = { ...createInitialState(), lifetime: { kills: 1 } }
+    const after = trainStat({ ...start, focus: 1e6 }, 'might')
+    expect(start.lifetime).toEqual({ kills: 1 })
+    expect(after.lifetime).not.toBe(start.lifetime)
   })
 })

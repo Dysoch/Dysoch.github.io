@@ -1,0 +1,29 @@
+[
+  {
+    "id": "adventurer",
+    "name": "Adventurer",
+    "icon": "map",
+    "description": "Master of none. Trains and fights with both Physical and Arcane, but neither school gets a specialization bonus.",
+    "lockedGroups": [],
+    "bonusSchool": null,
+    "presetId": "adventurer"
+  },
+  {
+    "id": "warrior",
+    "name": "Warrior",
+    "icon": "sword",
+    "description": "Weapons only. Physical abilities deal x{bonus} damage. Arcane attributes and spells are locked, and Arcane stats on gear do nothing.",
+    "lockedGroups": ["arcane"],
+    "bonusSchool": "physical",
+    "presetId": "warrior"
+  },
+  {
+    "id": "mage",
+    "name": "Mage",
+    "icon": "wand",
+    "description": "Spells only. Spells deal x{bonus} damage. Physical attributes and weapon abilities are locked, and Physical stats on gear do nothing.",
+    "lockedGroups": ["physical"],
+    "bonusSchool": "spell",
+    "presetId": "mage"
+  }
+]

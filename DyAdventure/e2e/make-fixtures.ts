@@ -44,3 +44,18 @@ const legacy = {
   discoveredItemIds: ['vanguard_sword', 'adept_wand', 'vanguard_armor', 'vanguard_charm', 'tattered_pouch'],
 } as unknown as SimState
 write('legacy-slots', legacy)
+
+// The geared character with enough Echoes banked to Ascend (and pick a spec)
+write('ascend-ready', { ...geared, echoesEarned: 500 })
+
+// Deep in the last zone with every zone unlocked: huge monster numbers and the full Zones list
+const allZones = ['whispering_woods', 'sunken_crypt', 'ember_caverns', 'frostbound_peaks', 'stormspire_heights', 'abyssal_depths', 'verdant_maw', 'obsidian_citadel', 'astral_rift', 'hollow_throne']
+write('late-game', {
+  ...geared,
+  unlockedZoneIds: allZones,
+  currentZoneId: 'hollow_throne',
+  currentDepth: 450,
+  maxDepthByZone: { hollow_throne: 450 },
+  depthMode: { auto: false, pinnedDepth: 450 },
+  currentMonster: null,
+})

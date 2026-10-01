@@ -3,7 +3,7 @@ import prestigeData from '../content/prestige.json'
 import automationData from '../content/automation.json'
 import { DEPTH_CLEARS_MAX, DEPTH_CLEARS_MIN, DESCEND_COOLDOWN_MS } from '../constants'
 import { useGameStore } from '../store/gameStore'
-import { canRecall, getZoneDef, getDefaultZoneId, isAutomationUnlocked, zoneGateDepth } from '../worker/simLogic'
+import { canRecall, getZoneDef, hasEverFoundGear, getDefaultZoneId, isAutomationUnlocked, zoneGateDepth } from '../worker/simLogic'
 import type { SimState } from '../types'
 
 interface GuideSection {
@@ -17,12 +17,12 @@ const SECTIONS = guideData as GuideSection[]
 
 // Sections not listed here are always shown (the core loop a brand-new player needs immediately).
 // Gated ones only appear once their subject is actually reachable, same "don't show what isn't
-// needed yet" rule the Prestige tab follows — and once true they stay true (discoveredItemIds only
-// grows; the prestige check reuses the same lifetime-counter guard TabBar uses, so it doesn't
-// flicker off after a Recall wipes live progress).
+// needed yet" rule the Prestige tab follows — and once true they stay true (hasEverFoundGear reads
+// lifetime counters, since Ascend wipes discoveries; the prestige check reuses the same lifetime-counter
+// guard TabBar uses, so it doesn't flicker off after a Recall wipes live progress).
 const SECTION_GATES: Record<string, (state: SimState) => boolean> = {
-  gear: (state) => state.discoveredItemIds.length > 0,
-  crafting: (state) => state.discoveredItemIds.length > 0,
+  gear: hasEverFoundGear,
+  crafting: hasEverFoundGear,
   // Names the autobuyers, so it waits until the first of them unlocks (duplicate handling is covered under Gear)
   automation: (state) => isAutomationUnlocked(state, 'autoTrain'),
   prestige: (state) => canRecall(state) || (state.lifetime.recalls ?? 0) > 0,

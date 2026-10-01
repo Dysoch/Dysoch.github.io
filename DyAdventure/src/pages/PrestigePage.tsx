@@ -10,12 +10,16 @@ import {
   computePerkCostN,
   computeRecallEchoes,
   computeStatGainPerTrain,
+  describeSpec,
+  getSpecDef,
   listPerks,
+  listSpecs,
   recallRequiredDepth,
 } from '../worker/simLogic'
+import { Icon } from '../components/icons'
 import { formatDuration, formatNumber } from '../utils/format'
 import { QtySelector, type BuyQty } from '../components/QtySelector'
-import type { PerkDef } from '../types'
+import type { PerkDef, SpecId } from '../types'
 
 const PERKS = listPerks()
 
@@ -48,6 +52,44 @@ function PerkRow({ perk, qty }: { perk: PerkDef; qty: BuyQty }) {
 }
 
 type PrestigeLayer = 'recall' | 'ascend'
+
+const SPECS = listSpecs()
+
+/** "a Warrior", "an Adventurer" */
+function withArticle(name: string): string {
+  return `${/^[AEIOU]/.test(name) ? 'an' : 'a'} ${name}`
+}
+
+/** Pick the spec for the next Ascension. The choice only takes effect by Ascending. */
+function SpecPicker({ value, current, onChange }: { value: SpecId; current: SpecId; onChange: (spec: SpecId) => void }) {
+  return (
+    <div className="d-flex flex-column gap-2 my-2" role="radiogroup" aria-label="Spec for the next Ascension">
+      {SPECS.map((spec) => {
+        const selected = spec.id === value
+        return (
+          <button
+            key={spec.id}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            className="inventory-card text-start"
+            style={{ flexDirection: 'row', alignItems: 'flex-start', gap: '10px', padding: '10px 12px', borderColor: selected ? 'var(--focus)' : undefined, boxShadow: selected ? '0 0 0 1px var(--focus)' : undefined, cursor: 'pointer' }}
+            onClick={() => onChange(spec.id)}
+          >
+            <span className="hud-portrait" style={{ width: '34px', height: '34px', borderRadius: '8px', flexShrink: 0 }}>
+              <Icon name={spec.icon} size={16} />
+            </span>
+            <span>
+              <span className="fw-semibold">{spec.name}</span>
+              {spec.id === current && <span className="small text-body-secondary"> · current</span>}
+              <span className="d-block small text-body-secondary">{describeSpec(spec)}</span>
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 /**
  * Rates for deciding when to Recall. Echoes only rise when depth does, while run time keeps growing,
@@ -92,6 +134,8 @@ export default function PrestigePage() {
   const ascend = useGameStore((s) => s.ascend)
   const gain = computeStatGainPerTrain(state)
   const [perkQty, setPerkQty] = useState<BuyQty>(1)
+  const [nextSpec, setNextSpec] = useState<SpecId>(state.spec)
+  const nextSpecName = getSpecDef(nextSpec).name
 
   const recallEchoes = computeRecallEchoes(state)
   const ascendSigils = computeAscendSigils(state)
@@ -106,7 +150,9 @@ export default function PrestigePage() {
       <p className="text-body-secondary small" style={{ maxWidth: '900px' }}>
         Recall resets your depth, stats, and ability ranks in exchange for <strong>Echoes</strong> — the deeper you got, the more you earn.
         Ascend resets your Echoes and Echo perks for <strong>Sigils</strong>, based on every Echo earned since your last Ascend.
-        Gear, inventory, discoveries, zone unlocks, and learned augments are always kept.
+        Ascending is a clean slate: it also removes your gear, materials, learned augments and discoveries, and lets you choose your spec:
+        <strong> Warrior</strong>, <strong>Mage</strong> or <strong>Adventurer</strong>. Sigil perks make every Ascension stronger than the last.
+        Recall keeps your gear, materials, augments and discoveries. Zone unlocks and milestones are always kept.
       </p>
 
       <div className="d-flex gap-2 mb-3">
@@ -169,7 +215,12 @@ export default function PrestigePage() {
             <div className="panel p-3" style={{ height: 'fit-content' }}>
               <div className="fw-bold">Ascend</div>
               <div className="small text-body-secondary">
-                Ascensions: {state.ascendCount} · Echoes earned this Ascension: {formatNumber(state.echoesEarned)}
+                Ascensions: {state.ascendCount} · Echoes earned this Ascension: {formatNumber(state.echoesEarned)} · Spec: {getSpecDef(state.spec).name}
+              </div>
+              <div className="small mt-2">Choose your spec for the next Ascension. It stays until you Ascend again.</div>
+              <SpecPicker value={nextSpec} current={state.spec} onChange={setNextSpec} />
+              <div className="small mb-2" style={{ color: 'var(--physical)' }}>
+                Ascending removes all your gear, materials, learned augments (and their Imbue ranks) and discoveries, except what your Sigil perks keep.
               </div>
               {canAscend(state) ? (
                 <div className="small mb-2">Ascending now grants <strong>{formatNumber(ascendSigils)} Sigils</strong>.</div>
@@ -181,10 +232,10 @@ export default function PrestigePage() {
                 className="btn btn-sm btn-outline-danger"
                 disabled={!canAscend(state)}
                 onClick={() => {
-                  if (confirm(`Ascend now for ${formatNumber(ascendSigils)} Sigils? This also resets your Echoes and Echo perks.`)) ascend()
+                  if (confirm(`Ascend as ${withArticle(nextSpecName)} for ${formatNumber(ascendSigils)} Sigils? This resets your Echoes and Echo perks and removes your gear, materials, augments and discoveries.`)) ascend(nextSpec)
                 }}
               >
-                Ascend
+                Ascend as {nextSpecName}
               </button>
             </div>
 
@@ -193,9 +244,23 @@ export default function PrestigePage() {
               <div className="panel p-3 mt-3">
                 <div className="fw-bold mb-1">Sigil Perks <span className="text-body-secondary small fw-normal">· permanent</span></div>
                 <div className="perk-grid">
-                  {PERKS.filter((p) => p.currency === 'sigils').map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
+                  {PERKS.filter((p) => p.currency === 'sigils' && !p.spec).map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
                 </div>
               </div>
+              {/* Your own spec first; the others can be bought ahead of switching to them */}
+              {[...SPECS].sort((a, b) => Number(b.id === state.spec) - Number(a.id === state.spec)).map((spec) => (
+                <div key={spec.id} className="panel p-3 mt-3" style={spec.id === state.spec ? { borderColor: 'var(--focus)' } : undefined}>
+                  <div className="fw-bold mb-1 d-flex align-items-center gap-2">
+                    <Icon name={spec.icon} size={15} /> {spec.name} Perks
+                    <span className="small fw-normal" style={{ color: spec.id === state.spec ? 'var(--focus)' : 'var(--text-dim)' }}>
+                      · {spec.id === state.spec ? 'active' : `only while you are ${withArticle(spec.name)}`}
+                    </span>
+                  </div>
+                  <div className="perk-grid">
+                    {PERKS.filter((p) => p.spec === spec.id).map((perk) => <PerkRow key={perk.id} perk={perk} qty={perkQty} />)}
+                  </div>
+                </div>
+              ))}
             </div>
           </>
         )}

@@ -9,6 +9,7 @@ import type {
   OfflineSummary,
   GearSlot,
   SimState,
+  SpecId,
   StatId,
   TabId,
   MainToWorkerMessage,
@@ -47,7 +48,7 @@ interface GameStore extends PersistedSlice {
   setAutomation: (automation: Partial<AutomationSettings>) => void
   reforgeItem: (instanceId: string) => void
   recall: () => void
-  ascend: () => void
+  ascend: (spec: SpecId) => void
   buyPerk: (perkId: string, count?: number) => void
   craftItem: (catalogId: string, count?: number) => void
   exportSave: () => string
@@ -138,7 +139,7 @@ export const useGameStore = create<GameStore>()(
       setAutomation: (automation) => post({ type: 'SET_AUTOMATION', automation }),
       reforgeItem: (instanceId) => post({ type: 'REFORGE_ITEM', instanceId }),
       recall: () => post({ type: 'RECALL' }),
-      ascend: () => post({ type: 'ASCEND' }),
+      ascend: (spec) => post({ type: 'ASCEND', spec }),
       buyPerk: (perkId, count) => post({ type: 'BUY_PERK', perkId, count }),
       craftItem: (catalogId, count) => post({ type: 'CRAFT_ITEM', catalogId, count }),
 

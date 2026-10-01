@@ -1,5 +1,5 @@
 import { useGameStore } from '../store/gameStore'
-import { computeMagicPower, computePhysicalPower, getZoneDef } from '../worker/simLogic'
+import { computeMagicPower, computePhysicalPower, describeSpec, getSpecDef, getZoneDef, isGroupLocked } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from './icons'
 
@@ -24,14 +24,15 @@ export default function HudHeader() {
   const setActiveTab = useGameStore((s) => s.setActiveTab)
   const setPaused = useGameStore((s) => s.setPaused)
   const zone = getZoneDef(state.currentZoneId)
+  const spec = getSpecDef(state.spec)
 
   return (
     <header className="hud-header">
-      <div className="hud-portrait">
-        <Icon name="sword" size={20} />
+      <div className="hud-portrait" title={`${spec.name}: ${describeSpec(spec)}`}>
+        <Icon name={spec.icon} size={20} />
       </div>
       <div style={{ minWidth: '110px' }}>
-        <div style={{ fontFamily: 'Cinzel, serif', fontWeight: 600, fontSize: '14px' }}>Adventurer</div>
+        <div style={{ fontFamily: 'Cinzel, serif', fontWeight: 600, fontSize: '14px' }}>{spec.name}</div>
         <div style={{ fontSize: '11.5px', color: 'var(--text-dim)' }}>Power {formatNumber(combatPower)}</div>
       </div>
 
@@ -39,8 +40,8 @@ export default function HudHeader() {
 
       <div className="hud-bars" style={{ display: 'flex', gap: '16px', flexGrow: 1, flexWrap: 'wrap' }}>
         <Bar label="HP" current={state.playerHp.current} max={state.playerHp.max} color="var(--hp)" />
-        <Bar label="Stamina" current={state.stamina.current} max={state.stamina.max} color="var(--physical)" />
-        <Bar label="Mana" current={state.mana.current} max={state.mana.max} color="var(--arcane)" />
+        {!isGroupLocked(state, 'physical') && <Bar label="Stamina" current={state.stamina.current} max={state.stamina.max} color="var(--physical)" />}
+        {!isGroupLocked(state, 'arcane') && <Bar label="Mana" current={state.mana.current} max={state.mana.max} color="var(--arcane)" />}
       </div>
 
       <div className="hud-chips" style={{ display: 'flex', gap: '8px' }}>

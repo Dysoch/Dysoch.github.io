@@ -13,6 +13,12 @@
       "resource": "Mana",
       "color": "var(--arcane)",
       "description": "Spells. Scale with Arcana and draw from Mana."
+    },
+    {
+      "id": "signature",
+      "name": "Signature",
+      "color": "var(--focus)",
+      "description": "Your spec's own ability, unlocked with Sigils. It only works while you are that spec."
     }
   ],
   "statGroups": [

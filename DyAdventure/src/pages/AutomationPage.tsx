@@ -3,7 +3,7 @@ import statsData from '../content/stats.json'
 import abilitiesData from '../content/abilities.json'
 import groupsData from '../content/groups.json'
 import { useGameStore } from '../store/gameStore'
-import { automationUnlockRecalls, buildPresetWeights, isAutomationUnlocked, listBuildPresets, totalPendingLevels } from '../worker/simLogic'
+import { automationUnlockRecalls, buildPresetWeights, isAbilityLocked, isAutomationUnlocked, isGroupLocked, listBuildPresets, totalPendingLevels } from '../worker/simLogic'
 import { formatNumber } from '../utils/format'
 import { Icon } from '../components/icons'
 import type { AbilityDef, AutomationFeature, DuplicateMode, GroupDef, StatDef } from '../types'
@@ -90,6 +90,8 @@ export default function AutomationPage() {
   const trainUnlocked = isAutomationUnlocked(state, 'autoTrain')
   const abilitiesUnlocked = isAutomationUnlocked(state, 'autoAbilities')
   const pending = totalPendingLevels(state)
+  // Signature abilities appear once owned
+  const showAbility = (ability: AbilityDef) => !(ability.spec && isAbilityLocked(state, ability.id))
 
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -103,7 +105,8 @@ export default function AutomationPage() {
           Sets every weight below in one click, so the autobuyers stop spending Focus on stats and abilities your build doesn't use. You can still fine-tune afterwards.
         </div>
         <div className="d-flex gap-2 flex-wrap">
-          {PRESETS.map((preset) => {
+          {/* A preset that spends on a locked school would only leave Focus unspent */}
+          {PRESETS.filter((preset) => Object.entries(preset.statGroupWeights).every(([group, w]) => w <= 0 || !isGroupLocked(state, group))).map((preset) => {
             const weights = buildPresetWeights(preset)
             const active = sameWeights(a.statWeights, weights.statWeights) && sameWeights(a.abilityWeights, weights.abilityWeights)
             return (
@@ -131,7 +134,7 @@ export default function AutomationPage() {
           The autobuyer always buys whatever is cheapest compared to its weight. A weight of 2 keeps training that stat until it costs twice as much as the weight-1 stats. A weight of 0 skips it.
         </div>
         <div className="stat-grid" style={{ gap: '8px', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
-          {STAT_GROUPS.flatMap((group) => [
+          {STAT_GROUPS.filter((group) => !isGroupLocked(state, group.id)).flatMap((group) => [
             <GroupLabel key={`g-${group.id}`} group={group} />,
             ...STATS.filter((stat) => stat.group === group.id).map((stat) => (
             <div key={stat.id} className="d-flex align-items-center justify-content-between inventory-card" style={{ flexDirection: 'row', padding: '6px 10px' }}>
@@ -159,9 +162,9 @@ export default function AutomationPage() {
           Works like Auto-train, sharing the same Focus. Locked abilities (rank 0) get unlocked too unless their weight is 0.
         </div>
         <div className="stat-grid" style={{ gap: '8px', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
-          {ABILITY_GROUPS.flatMap((group) => [
+          {ABILITY_GROUPS.filter((group) => !isGroupLocked(state, group.id) && ABILITIES.some((a) => a.group === group.id && showAbility(a))).flatMap((group) => [
             <GroupLabel key={`g-${group.id}`} group={group} />,
-            ...ABILITIES.filter((ability) => ability.group === group.id).map((ability) => {
+            ...ABILITIES.filter((ability) => ability.group === group.id && showAbility(ability)).map((ability) => {
             const rank = state.abilities[ability.id]?.rank ?? 0
             return (
               <div key={ability.id} className="d-flex align-items-center justify-content-between inventory-card" style={{ flexDirection: 'row', padding: '6px 10px' }}>
